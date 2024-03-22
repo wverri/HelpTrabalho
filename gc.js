@@ -121,91 +121,57 @@ var createSectionTitle = function(text) {
     }).text(text);
 };
 
-// Cria os elementos do widget
-var sectionTitle = createSectionTitle('--- TITULARIDADE ---');
-var button2 = createButton('Alteração para Titular Atual');
-var button3 = createButton('Alteração Realizada');
-var button4 = createButton('Alteração com Débitos');
-var button5 = createButton('Alteração Falta Documentos');
-var button7 = createButton('Abrir todos os anexos');
-var sectionTitle2 = createSectionTitle('--- REVISAO DE CONTAS ---');
-var button8 = createButton('Usuario Orientado Vazamento');
-var button9 = createButton('Portão fechado');
-var button10 = createButton('Sem Vazam. Improcedente');
-var button11 = createButton('Vazamento Interno Ñ Vis/Col');
-var button12 = createButton('Leitura informada pelo usuario');
-var button13 = createButton('Vazamento Coberto');
-var button14 = createButton('Erro de leitura');
-var button15 = createButton('Agendamento de leitura');
-var button16 = createButton('Vazamento Visivel/Coletado');
-var button17 = createButton('NºHid.ñ conf. já atualizado');
-var button18 = createButton('Vaz.Negado mais de 2 LS');
-var button20 = createButton('Distribuição de Consumo');
-var button21 = createButton('Vaz.Abaixo LS S/Esg');
-var button26 = createButton('Clt ausente Vist realizada');
-var button31 = createButton('Vaz depois cavalete');
-var button22 = createButton('Troca de HD**');
-var sectionTitle3 = createSectionTitle('--- EXTRAS ---');
-var button1 = createButton('Colocar Hora Atual');
-var button6 = createButton('Anexar arquivos');
-var button19 = createButton('Reforço feita hoje');
-var button23 = createButton('Leit 04/2023');
-var sectionTitle4 = createSectionTitle('--- TARIFA SOCIAL ---');
-var button24 = createButton('Usuario Descadastr.');
-var button25 = createButton('Fora da Lista');
-var button32 = createButton('Usuário já tem tar. social');
-var sectionTitle5 = createSectionTitle('--- EXEC.CONS. CORTE ---');
-var button27 = createButton('Proprietario');
-var button28 = createButton('Inq.Sem.Cons.');
-var button29 = createButton('Inq.Cons.Final');
-var button30 = createButton('Corte ñ exec.');
-var credits = $('<div></div>').css({
+var createButtonWithClick = function(text, clickHandler) {
+    var button = $('<button>' + text + '</button>').css(buttonStyles);
+    button.click(clickHandler);
+    return button;
+};
+
+// Adiciona os elementos ao widget
+myWidget.append(
+    createSectionTitle('--- TITULARIDADE ---'),
+    createButtonWithClick('Alteração para Titular Atual', function(){ AltTitAtual(); }),
+    createButtonWithClick('Alteração Realizada', function(){ AltRealizada(); }),
+    createButtonWithClick('Alteração com Débitos', function(){ AltDebitos(); }),
+    createButtonWithClick('Alteração Falta Documentos', function(){ AltFaltaDoc(); }),
+    createButtonWithClick('Abrir todos os anexos', function(){ AbrirAnexos(); }),
+    createSectionTitle('--- REVISAO DE CONTAS ---'),
+    createButtonWithClick('Usuario Orientado Vazamento', function(){ UsuarioOrientadoVazamento(); }),
+    createButtonWithClick('Portão fechado', function(){ PortaoFechado(); }),
+    createButtonWithClick('Sem Vazam. Improcedente', function(){ SemVazamImprocedente(); }),
+    createButtonWithClick('Vazamento Interno Ñ Vis/Col', function(){ VazInternNVisCol(); }),
+    createButtonWithClick('Leitura informada pelo usuario', function(){ LeituraInformada(); }),
+    createButtonWithClick('Vazamento Coberto', function(){ VazCoberto(); }),
+    createButtonWithClick('Erro de leitura', function(){ ErroLeitura(); }),
+    createButtonWithClick('Agendamento de leitura', function(){ AgendLeitura(); }),
+    createButtonWithClick('Vazamento Visivel/Coletado', function(){ VazVisCol(); }),
+    createButtonWithClick('NºHid.ñ conf. já atualizado', function(){ NhidNConf(); }),
+    createButtonWithClick('Vaz.Negado mais de 2 LS', function(){ VazNegado(); }),
+    createButtonWithClick('Distribuição de Consumo', function(){ DistribuicaoConsumo(); }),
+    createButtonWithClick('Vaz.Abaixo LS S/Esg', function(){ VazAbaixoLs(); }),
+    createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
+    createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
+    createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
+    createSectionTitle('--- EXTRAS ---'),
+    createButtonWithClick('Colocar Hora Atual', function(){ HoraAtual(); }),
+    createButtonWithClick('Anexar arquivos', function(){ AnexarArquivos(); }),
+    createButtonWithClick('Reforço feita hoje', function(){ ReforcoFeitaHoje(); }),
+    createButtonWithClick('Leit 04/2023', function(){ Leit042023(); }),
+    createSectionTitle('--- TARIFA SOCIAL ---'),
+    createButtonWithClick('Usuario Descadastr.', function(){ UsuarioDescadastr(); }),
+    createButtonWithClick('Fora da Lista', function(){ ForaDaLista(); }),
+    createButtonWithClick('Usuário já tem tar. social', function(){ UsuarioJaTemTarSocial(); }),
+    createSectionTitle('--- EXEC.CONS. CORTE ---'),
+    createButtonWithClick('Proprietario', function(){ Proprietario(); }),
+    createButtonWithClick('Inq.Sem.Cons.', function(){ InqSemCons(); }),
+    createButtonWithClick('Inq.Cons.Final', function(){ InqConsFinal(); }),
+    createButtonWithClick('Corte ñ exec.', function(){ CorteNExec(); }),
+    $('<div></div>').css({
     'font-size': '8px',
     'text-align': 'right',
     'margin-top': '10px',
     'font-weight': 'bold'
-}).text('Ver. 1.51 - Feito por Willian Verri');
-
-// Adiciona os elementos ao widget
-myWidget.append(
-    sectionTitle,
-    button2,
-    button3,
-    button4,
-    button5,
-    button7,
-    sectionTitle2,
-    button8,
-    button9,
-    button10,
-    button11,
-    button12,
-    button13,
-    button14,
-    button15,
-    button16,
-    button17,
-    button18,
-    button20,
-    button21,
-    button26,
-    button31,
-    button22,
-    sectionTitle3,
-    button1,
-    button6,
-    button19,
-    button23,
-    sectionTitle4,
-    button24,
-    button25,
-    button32,
-    sectionTitle5,
-    button27,
-    button28,
-    button29,
-    button30,
-    credits
+    }).text('Ver. 1.51 - Feito por Willian Verri'),
 );
 
 // Torna os botões visíveis ao clicar nos títulos de seção
@@ -373,7 +339,7 @@ const taganexar = '#form1\\:j_idt499_header';
 
             button.addEventListener('click', function() {
                 event.preventDefault();
-                button1.click();
+                HoraAtual();
             });
 
             // Insere o botão após o elemento de destino
@@ -770,7 +736,7 @@ function moverSlider(sliderHandle, posicao) {
 }
 
 
-button1.click(function() { //Colocar Hora Atual
+function HoraAtual() { //Colocar Hora Atual
     var data = new Date();
     var hora = data.getHours();
     var minuto = data.getMinutes();
@@ -798,10 +764,10 @@ button1.click(function() { //Colocar Hora Atual
     // Minuto Fim
     sliderHandleMinuto = document.querySelector(".ui_tpicker_minute_slider");
     moverSlider(sliderHandleMinuto, 123);
-});
+};
 
 function Titularidade(diag, prov) {
-    button1.click();
+    HoraAtual();
 
     var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -913,41 +879,41 @@ async function waitForElement(selector) {
     return document.querySelector(selector);
 }
 
-button2.click(function() { // Alteração para Titular Atual
+function AltTitAtual() { // Alteração para Titular Atual
     var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = 'Usuário(a) ' + titular + ' já consta como atual responsável financeiro(a) do imóvel de inscrição ' + inscricao + '. \nCaso queira solicitar a alteração para outra pessoa, a solicitação deve ser feita no cadastro desta, sendo vedada a alteração por solicitação de terceiros.';
     var prov = 'Para solicitação de alteração de titularidade de conta, é necessário que o requerente apresente documento que comprove vínculo com o imóvel, seja de propriedade como IPTU, escritura ou cessão de direitos, seja de locação com contrato de locação tendo firma reconhecida em cartório de locador e locatário ou assinatura digital válida. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de alteração por terceiros ou por aqueles que já são os atuais titulares da conta.';
     Titularidade(diag, prov);
-});
+};
 
-button3.click(function() { //Alteração Realizada
+function AltRealizada() { //Alteração Realizada
     var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = 'SOLICITAÇÃO DE ALTERAÇÃO DE TITULARIDADE.';
     var prov = 'Prezado(a) ' + titular + ', informamos que sua solicitação de vinculação como responsável financeiro do imóvel de inscrição ' + inscricao + ' foi aceita, considerando a documentação apresentada. \nDesta forma, você passa a ser o responsável pelos pagamentos referentes a este imóvel. \nCaso o fornecimento de água esteja suspenso, é importante ressaltar que será necessária a abertura de uma solicitação de religação.';
     Titularidade(diag, prov);
-});
+};
 
-button4.click(function() { //Alteração com Débitos
+function AltDebitos() { //Alteração com Débitos
     var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var insc = prompt('Digite as inscrições que possuem débitos (ex.: 123456, 654321 e 112233): ');
     var diag = 'Alteração não efetuada, cliente com débito junto a CAESB em outra(s) inscrição(ões): ' + insc + '.';
     var prov = 'Nova vinculação poderá ser feita mediante quitação do débito ou parcelamento.';
     Titularidade(diag, prov);
-});
+};
 
-button5.click(function() { //Alteração Falta Documentos
+function AltFaltaDoc() { //Alteração Falta Documentos
     var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = 'Usuário(a) ' + titular + ' solicita vinculação como responsável financeiro(a) do imóvel de inscrição ' + inscricao + ', porém +++COMPLETAR+++';
     var prov = 'Para solicitação de alteração de titularidade de conta, é necessário que o requerente apresente documento que comprove vínculo com o imóvel, seja de propriedade como IPTU, escritura ou cessão de direitos, seja de locação com contrato de locação tendo firma reconhecida em cartório de locador e locatário ou assinatura digital válida. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de alteração por terceiros ou por aqueles que já são os atuais titulares da conta.';
     Titularidade(diag, prov);
-});
+};
 
 //Revisao(vazamento, concluido, executado, resposta, diag, prov, usu, lei, lacre, improcende)
 
-button8.click(function() { //Usuario Orientado Vazamento
+function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
     var usuario = prompt('Digite o nome do usuario: ');
@@ -960,18 +926,18 @@ button8.click(function() { //Usuario Orientado Vazamento
     var prov = `Caso seja identificado um vazamento, é importante efetuar o registro fotográfico do local antes e depois da correção, além de providenciar o reparo imediato.\nApós o reparo, o usuário(a) deve encaminhar as fotos que comprovem a existência/correção do vazamento, juntamente com foto da numeração do hidrômetro e foto da leitura atual, em uma nova solicitação por meio do Autoatendimento no site da CAESB ou pelo Aplicativo.\nEssas medidas garantirão a revisão adequada das contas, conforme estabelecido pela Resolução 14/2011.`;
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button9.click(function() { //Portão fechado.
+function PortaoFechado() { //Portão fechado.
     var data = document.getElementById('form1:dataFimExecucao_input').value;
     //var diag = `Comunicamos que em ${data.split(' ')[0]} às ${data.split(' ')[1]} a CAESB esteve em seu imóvel para realizar vistoria. Informamos que não foi possível, pois o imóvel estava fechado e não havia ninguém no local.`;
     var diag = `Comunicamos que em ${data.split(' ')[0]} a CAESB esteve em seu imóvel para realizar vistoria. Informamos que não foi possível, pois o imóvel estava fechado e não havia ninguém no local.`;
     var prov = `Deixado aviso de comparecimento.`;
 
     Revisao(2, 2, 2, 1, diag, prov, false, false, false, true);
-});
+};
 
-button10.click(function() { //Sem Vazam. Improcedente
+function SemVazamImprocedente() { //Sem Vazam. Improcedente
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -991,9 +957,9 @@ button10.click(function() { //Sem Vazam. Improcedente
     }
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button11.click(function() { //Vaz. Interno
+function VazInternNVisCol() { //Vaz. Interno
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1011,11 +977,11 @@ button11.click(function() { //Vaz. Interno
     var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
 
     Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
-});
+};
 
-button12.click(function() { //Leitura informada
+function LeituraInformada() { //Leitura informada
 
-    button1.click();
+    HoraAtual();
     var leitura = prompt('Digite a leitura: ');
     var conta = prompt('Digite a conta: Ex. 01/2023');
 
@@ -1023,9 +989,9 @@ button12.click(function() { //Leitura informada
     var prov = ('Conta referência ' + conta + ' refaturada conforme leitura informada pelo usuário.');
 
     Revisao(2, 1, 1, 1, diag, prov, '.', leitura, false, false);
-});
+};
 
-button13.click(function() { //Vaz Coberto
+function VazCoberto() { //Vaz Coberto
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1041,9 +1007,9 @@ button13.click(function() { //Vaz Coberto
     var prov = ('A revisão de contas solicitada não pode ser concedida devido à falta de documentação comprobatória do conserto do vazamento imperceptível e/ou da realização da vistoria para verificação do mesmo. \nConforme a Resolução 014/2011 da ADASA, para obter o desconto mencionado, é necessário apresentar o termo de ocorrência de eliminação do vazamento imperceptível e comprovantes do material/serviço utilizado para reparar o vazamento. Alternativamente, é possível solicitar uma vistoria para verificar novamente o vazamento, desde que o mesmo esteja exposto para registro fotográfico. As fotos do conserto, juntamente com os comprovantes, podem ser apresentados em novo pedido de revisão pelo Autoatendimento no site da CAESB ou Aplicativo.')
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button14.click(function() { //Erro de leitura
+function ErroLeitura() { //Erro de leitura
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1060,9 +1026,9 @@ button14.click(function() { //Erro de leitura
     var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel');
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
-});
+};
 
-button15.click(function() { //Agendamento de leitura
+function AgendLeitura() { //Agendamento de leitura
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1079,9 +1045,9 @@ button15.click(function() { //Agendamento de leitura
     var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel e retirada multa de impedimento de leitura.');
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
-});
+};
 
-button16.click(function() { //Vazamento visível e coletado
+function VazVisCol() { //Vazamento visível e coletado
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1100,10 +1066,10 @@ button16.click(function() { //Vazamento visível e coletado
     var prov = ('Após analisarmos o seu pedido de revisão tarifária referente ao vazamento visível nas instalações hidráulicas da sua unidade usuária, verificamos que, de acordo com a Resolução ADASA nº 14/2011, Art. 118, o desconto sobre o consumo excedente só é aplicável quando há comprovação e subsequente eliminação de vazamento imperceptível nas instalações hidráulicas. Além disso, conforme o § 4º da mesma resolução, caso seja comprovado que o excesso de água não foi direcionado para a rede pública de esgotos sanitários, a tarifa de esgoto será calculada com base na média de consumo da unidade usuária. \nPortanto, devido ao fato de o vazamento ser visível e a água ter escoado para a rede de esgoto, não é possível conceder desconto tanto na tarifa de água quanto na de esgoto.');
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button17.click(function() { // Nº Hid não confere - já atualizado
-    button1.click()
+function NhidNConf() { // Nº Hid não confere - já atualizado
+    HoraAtual()
     var hid = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
     console.log(hid);
     var data = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(2)").innerText;
@@ -1112,9 +1078,9 @@ button17.click(function() { // Nº Hid não confere - já atualizado
     var prov = ('Hidrômetro instalado em ' + data);
 
     Revisao(2, 2, 1, 2, diag, prov, '.', '0', false, true);
-});
+};
 
-button18.click(function() { //Vaz.Negado Mais de 2 LS.
+function VazNegado() { //Vaz.Negado Mais de 2 LS.
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1133,10 +1099,10 @@ button18.click(function() { //Vaz.Negado Mais de 2 LS.
     var prov = ('Conforme o ART. 118, §5º da Resolução 014/2011 da ADASA, o desconto será aplicado em, no máximo, duas faturas mensais subsequentes que comprovadamente foram influenciadas pelo vazamento confirmado pelo prestador de serviços. Esse desconto está limitado a uma ocorrência de vazamento em um período de 12 (doze) meses. \nInformamos que a solicitação de revisão não procede, uma vez que já foi concedido desconto por vazamento na(s) conta(s) ' +conta+ '. \nAtualizado vencimento da conta xx/2023.');
 
     Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button19.click(function() { // Reforço feito hoje
-    button1.click()
+function ReforcoFeitaHoje() { // Reforço feito hoje
+    HoraAtual()
     var data = document.getElementById('form1:dataInicioExecucao_input').value;
     var diag = `OS principal baixada em ${data.split(' ')[0]} .`;
     var prov = (' ');
@@ -1147,9 +1113,9 @@ button19.click(function() { // Reforço feito hoje
             document.getElementById("form1:motivoNaoExecucao_22").click();
         }
     });
-});
+};
 
-button20.click(function() { // Distribuição de Consumo
+function DistribuicaoConsumo() { // Distribuição de Consumo
 
     const input = prompt('Copie e cole da FICHA a distribuição');
     // Regex para extrair as informações relevantes do input
@@ -1192,9 +1158,9 @@ button20.click(function() { // Distribuição de Consumo
     var prov = frase2;
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
-});
+};
 
-button21.click(function() { // Vaz.Abaixo LS S/Esg
+function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
@@ -1214,9 +1180,9 @@ button21.click(function() { // Vaz.Abaixo LS S/Esg
     var prov = ('Conforme ART. 118, §3º da resolução 014/2011 da ADASA o desconto na tarifa de água será no volume que ultrapassar o Limite Superior, sendo este 80% do consumo médio dos últimos 12 meses do imóvel. Conta(s) referência ' + conta + ' com consumo abaixo do Limite Superior.');
 
     Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-});
+};
 
-button22.click(async function() { // Troca de HD
+async function TrocaHD() { // Troca de HD
 
     var leitura = prompt('Digite a leitura: ');
     var lacre = prompt('Digite o nº do lacre atual: ');
@@ -1253,39 +1219,39 @@ button22.click(async function() { // Troca de HD
         check.click();
     }
     var leitn = document.getElementByID('#formSubstituicaoHidrometro\\:j_idt1159').value = 0;
-});
+};
 
-button23.click(function() { // Vaz.Abaixo LS S/Esg
-    button1.click();
+function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
+    HoraAtual();
     var diag = ('Conta faturada pela média por ocorrência 98 - Sem Retorno de Faturamento. Já normalizado e conta paga.')
 
     Revisao(2, 2, 2, 2, diag, '', false, false, false, true);
-});
+};
 
-button24.click(function() { // Tarifa Social - Usuario Descadastr.
-    button1.click();
+function UsuarioDescadastr() { // Tarifa Social - Usuario Descadastr.
+    HoraAtual();
     var data = prompt('Informe a data que usuário foi descadastrado (ficha): ');
     var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. \nCliente revogado por não estar mais nos critérios estabelecidos de acordo com informações recebidas da SEDES/GDF em ' + data + '.');
     var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no último relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
     Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
-});
+};
 
-button25.click(function() { // Tarifa Social - Fora da lista
-    button1.click();
+function ForaDaLista() { // Tarifa Social - Fora da lista
+    HoraAtual();
     var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre.');
     var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no último relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
     Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
-});
+};
 
-button32.click(function() { // Tarifa Social - Usuário já tem tar. social
-    button1.click();
+function UsuarioJaTemTarSocial() { // Tarifa Social - Usuário já tem tar. social
+    HoraAtual();
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = ('Informamos que o imóvel de inscrição ' + inscricao + ' já possui o benefício de tarifa social.');
     var prov = ('Salientamos que para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. O cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e a alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
     Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
-});
+};
 
-button26.click(function() { //Cliente Ausente - Vistoria Realizada
+function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
 
     var leitura = prompt('Digite a leitura: ');
     var data = document.getElementById('form1:dataFimExecucao_input').value;
@@ -1294,46 +1260,46 @@ button26.click(function() { //Cliente Ausente - Vistoria Realizada
     var prov = 'Acesso ao hidrômetro, com leitura ' +leitura+ ' confirmada.  Caso necessário, realizar novo pedido de vistoria em nosso site (https://www.caesb.df.gov.br/portal-servicos/) ou aplicativo e caso não fique ninguém no imóvel solicitar vistoria com agendamento, onde poderá escolher o dia e o período, matutino ou vespertino, para realização da vistoria, sendo cobrada uma taxa de R$ 35,21 no próximo faturamento.';
 
     Revisao(2, 1, 1, 1, diag, prov, 'ausente', leitura, false, true);
-});
+};
 
-button27.click(function() { // Exec.Cons.Final - Proprietario
-    button1.click();
+function Proprietario() { // Exec.Cons.Final - Proprietario
+    HoraAtual();
     var data = prompt('Informe a data que houve o corte: ');
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Atual titular é proprietário e solicitou apenas a desativação, não sendo registrada a saída.');
     Revisao(2, 1, 2, null, diag, prov, false, false, false, false);
-});
+};
 
-button28.click(function() { // Exec.Cons.Final - Inquilino sem Consumo Final
-    button1.click();
+function InqSemCons() { // Exec.Cons.Final - Inquilino sem Consumo Final
+    HoraAtual();
     var data = prompt('Informe a data que houve o corte: ');
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e sem conta de consumo final.');
     Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
-});
+};
 
-button29.click(function() { // Exec.Cons.Final - Inquilino com Consumo Final
-    button1.click();
+function InqConsFinal() { // Exec.Cons.Final - Inquilino com Consumo Final
+    HoraAtual();
     var data = prompt('Informe a data que houve o corte: ');
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e gerada conta com consumo final do imóvel.');
     Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
-});
+};
 
-button30.click(function() { // Exec.Cons.Final - Corte não realizado
-    button1.click();
+function CorteNExec() { // Exec.Cons.Final - Corte não realizado
+    HoraAtual();
     var data = prompt('Informe a data que houve a tentativa de corte: ');
     var diag = ('Tentativa de corte pela equipe da CAESB em ' + data + ', porém sem acesso ao hidrômetro para execução do serviço.');
     var prov = ('Conforme informado no Termo de Solicitação assinado pelo usuário a rescisão contratual e consequente suspensão do faturamento somente será efetivada após a suspensão definitiva dos serviços de abastecimento de água, onde deve ser viabilizada mediante a concessão de acesso ao padrão de ligação.');
     Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
-});
+};
 
-button31.click(function() { //Vaz depois cavalete
+function VazDepoisCavalete() { //Vaz depois cavalete
 
-    button1.click();
+    HoraAtual();
     var OSC = prompt('Informe a OSC de conserto de cavalete: ');
     var data = prompt('Informe a data do conserto.');
     var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
@@ -1353,10 +1319,10 @@ button31.click(function() { //Vaz depois cavalete
             document.getElementById("form1:tipoVazamento_2").click();
         }
     });
-});
+};
 
 
-button7.click(function() { //Abrir todos os anexos.
+function AbrirAnexos() { //Abrir todos os anexos.
     var form2 = 'formOsAnexoBean';
     //const count1 = countElements("formOsAnexoBean:abasAtendimento:j_idt1741:", "j_idt1747_menu", 20);
     //const count2 = countElements("formOsAnexoBean:abasAtendimento:tableAtendimento:", "j_idt1737_menu", 20);
@@ -1366,7 +1332,7 @@ button7.click(function() { //Abrir todos os anexos.
     const count2 = countElements(prefix2, menuId2, 20);
     openAttachments(prefix1, abrir1, count1, form2);
     openAttachments(prefix2, abrir2, count2, form2);
-});
+};
 
 function AbrirAnexosAtendimento() {
     var form2 = 'abas:formAtendimentoAnexo';
