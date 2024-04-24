@@ -3,11 +3,15 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.51
+// @version     1.58
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
+// @downloadURL https://update.greasyfork.org/scripts/487748/HelpGCOM.user.js
+// @updateURL https://update.greasyfork.org/scripts/487748/HelpGCOM.meta.js
 // ==/UserScript==
+
+var version = GM_info.script.version;
 
 // Define as estilizações do widget em um objeto CSS
 var widgetStyles = {
@@ -151,6 +155,7 @@ myWidget.append(
     createButtonWithClick('Vaz.Abaixo LS S/Esg', function(){ VazAbaixoLs(); }),
     createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
     createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
+    createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
     createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
     createSectionTitle('--- EXTRAS ---'),
     createButtonWithClick('Colocar Hora Atual', function(){ HoraAtual(); }),
@@ -161,6 +166,7 @@ myWidget.append(
     createButtonWithClick('Usuario Descadastr.', function(){ UsuarioDescadastr(); }),
     createButtonWithClick('Fora da Lista', function(){ ForaDaLista(); }),
     createButtonWithClick('Usuário já tem tar. social', function(){ UsuarioJaTemTarSocial(); }),
+    createButtonWithClick('Usuário vinculado', function(){ UsuarioVinculadoTarSocial(); }),
     createSectionTitle('--- EXEC.CONS. CORTE ---'),
     createButtonWithClick('Proprietario', function(){ Proprietario(); }),
     createButtonWithClick('Inq.Sem.Cons.', function(){ InqSemCons(); }),
@@ -171,7 +177,7 @@ myWidget.append(
     'text-align': 'right',
     'margin-top': '10px',
     'font-weight': 'bold'
-    }).text('Ver. 1.51 - Feito por Willian Verri'),
+    }).text('Ver. ' + version + ' Feito por Willian Verri'),
 );
 
 // Torna os botões visíveis ao clicar nos títulos de seção
@@ -189,56 +195,56 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
 // Colocar nomes dos anexos automaticamente
 const elementPairs = [
     ['#formConfirmaAnexo\\:j_idt865 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt869'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
-    ['#formConfirmaAnexo\\:j_idt1767 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1771'],
-    ['#formConfirmaAnexoEmail\\:j_idt1998 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2001'],  // ANEXO DA BAIXA DA OSC.
+    ['#formConfirmaAnexo\\:j_idt1784 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1788'],  // Anexo na tela de baixa OSC - ANEXO OSC
+    ['#formConfirmaAnexoEmail\\:j_idt1999 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2002'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
     ['#formClienteConfirmaAnexo\\:j_idt615 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
     ['#formConfirmaAnexo\\:j_idt746 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt749'],
     ['#formCadastroAnexo\\:j_idt707 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt710'],
 ];
 
 // Adiciona botões na função de REFATURAR CONTA.
-const contaTitleElement = document.querySelector('#j_idt683_title');
+const contaTitleElement = document.querySelector('#j_idt684_title');
 // Adiciona botão na função de atualizar vencimento.
-const AttVencElement = document.querySelector('#j_idt661_title');
+const AttVencElement = document.querySelector('#j_idt662_title');
 // Text area da tela de atualizar vencimento de conta
-const textarea2idt = '#formVencimento\\:j_idt679';
+const textarea2idt = '#formVencimento\\:j_idt680';
 // Text area da tela de refaturamento
-const textareaidt = '#formAlteracaoConta\\:j_idt745';
+const textareaidt = '#formAlteracaoConta\\:j_idt746';
 // Leitura da tela de refaturamento
-const leitidt = '#formAlteracaoConta\\:j_idt720';
+const leitidt = '#formAlteracaoConta\\:j_idt721';
 // botão de media no esgoto e leitura criada nao na tela de refaturamento.
-const mediaesgoto = '#formAlteracaoConta\\:j_idt736 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-const leituracriadanao = '#formAlteracaoConta\\:j_idt740 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const mediaesgoto = '#formAlteracaoConta\\:j_idt737 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const leituracriadanao = '#formAlteracaoConta\\:j_idt741 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 
 // Abrir anexos na tela de atendimento
-const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt652_data';
+const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt653_data';
 // Tela de abrir anexos na tela de atendimento
-const prefix3 = 'abas:formAtendimentoAnexo:j_idt652:';
-const menuId3 = 'j_idt658_menu';
-const abrir3 = 'j_idt661';
-const prefix4 = 'abas:formAtendimentoAnexo:j_idt662:';
-const menuId4 = 'j_idt668_menu';
-const abrir4 = 'j_idt669';
+const prefix3 = 'abas:formAtendimentoAnexo:j_idt653:';
+const menuId3 = 'j_idt659_menu';
+const abrir3 = 'j_idt662';
+const prefix4 = 'abas:formAtendimentoAnexo:j_idt663:';
+const menuId4 = 'j_idt669_menu';
+const abrir4 = 'j_idt670';
 
 // Tela de abrir anexos na tela de baixa
 // Anexos do atendimento
-const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1761:';
-const menuId1 = 'j_idt1767_menu';
-const abrir1 = 'j_idt1768';
+const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1762:';
+const menuId1 = 'j_idt1768_menu';
+const abrir1 = 'j_idt1769';
 // Anexos da Ordem de Serviço
 const prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
-const menuId2 = 'j_idt1755_menu';
-const abrir2 = 'j_idt1758';
+const menuId2 = 'j_idt1756_menu';
+const abrir2 = 'j_idt1759';
 
 // CheckBox do enviar email resposta
-const checkemail1 = 'formEnviarEmail:j_idt1807_input';
-const checkemail2 = 'formEnviarEmail:j_idt1809_input';
-const botaoemail = 'formEnviarEmail:j_idt1813';
+const checkemail1 = 'formEnviarEmail:j_idt1808_input';
+const checkemail2 = 'formEnviarEmail:j_idt1810_input';
+const botaoemail = 'formEnviarEmail:j_idt1814';
 
 // Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuario = '#form1\\:j_idt514';
-const tagleitura = '#form1\\:j_idt516';
-const taganexar = '#form1\\:j_idt499_header';
+const tagusuario = '#form1\\:j_idt515';
+const tagleitura = '#form1\\:j_idt517';
+const taganexar = '#form1\\:j_idt450_header';
 
 (function() {
     var checkExist = setInterval(function() {
@@ -305,7 +311,7 @@ const taganexar = '#form1\\:j_idt499_header';
             button.textContent = 'Abrir todos os anexos';
             button.addEventListener('click', function() {
                 event.preventDefault();
-                button7.click();
+                AbrirAnexos();
             });
 
             // Aplica estilos ao botão
@@ -321,7 +327,7 @@ const taganexar = '#form1\\:j_idt499_header';
             button.textContent = 'Abrir todos os anexos';
             button.addEventListener('click', function() {
                 event.preventDefault();
-                button7.click();
+                AbrirAnexos();
             });
 
             // Aplica estilos ao botão
@@ -345,16 +351,6 @@ const taganexar = '#form1\\:j_idt499_header';
             // Insere o botão após o elemento de destino
             targetElement.parentNode.insertBefore(button, targetElement.nextSibling);
         }
-
-        // Colocar nome do anexo automaticamente
-        //        const elementPairs = [
-        //            ['#formConfirmaAnexo\\:j_idt858 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt862'],
-        //            ['#formConfirmaAnexo\\:j_idt1760 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1764'],
-        //            ['#formConfirmaAnexoEmail\\:j_idt1975 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt1978'],
-        //            ['#formClienteConfirmaAnexo\\:j_idt612 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
-        //            ['#formConfirmaAnexo\\:j_idt743 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt746'],
-        //            ['#formCadastroAnexo\\:j_idt704 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt707'],
-        //        ];
 
         for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
             const confirmElement = document.querySelector(confirmElementSelector);
@@ -1236,6 +1232,16 @@ function UsuarioDescadastr() { // Tarifa Social - Usuario Descadastr.
     Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
 };
 
+function MultaImpCorte() { //Multa de impedimento de corte - negado
+    HoraAtual();
+    var diag = `Comunicamos que, de acordo com as normas estabelecidas na Resolução ADASA nº 03/2012 (atualizada pela Resolução nº 21/2023) e na Resolução ADASA nº 11/2014, bem como na Cláusula Oitava deste, qualquer impedimento ao acesso ao  padrão de ligação de água, incluindo o cavalete e o hidrômetro para a realização da leitura, vistoria preventiva ou para a suspensão do fornecimento de água constitui uma infração passível de penalidade.
+                \nNesse sentido, destacamos que o prestador de serviços está autorizado a aplicar a penalidade de multa sem a necessidade de iniciar procedimentos adicionais quando ocorrer impedimento ao acesso ao hidrômetro para a suspensão do fornecimento de água, conforme estipulado no artigo 31 da Resolução ADASA nº 03/2012. A multa a ser aplicada será calculada com base nos critérios estabelecidos no artigo 5º-C da mesma resolução.`;
+    var prov = `Alertamos que o não pagamento das contas constitui descumprimento contratual, sujeitando o usuário à suspensão do serviço de abastecimento de água, conforme previsto no artigo 82, §3º, e no artigo 121, inciso I, da Resolução ADASA nº 11/2014, onde o usuário é notificado mensalmente nas contas de consumo mensal sobre as contas em aberto no imóvel e a possibilidade de corte em caso de permanência no inadimplemento.
+                \nPedido de revisão indeferido, conta mantida.`;
+
+    Revisao(2, 1, 1, 1, diag, prov, '.', '0', false, true);
+};
+
 function ForaDaLista() { // Tarifa Social - Fora da lista
     HoraAtual();
     var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre.');
@@ -1248,6 +1254,14 @@ function UsuarioJaTemTarSocial() { // Tarifa Social - Usuário já tem tar. soci
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = ('Informamos que o imóvel de inscrição ' + inscricao + ' já possui o benefício de tarifa social.');
     var prov = ('Salientamos que para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. O cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e a alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
+    Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+};
+
+function UsuarioVinculadoTarSocial() { // Tarifa Social - Usuário vinculado
+    HoraAtual();
+    var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var diag = ('Usuário é beneficiário de tarifa social e solicita vinculação do imóvel de inscrição ' + inscricao + ' para o benefício.');
+    var prov = ('Imóvel selecionado para concessão de tarifa social, alteração terá efeito à partir do próximo faturamento.');
     Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
 };
 
@@ -1552,8 +1566,7 @@ function mostrarJanela() {
     ${criarInput("Unidade de Consumo:", "unidadeConsumoInput").outerHTML}
     <button id="calcularButton">Calcular</button>
     <div id="valorContaContainer"></div>
-  `;
-
+    `;
     const calcularButton = modal.querySelector("#calcularButton");
     calcularButton.addEventListener("click", () => {
         const consumo = parseFloat(document.getElementById("consumoInput").value);
@@ -1570,5 +1583,7 @@ function mostrarJanela() {
 
     document.body.appendChild(modal);
 }
+
+
 
 //mostrarJanela();
