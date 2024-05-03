@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.58
+// @version     1.60
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -162,6 +162,7 @@ myWidget.append(
     createButtonWithClick('Anexar arquivos', function(){ AnexarArquivos(); }),
     createButtonWithClick('Reforço feita hoje', function(){ ReforcoFeitaHoje(); }),
     createButtonWithClick('Leit 04/2023', function(){ Leit042023(); }),
+    createButtonWithClick('Descad.Autoleitura', function(){ DescAutoLeitura(); }),
     createSectionTitle('--- TARIFA SOCIAL ---'),
     createButtonWithClick('Usuario Descadastr.', function(){ UsuarioDescadastr(); }),
     createButtonWithClick('Fora da Lista', function(){ ForaDaLista(); }),
@@ -1109,6 +1110,52 @@ function ReforcoFeitaHoje() { // Reforço feito hoje
             document.getElementById("form1:motivoNaoExecucao_22").click();
         }
     });
+};
+
+function DescAutoLeitura() { // Descadastrado da auto leitura mes
+
+    const modal = document.createElement('div');
+    var opcao;
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 10vh;">
+            <h3>Escolha uma opção</h3>
+            <button id="opcao1">Duas ocorrências de autoleitura não informada</button>
+            <button id="opcao2">Leitura não realizada em ABRIL</button>
+            <button id="opcao3">Leitura não realizada em OUTUBRO</button>
+        </div>
+    `;
+
+    modal.querySelector('#opcao1').addEventListener('click', function() {
+        opcao = 'duasnaolidas';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, em caso de não informação de autoleitura por dois meses seguidos, usuário é automaticamente descadastrado do sistema de autoleitura.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    });
+
+    modal.querySelector('#opcao2').addEventListener('click', function() {
+        opcao = 'abril';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
+            'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    });
+
+    modal.querySelector('#opcao3').addEventListener('click', function() {
+        opcao = 'outubro';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
+            'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    });
+
+    document.body.appendChild(modal);
 };
 
 function DistribuicaoConsumo() { // Distribuição de Consumo
