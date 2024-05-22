@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.60
+// @version     1.62
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -157,6 +157,7 @@ myWidget.append(
     createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
     createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
     createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
+    createButtonWithClick('Multa Agend Fora Prazo', function(){ AgendLeituraForaPrazo(); }),
     createSectionTitle('--- EXTRAS ---'),
     createButtonWithClick('Colocar Hora Atual', function(){ HoraAtual(); }),
     createButtonWithClick('Anexar arquivos', function(){ AnexarArquivos(); }),
@@ -195,57 +196,57 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
 
 // Colocar nomes dos anexos automaticamente
 const elementPairs = [
-    ['#formConfirmaAnexo\\:j_idt865 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt869'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
-    ['#formConfirmaAnexo\\:j_idt1784 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1788'],  // Anexo na tela de baixa OSC - ANEXO OSC
-    ['#formConfirmaAnexoEmail\\:j_idt1999 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2002'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
-    ['#formClienteConfirmaAnexo\\:j_idt615 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
-    ['#formConfirmaAnexo\\:j_idt746 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt749'],
-    ['#formCadastroAnexo\\:j_idt707 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt710'],
+    ['#formConfirmaAnexo\\:j_idt868 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt872'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
+    ['#formConfirmaAnexo\\:j_idt1787 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1791'],  // Anexo na tela de baixa OSC - ANEXO OSC
+    ['#formConfirmaAnexoEmail\\:j_idt2002 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2005'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
+    ['#formClienteConfirmaAnexo\\:j_idt618 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
+    ['#formConfirmaAnexo\\:j_idt749 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt752'],
+    ['#formCadastroAnexo\\:j_idt710 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt713'],
 ];
 
 // Adiciona botões na função de REFATURAR CONTA.
-const contaTitleElement = document.querySelector('#j_idt684_title');
+const contaTitleElement = document.querySelector('#j_idt687_title');
 // Adiciona botão na função de atualizar vencimento.
-const AttVencElement = document.querySelector('#j_idt662_title');
+const AttVencElement = document.querySelector('#j_idt665_title');
 // Text area da tela de atualizar vencimento de conta
-const textarea2idt = '#formVencimento\\:j_idt680';
+const textarea2idt = '#formVencimento\\:j_idt683';
 // Text area da tela de refaturamento
-const textareaidt = '#formAlteracaoConta\\:j_idt746';
+const textareaidt = '#formAlteracaoConta\\:j_idt749';
 // Leitura da tela de refaturamento
-const leitidt = '#formAlteracaoConta\\:j_idt721';
+const leitidt = '#formAlteracaoConta\\:j_idt724';
 // botão de media no esgoto e leitura criada nao na tela de refaturamento.
-const mediaesgoto = '#formAlteracaoConta\\:j_idt737 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-const leituracriadanao = '#formAlteracaoConta\\:j_idt741 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const mediaesgoto = '#formAlteracaoConta\\:j_idt740 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const leituracriadanao = '#formAlteracaoConta\\:j_idt744 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 
 // Abrir anexos na tela de atendimento
-const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt653_data';
+const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt656_data';
 // Tela de abrir anexos na tela de atendimento
-const prefix3 = 'abas:formAtendimentoAnexo:j_idt653:';
-const menuId3 = 'j_idt659_menu';
-const abrir3 = 'j_idt662';
-const prefix4 = 'abas:formAtendimentoAnexo:j_idt663:';
-const menuId4 = 'j_idt669_menu';
-const abrir4 = 'j_idt670';
+const prefix3 = 'abas:formAtendimentoAnexo:j_idt656:';
+const menuId3 = 'j_idt662_menu';
+const abrir3 = 'j_idt665';
+const prefix4 = 'abas:formAtendimentoAnexo:j_idt666:';
+const menuId4 = 'j_idt672_menu';
+const abrir4 = 'j_idt673';
 
 // Tela de abrir anexos na tela de baixa
 // Anexos do atendimento
-const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1762:';
-const menuId1 = 'j_idt1768_menu';
-const abrir1 = 'j_idt1769';
+const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1765:';
+const menuId1 = 'j_idt1771_menu';
+const abrir1 = 'j_idt1772';
 // Anexos da Ordem de Serviço
 const prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
-const menuId2 = 'j_idt1756_menu';
-const abrir2 = 'j_idt1759';
+const menuId2 = 'j_idt1759_menu';
+const abrir2 = 'j_idt1762';
 
 // CheckBox do enviar email resposta
-const checkemail1 = 'formEnviarEmail:j_idt1808_input';
-const checkemail2 = 'formEnviarEmail:j_idt1810_input';
-const botaoemail = 'formEnviarEmail:j_idt1814';
+const checkemail1 = 'formEnviarEmail:j_idt1811_input';
+const checkemail2 = 'formEnviarEmail:j_idt1813_input';
+const botaoemail = 'formEnviarEmail:j_idt1817';
 
 // Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuario = '#form1\\:j_idt515';
-const tagleitura = '#form1\\:j_idt517';
-const taganexar = '#form1\\:j_idt450_header';
+const tagusuario = '#form1\\:j_idt518';
+const tagleitura = '#form1\\:j_idt520';
+const taganexar = '#form1\\:j_idt453_header';
 
 (function() {
     var checkExist = setInterval(function() {
@@ -1044,6 +1045,20 @@ function AgendLeitura() { //Agendamento de leitura
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
 };
 
+function AgendLeituraForaPrazo() { //Agendamento de leitura aberta fora do prazo
+
+    var conta = prompt('Digite a conta: Ex. 01/2023');
+
+    var diag = ('Informamos que em caso de ocorrência impeditiva de leitura, a conta de água é faturada pela média de consumo do imóvel dos últimos doze meses e quando ocorre dois ou mais impedimentos consecutivos passa a' +
+                ' ser cobrada multa por impedimento de leitura.\n A multa de impedimento de leitura pode ser retirada mediante AGENDAMENTO de leitura no MESMO MÊS em que é lançada a multa, onde o usuário ao solicitar o ' +
+                'agendamento informa a data e o período, matutino ou vespertino, para o qual gostaria que fosse realizada a vistoria, onde será coletada a leitura atual e feita a revisão de contas. ');
+
+    var prov = ('Conta referência ' +conta+ ' mantida, pedido de revisão indeferido, pois foi solicitado o agendamento APÓS o faturamento da conta seguinte ao impedimento gerador da multa. \n' +
+               'Salientamos ainda que o usuário tem a opção de solicitar o remanejamento do hidrômetro para fora do imóvel, dando acesso à leitura, ou se cadastrar na Auto Leitura pelo site da CAESB, sendo necessário informar a leitura mensalmente pelo site.');
+
+    Revisao(2, 1, 1, 1, diag, prov, ' ', '0', false, false);
+};
+
 function VazVisCol() { //Vazamento visível e coletado
 
     var leitura = prompt('Digite a leitura: ');
@@ -1264,7 +1279,7 @@ async function TrocaHD() { // Troca de HD
     var leitn = document.getElementByID('#formSubstituicaoHidrometro\\:j_idt1159').value = 0;
 };
 
-function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
+function Leit042023() { // Vaz.Abaixo LS S/Esg
     HoraAtual();
     var diag = ('Conta faturada pela média por ocorrência 98 - Sem Retorno de Faturamento. Já normalizado e conta paga.')
 
