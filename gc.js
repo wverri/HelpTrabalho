@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.62
+// @version     1.64
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -156,14 +156,17 @@ myWidget.append(
     createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
     createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
     createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
-    createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
     createButtonWithClick('Multa Agend Fora Prazo', function(){ AgendLeituraForaPrazo(); }),
+    createSectionTitle('--- DADOS CADASTRAIS ---'),
+    createButtonWithClick('Alteração de categoria', function(){ AlteracaoCategoria(); }),
+    createButtonWithClick('Alteração de Unidades de Consumo', function(){ AlteracaoUnidadesConsumo(); }),
+    createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
+    createButtonWithClick('Descad.Autoleitura', function(){ DescAutoLeitura(); }),
     createSectionTitle('--- EXTRAS ---'),
     createButtonWithClick('Colocar Hora Atual', function(){ HoraAtual(); }),
     createButtonWithClick('Anexar arquivos', function(){ AnexarArquivos(); }),
     createButtonWithClick('Reforço feita hoje', function(){ ReforcoFeitaHoje(); }),
     createButtonWithClick('Leit 04/2023', function(){ Leit042023(); }),
-    createButtonWithClick('Descad.Autoleitura', function(){ DescAutoLeitura(); }),
     createSectionTitle('--- TARIFA SOCIAL ---'),
     createButtonWithClick('Usuario Descadastr.', function(){ UsuarioDescadastr(); }),
     createButtonWithClick('Fora da Lista', function(){ ForaDaLista(); }),
@@ -647,7 +650,7 @@ function refatCavalete() {
 
 function agendLeitura() {
     var leitura = prompt('Digite a leitura no dia da vistoria: ');
-    var data = prompt('Digite a data da vistoria informada no formato dd/mm/aaaa:');
+    var data = prompt('Digite a data da vistoria informada no formato dd/mm/aaaa \nou deixe em branco se for a mesma da leitura:');
     var OSC = prompt('Digite o número da OSC de agendamento: ');
     document.querySelector('li[data-label="Ocorrência Resolvida (91)"]').click();
     document.querySelector('li[data-label="Medido"]').click();
@@ -664,7 +667,7 @@ function agendLeitura() {
 
 function leituraInformada() {
     var leitura = prompt('Digite a leitura informada pelo usuário: ');
-    var data = prompt('Digite a data da leitura informada no formato dd/mm/aaaa:');
+    var data = prompt('Digite a data da leitura informada no formato dd/mm/aaaa \nou deixe em branco se for a mesma da leitura::');
     var OSC = prompt('Digite o número da OSC: ');
     document.querySelector('li[data-label="Leitura Informada Pelo Usuário (84)"]').click();
     document.querySelector('li[data-label="Medido"]').click();
@@ -1173,6 +1176,53 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
     document.body.appendChild(modal);
 };
 
+function AlteracaoCategoria() { // Alteração de categoria
+
+    var leitura = prompt('Digite a leitura: ');
+    var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
+    var usuario = prompt('Digite o nome do usuario: ');
+    var categoriaAtual = prompt('Digite a categoria anterior: ');
+    var categoriaNova = prompt('Digite a nova categoria: ');
+
+    var diag;
+    if (lacre == "") {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e em bom funcionamento, abastece imóvel de categoria ' + categoriaNova + '.';
+    } else {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e lacre ' + lacre + ' e em bom funcionamento, abastece imóvel de categoria ' + categoriaNova + '.';
+    }
+
+    var prov = 'Estivemos em seu endereço e constatamos alterações nos dados cadastrais deste imóvel. Diante do exposto e em atenção ao Artigo 70 da Resolução ADASA nº 14/2011, realizaremos a atualização em nosso sistema, conforme abaixo.\n' +
+               'Alterado da categoria ' + categoriaAtual + ' para ' + categoriaNova + 'com efeito à partir do próximo faturamento.\n' +
+               'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
+               'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
+
+    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+}
+
+function AlteracaoUnidadesConsumo() { // Alteração de Unidades de Consumo
+
+    var leitura = prompt('Digite a leitura: ');
+    var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
+    var usuario = prompt('Digite o nome do usuario: ');
+    var unidadesConsumoAtual = prompt('Digite o nº de Unidades de Consumo anterior: ');
+    var unidadesConsumoNova = prompt('Digite o novo nº de Unidades de Consumo: ');
+
+    var diag;
+    if (lacre == "") {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e em bom funcionamento, abastece imóvel com ' + unidadesConsumoNova + ' unidades de consumo.';
+    } else {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e lacre ' + lacre + ' e em bom funcionamento, abastece imóvel com ' + unidadesConsumoNova + ' unidades de consumo.';
+    }
+
+    var prov = 'Estivemos em seu endereço e constatamos alterações nos dados cadastrais deste imóvel. Diante do exposto e em atenção ao Artigo 70 da Resolução ADASA nº 14/2011, realizaremos a atualização em nosso sistema, conforme abaixo.\n' +
+               'Alterado de ' + unidadesConsumoAtual + ' unidades de consumo para ' + unidadesConsumoNova + ' unidades de consumo com efeito à partir do próximo faturamento.\n' +
+               'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
+               'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
+
+    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+}
+
+
 function DistribuicaoConsumo() { // Distribuição de Consumo
 
     const input = prompt('Copie e cole da FICHA a distribuição');
@@ -1250,11 +1300,15 @@ async function TrocaHD() { // Troca de HD
     var lacrenovo = prompt('Digite o novo LACRE: ');
     var hd = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
 
-    var diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + ' e lacre ' + lacre + '.');
+    if (lacre == "") {
+        diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + '.');
+    } else {
+        diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + ' e lacre ' + lacre + '.');
+    }
     var prov = ('Hidrômetro substituído pelo ' + hdnovo + ', lacre ' + lacrenovo + ' e leitura 0.');
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-
+    /*
     PrimeFaces.ab({s:'form1:tbHidro:0:j_idt638',p:'form1:tbHidro:0:j_idt638',u:'formSubstituicaoHidrometro',onco:function(xhr,status,args){PF('dlgSubstituicaoHidrometro').show();}});
 
     const sub = await waitForElement('#formSubstituicaoHidrometro\\:pnlHidAntigo_header > span:nth-child(1)');
@@ -1277,6 +1331,7 @@ async function TrocaHD() { // Troca de HD
         check.click();
     }
     var leitn = document.getElementByID('#formSubstituicaoHidrometro\\:j_idt1159').value = 0;
+    */
 };
 
 function Leit042023() { // Vaz.Abaixo LS S/Esg
