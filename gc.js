@@ -1444,7 +1444,7 @@ function VazDepoisCavalete() { //Vaz depois cavalete
     }
 
 
-    Revisao(1, 1, 2, 2, diag, prov, '.', '0', null, false).then(async v => {
+    Revisao(1, 1, 1, 1, diag, prov, '.', '0', null, false).then(async v => {
         const vaz = await waitForElement('#form1\\:tipoVazamento');
         if (vaz) {
             document.getElementById("form1:tipoVazamento_2").click();
