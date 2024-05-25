@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.03
+// @version     2.13
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -1753,13 +1753,13 @@ function PopUpRefatCred() {
         const ls = document.getElementById('ls').value;
         const media = document.getElementById('media').value;
         const tarifacao = document.getElementById('tarifacao').value;
-
+    
         const resultadoAguaMedido = calcValorConta(consumo, categoria, tarifacao, unidadesConsumo, tabela);
         const consumoRefat = tipoVazamento === 'Interno' ? ls : media;
         const resultadoAguaRefat = calcValorConta(consumoRefat, categoria, tarifacao, unidadesConsumo, tabela);
-        const resultadoEsgotoMedido = calcValorConta(consumo * esgoto / 100, categoria, tarifacao, unidadesConsumo, tabela);
-        const resultadoEsgotoRefat = calcValorConta(media * esgoto / 100, categoria, tarifacao, unidadesConsumo, tabela);
-
+        const resultadoEsgotoMedido = resultadoAguaMedido * (esgoto / 100);
+        const resultadoEsgotoRefat = calcValorConta(media, categoria, tarifacao, unidadesConsumo, tabela) * (esgoto / 100);
+    
         displayResults(resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento);
     }
 
@@ -1801,26 +1801,26 @@ function PopUpRefatCred() {
                     </tr>
                     <tr>
                         <td style="padding: 3px; font-size: 11px;"><strong>Medido:</strong></td>
-                        <td style="padding: 3px; font-size: 11px;">${resultadoAguaMedido.toFixed(2)} (${consumo}m³)</td>
-                        <td style="padding: 3px; font-size: 11px;">${resultadoEsgotoMedido.toFixed(2)} (${(consumo * esgoto / 100).toFixed(0)}m³)</td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${resultadoAguaMedido.toFixed(2)}</b> (${consumo}m³)</td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${resultadoEsgotoMedido.toFixed(2)}</b> (${consumo}m³)</td>
                     </tr>
                     <tr>
                         <td style="padding: 3px; font-size: 11px;"><strong>Refat:</strong></td>
-                        <td style="padding: 3px; font-size: 11px;">${resultadoAguaRefat.toFixed(2)} (${consumoRefat}m³)</td>
-                        <td style="padding: 3px; font-size: 11px;">${resultadoEsgotoRefat.toFixed(2)} (${media}m³)</td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${resultadoAguaRefat.toFixed(2)}</b> (${consumoRefat}m³)</td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${resultadoEsgotoRefat.toFixed(2)}</b> (${media}m³)</td>
                     </tr>
                     <tr>
                         <td style="padding: 3px; font-size: 11px;"><strong>Desconto:</strong></td>
-                        <td style="padding: 3px; font-size: 11px;">${descontoAgua.toFixed(2)}</td>
-                        <td style="padding: 3px; font-size: 11px;">${descontoEsgoto.toFixed(2)}</td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${descontoAgua.toFixed(2)}</b></td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${descontoEsgoto.toFixed(2)}</b></td>
                     </tr>
                 </table>
             </div>
             <div style="margin-top: 10px; font-size: 11px; text-align: left">
-                Vazamento ${tipoVazamento} conforme OSC ${osc} conta ${contaRef} já paga.<br>
+                Vazamento <b>${tipoVazamento}</b> conforme OSC <b>${osc}</b> conta <b>${contaRef}</b> já paga.<br>
                 Refaturamento pel${tipoVazamento === 'Interno' && ls < consumo ? 'o LS e MÉDIA' : 'a MÉDIA'}<br>
                 ${descontoAgua > 0 ? `Valor de água: ${resultadoAguaMedido.toFixed(2)} (${consumo}m³) - ${resultadoAguaRefat.toFixed(2)} (${consumoRefat}m³) = ${descontoAgua.toFixed(2)}<br>` : ''}
-                ${descontoEsgoto > 0 ? `Valor de esgoto: ${resultadoEsgotoMedido.toFixed(2)} (${(consumo * esgoto / 100).toFixed(0)}m³) - ${resultadoEsgotoRefat.toFixed(2)} (${media}m³) = ${descontoEsgoto.toFixed(2)}` : ''}
+                ${descontoEsgoto > 0 ? `Valor de esgoto: ${resultadoEsgotoMedido.toFixed(2)} (${consumo}m³) - ${resultadoEsgotoRefat.toFixed(2)} (${media}m³) = ${descontoEsgoto.toFixed(2)}` : ''}
             </div>
 
         `;
