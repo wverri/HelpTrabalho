@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.00
+// @version     2.03
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -572,6 +572,18 @@ function LeituraCriadaN() {
 function refatVazamento() {
     const modal = document.createElement('div');
     modal.className = 'modal';
+    modal.style.position = 'fixed';
+    modal.style.left = '50%';
+    modal.style.top = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.zIndex = '9999'; // Valor alto para z-index
+    modal.style.backgroundColor = 'white';
+    modal.style.padding = '20px';
+    modal.style.borderRadius = '10px';
+    modal.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+    modal.style.width = '400px'; // Definir uma largura
+    modal.style.height = 'auto'; // Altura automática
+
     modal.innerHTML = `
         <div class="modal-content">
             <h3>Refat p/ Vazamento</h3>
@@ -600,6 +612,7 @@ function refatVazamento() {
         </div>
     `;
 
+    document.body.appendChild(modal);
     modal.querySelector('#confirmButton').addEventListener('click', () => {
         const refatLS = modal.querySelector('input[name="refatLS"]').checked;
         const qualLS = modal.querySelector('input[name="qualLS"]:checked') ? modal.querySelector('input[name="qualLS"]:checked').value : '';
@@ -1135,6 +1148,12 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
     const modal = document.createElement('div');
     var opcao;
     modal.className = 'modal';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '9999';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.height = 'auto';
     modal.innerHTML = `
         <div class="modal-content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 10vh;">
             <h3>Escolha uma opção</h3>
