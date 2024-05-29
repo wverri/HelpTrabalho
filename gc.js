@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.13
+// @version     2.30
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -881,7 +881,7 @@ async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacr
 
 async function waitForElement(selector) {
     const startTime = Date.now();
-    const timeout = 2000; // Tempo limite de 5 segundos
+    const timeout = 2000; // Tempo limite de 2 segundos
 
     while (!document.querySelector(selector)) {
         if (Date.now() - startTime > timeout) {
@@ -891,6 +891,20 @@ async function waitForElement(selector) {
     }
 
     return document.querySelector(selector);
+}
+
+async function waitForElementEnabled(selector, timeout = 30000) {
+    const startTime = Date.now();
+    while (true) {
+        const element = document.querySelector(selector);
+        if (element && !element.disabled) {
+            return element;
+        }
+        if (Date.now() - startTime > timeout) {
+            throw new Error('Timeout waiting for element to be enabled');
+        }
+        await new Promise(resolve => setTimeout(resolve, 100)); // espera 100ms antes de tentar novamente
+    }
 }
 
 function AltTitAtual() { // Alteração para Titular Atual
@@ -1652,6 +1666,7 @@ function PopUpRefatCred() {
             { label: 'Categoria', id: 'categoria', type: 'select', options: ['Residencial', 'Comercial', 'Social'], default: 'Residencial' },
             { label: 'Esgoto', id: 'esgoto', type: 'select', options: [100, 60, 50, 0], default: 100 },
             { label: 'Tipo de Vazamento', id: 'tipoVazamento', type: 'select', options: ['Interno', 'Depois do Hidrômetro'], default: 'Interno' },
+            { label: 'Inscrição', id: 'insc', type: 'text' },
             { label: 'OSC', id: 'osc', type: 'text' },
             { label: 'Unidades de Consumo', id: 'unidadesConsumo', type: 'text' },
             { label: 'Conta ref', id: 'contaRef', type: 'text' },
@@ -1710,6 +1725,16 @@ function PopUpRefatCred() {
         button.addEventListener('click', calculate);
         container.appendChild(button);
 
+        // Adicionando botão de aplicar crédito se a página atual é a especificada
+        if (window.location.pathname === '/gcom/app/arrecadacao/concessaoCredito') {
+            const creditButton = document.createElement('button');
+            creditButton.textContent = 'Aplicar Crédito';
+            creditButton.style.marginTop = '3px';
+            creditButton.style.fontSize = '11px';
+            creditButton.addEventListener('click', applyCredit);
+            container.appendChild(creditButton);
+        }
+
         const resultContainer = document.createElement('div');
         resultContainer.id = 'resultContainer';
         resultContainer.style.marginTop = '10px';
@@ -1741,8 +1766,7 @@ function PopUpRefatCred() {
         document.body.appendChild(icon);
     }
 
-    function calculate() {
-        console.log("Calculando valores");
+    function calculateBilling() {
         const categoria = document.getElementById('categoria').value;
         const esgoto = document.getElementById('esgoto').value;
         const tipoVazamento = document.getElementById('tipoVazamento').value;
@@ -1753,14 +1777,32 @@ function PopUpRefatCred() {
         const ls = document.getElementById('ls').value;
         const media = document.getElementById('media').value;
         const tarifacao = document.getElementById('tarifacao').value;
-    
+        const insc = document.getElementById('insc').value;
+
         const resultadoAguaMedido = calcValorConta(consumo, categoria, tarifacao, unidadesConsumo, tabela);
         const consumoRefat = tipoVazamento === 'Interno' ? ls : media;
         const resultadoAguaRefat = calcValorConta(consumoRefat, categoria, tarifacao, unidadesConsumo, tabela);
         const resultadoEsgotoMedido = resultadoAguaMedido * (esgoto / 100);
         const resultadoEsgotoRefat = calcValorConta(media, categoria, tarifacao, unidadesConsumo, tabela) * (esgoto / 100);
-    
-        displayResults(resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento);
+
+        const descontoAgua = Math.max(0, resultadoAguaMedido - resultadoAguaRefat).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const descontoEsgoto = Math.max(0, resultadoEsgotoMedido - resultadoEsgotoRefat).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        return {
+            resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat,
+            consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento, insc,
+            descontoAgua, descontoEsgoto
+        };
+    }
+
+    function updateUI(data) {
+        displayResults(data);
+    }
+
+    function calculate() {
+        console.log("Calculando valores");
+        const billingData = calculateBilling();
+        updateUI(billingData);
     }
 
     function calcValorConta(consumo, tipo, data, unidadeConsumo, tabela) {
@@ -1785,11 +1827,185 @@ function PopUpRefatCred() {
         return valorConta;
     }
 
-    function displayResults(resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento) {
-        const resultContainer = document.getElementById('resultContainer');
-        const descontoAgua = Math.max(0, resultadoAguaMedido - resultadoAguaRefat);
-        const descontoEsgoto = Math.max(0, resultadoEsgotoMedido - resultadoEsgotoRefat);
+    async function applyCredit() {
+        console.log("Aplicando crédito");
+        const { resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento, insc, descontoAgua, descontoEsgoto } = calculateBilling();
 
+        // Simula o clique no menu Concessão de Crédito na Conta
+        PrimeFaces.ab({s:"j_idt380:j_idt382",u:"form1",onco:function(xhr,status,args){PF('dlgEdicao').show();}});
+
+        // Insere o valor da inscrição
+        const inscricaoInput = await waitForElement('#form1\\:inscricao');
+        console.log(inscricaoInput);
+        console.log(insc);
+        // Dispara o evento valueChange diretamente via PrimeFaces
+        PrimeFaces.ab({
+            s: "form1:inscricao",
+            e: "valueChange",  // Adiciona o evento valueChange
+            p: "form1:inscricao",
+            params: [{name: 'form1:inscricao', value: insc}]
+        });
+
+        // Insere o valor da contaRef
+        const contaRefInput = await waitForElement('#form1\\:j_idt473');
+        console.log(contaRefInput);
+        console.log(contaRef);
+        PrimeFaces.ab({
+            s: "form1:j_idt473",
+            e: "valueChange",  // Adiciona o evento valueChange
+            p: "form1:j_idt473",
+            params: [{name: 'form1:j_idt473', value: contaRef}]
+        });
+
+        // Simula o clique na lupa
+        PrimeFaces.ab({s:"form1:j_idt475",u:"form3"});
+
+        // Espera o novo elemento aparecer
+        await waitForElement('dlg2_title');
+
+        // Aqui você precisaria de uma lógica para verificar a linha correta e clicar no checkbox e na opção PARCIAL
+        const rows = document.querySelectorAll("#form3\\:tableLancamento_data > tr");
+
+        var descontosaguaaplicado = false;
+
+        if (descontoAgua != '0,00'){
+            rows.forEach(async (row, index) => {
+                const tarifaCell = row.cells[2].textContent;
+                if (tarifaCell.includes("TARIFA VARIAVEL DE AGUA")) {
+
+                    console.log("Achei linha tarifa de agua!");
+                    console.log(row);
+
+                    // Checkbox
+                    const checkboxDiv = row.querySelector("td:nth-child(1) > div.ui-chkbox > div.ui-chkbox-box");
+                    if (checkboxDiv) {
+                        console.log("primeiro checkbox");
+                        console.log(checkboxDiv);
+                        checkboxDiv.click();  // Dispara o clique no div que simula a checkbox
+                    }
+                    // Selecionar a opção "Parcial"
+                    try {
+                        const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
+                        console.log("check parcial");
+                        console.log(radioParcial);
+                        radioParcial.click();  // Clique no radio button para selecionar "Parcial"
+                    } catch (error) {
+                        console.log("O elemento radioParcial está desabilitado e não pode ser clicado.");
+                        console.error(error);
+                    }
+
+                    // Inserir o valor do desconto na Água
+                    console.log("tentando colocar o desconto");
+                    try {
+                        const descontoAguaInput = await waitForElementEnabled("input[id$='j_idt676']");
+                        console.log("desconto agua");
+                        console.log(descontoAguaInput);
+                        descontoAguaInput.value = descontoAgua;
+                        descontosaguaaplicado = true;
+                    } catch (error) {
+                        console.log("O elemento descontoAguaInput está desabilitado e não pode ser alterado.");
+                        console.error(error);
+                    }
+                }
+            });
+        }
+        else{
+            descontosaguaaplicado = true;
+        }
+
+        var descontosesgotoaplicado = false;
+
+        if (descontoEsgoto != '0,00'){
+            rows.forEach(async (row, index) => {
+                const tarifaCell = row.cells[2].textContent;
+                if (tarifaCell.includes("TARIFA VARIAVEL DE ESGOTO")) {
+
+                    console.log("Achei linha tarifa de esgoto!");
+                    console.log(row);
+
+                    // Checkbox
+                    const checkboxDiv2 = row.querySelector("td:nth-child(1) > div.ui-chkbox > div.ui-chkbox-box");
+                    if (checkboxDiv2) {
+                        console.log("primeiro checkbox");
+                        console.log(checkboxDiv2);
+                        checkboxDiv2.click();  // Dispara o clique no div que simula a checkbox
+                    }
+
+                    // Selecionar a opção "Parcial"
+                    try {
+                        const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
+                        console.log("check parcial");
+                        console.log(radioParcial2);
+                        radioParcial2.click();  // Clique no radio button para selecionar "Parcial"
+                    } catch (error) {
+                        console.log("O elemento radioParcial está desabilitado e não pode ser clicado.");
+                        console.error(error);
+                    }
+
+                    // Inserir o valor do desconto no Esgoto
+                    console.log("tentando colocar o desconto");
+                    try {
+                        const descontoEsgotoInput = await waitForElementEnabled("input[id$='j_idt676']");
+                        console.log("desconto esgoto");
+                        console.log(descontoEsgotoInput);
+                        descontoEsgotoInput.value = descontoEsgoto;
+                        descontosesgotoaplicado = true;
+                    } catch (error) {
+                        console.log("O elemento descontoEsgotoInput está desabilitado e não pode ser alterado.");
+                        console.error(error);
+                    }
+                }
+            });
+        }
+        else{
+            descontosesgotoaplicado = true;
+        }
+
+        while(!descontosaguaaplicado || !descontosesgotoaplicado){
+            // Espera ativa até que ambos os descontos sejam aplicados
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        console.log("descontos aplicados");
+
+        document.querySelector("#form3\\:j_idt680 > span.ui-button-text.ui-c").click();
+
+        var resultado = document.querySelector("#resultContainer > div:nth-child(3)").innerText;
+        console.log(resultado);
+
+        document.querySelector("#form1\\:j_idt494").value = resultado;
+
+        var inscricaoInput2 = await waitForElement('#form1\\:inscricao');
+        console.log(inscricaoInput2);
+        console.log(insc);
+        // Dispara o evento valueChange diretamente via PrimeFaces
+        PrimeFaces.ab({
+            s: "form1:inscricao",
+            e: "valueChange",  // Adiciona o evento valueChange
+            p: "form1:inscricao",
+            params: [{name: 'form1:inscricao', value: document.getElementById('insc').value}]
+        });
+        inscricaoInput2.value = insc;
+
+        // Insere o valor da contaRef
+        var contaRefInput2 = await waitForElement('#form1\\:j_idt473');
+        console.log(contaRefInput2);
+        console.log(contaRef);
+        PrimeFaces.ab({
+            s: "form1:j_idt473",
+            e: "valueChange",  // Adiciona o evento valueChange
+            p: "form1:j_idt473",
+            params: [{name: 'form1:j_idt473', value: document.getElementById('contaRef').value}]
+        });
+        contaRefInput2.value = contaRef;
+
+
+    }
+
+    function displayResults(data) {
+        const { resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento, insc, descontoAgua, descontoEsgoto } = data;
+
+        const resultContainer = document.getElementById('resultContainer');
         resultContainer.innerHTML = `
             <div><strong>Cálculo:</strong></div>
             <div style="display: flex;">
@@ -1811,18 +2027,17 @@ function PopUpRefatCred() {
                     </tr>
                     <tr>
                         <td style="padding: 3px; font-size: 11px;"><strong>Desconto:</strong></td>
-                        <td style="padding: 3px; font-size: 11px;"><b>${descontoAgua.toFixed(2)}</b></td>
-                        <td style="padding: 3px; font-size: 11px;"><b>${descontoEsgoto.toFixed(2)}</b></td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${descontoAgua}</b></td>
+                        <td style="padding: 3px; font-size: 11px;"><b>${descontoEsgoto}</b></td>
                     </tr>
                 </table>
             </div>
             <div style="margin-top: 10px; font-size: 11px; text-align: left">
                 Vazamento <b>${tipoVazamento}</b> conforme OSC <b>${osc}</b> conta <b>${contaRef}</b> já paga.<br>
                 Refaturamento pel${tipoVazamento === 'Interno' && ls < consumo ? 'o LS e MÉDIA' : 'a MÉDIA'}<br>
-                ${descontoAgua > 0 ? `Valor de água: ${resultadoAguaMedido.toFixed(2)} (${consumo}m³) - ${resultadoAguaRefat.toFixed(2)} (${consumoRefat}m³) = ${descontoAgua.toFixed(2)}<br>` : ''}
-                ${descontoEsgoto > 0 ? `Valor de esgoto: ${resultadoEsgotoMedido.toFixed(2)} (${consumo}m³) - ${resultadoEsgotoRefat.toFixed(2)} (${media}m³) = ${descontoEsgoto.toFixed(2)}` : ''}
+                ${descontoAgua != '0,00' ? `Valor de água: ${resultadoAguaMedido.toFixed(2)} (${consumo}m³) - ${resultadoAguaRefat.toFixed(2)} (${consumoRefat}m³) = ${descontoAgua}<br>` : ''}
+                ${descontoEsgoto != '0,00' ? `Valor de esgoto: ${resultadoEsgotoMedido.toFixed(2)} (${consumo}m³) - ${resultadoEsgotoRefat.toFixed(2)} (${media}m³) = ${descontoEsgoto}` : ''}
             </div>
-
         `;
     }
 
