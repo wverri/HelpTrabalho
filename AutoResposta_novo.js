@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.05
+// @version     1.18
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -16,6 +16,7 @@ var version = GM_info.script.version;
 var hidrometro = 'form:numHidrometro';
 var leit = 'form:leituraVistoria';
 var lacr = 'form:lacreInstaladoVistoria';
+var usu = 'form:nomeContatoVistoria';
 
 var resposta = '#form\\:j_idt809 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 
@@ -28,10 +29,11 @@ var vaznaovisivel = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > t
 var vazcoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 var vaznaocoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 var usuario = '#form\\:nomeContatoVistoria';
+var naoseaplica = '#form\\:naoSeAplicaVistoria > div:nth-child(2) > span:nth-child(1)';
 
-var checkemaildiag = '#formEnviarEmail\\:j_idt2584 > div:nth-child(2) > span:nth-child(1)'
-var checkemailprov = '#formEnviarEmail\\:j_idt2586 > div:nth-child(2) > span:nth-child(1)'
-var checkemailgerar = '#formEnviarEmail\\:j_idt2590 > span:nth-child(1)'
+var checkemaildiag = '#formEnviarEmail\\:j_idt2584 > div:nth-child(2) > span:nth-child(1)';
+var checkemailprov = '#formEnviarEmail\\:j_idt2586 > div:nth-child(2) > span:nth-child(1)';
+var checkemailgerar = '#formEnviarEmail\\:j_idt2590';
 
 var elementPairs = [
     ['#formConfirmaAnexoVistoriaEmail\\:j_idt2478 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoVistoriaEmail\\:j_idt2481']
@@ -202,6 +204,7 @@ if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistor
     $('body').append(myWidget);
 }
 
+var marcado = false;
 
 (function() {
     var checkExist = setInterval(function() {
@@ -209,8 +212,8 @@ if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistor
         if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistoria/edicao')) {
 
             //Verifica se o elemento #dlgEnviarEmailVistoria_title está presente
-            var dlgEnviarEmailElement = document.querySelector('#dlgEnviarEmailVistoria_title');
-            if (dlgEnviarEmailElement) {
+            var dlgEnviarEmailElement = document.querySelector('html body div#dlgEnviarEmailVistoria.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-shadow.ui-hidden-container.ui-dialog-absolute.ui-draggable[aria-hidden="false"]');
+            if (dlgEnviarEmailElement && marcado == false) {
                 // Verifica se os checkboxes estão marcados
                 var checkbox1 = document.querySelector(checkemaildiag);
                 var checkbox2 = document.querySelector(checkemailprov);
@@ -232,7 +235,11 @@ if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistor
                         botaoGerarTextoEmail.click();
                     }
                 }
+                console.log(checkbox1);
+                console.log(checkbox2);
+                marcado = true;
             }
+
             for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
                 const confirmElement = document.querySelector(confirmElementSelector);
                 const confirmElementValue = document.querySelector(confirmElementValueSelector);
@@ -244,7 +251,7 @@ if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistor
                 }
             }
         }
-    }, 100);
+    }, 200);
 })();
 
 
@@ -284,6 +291,9 @@ async function Revisao(vaz, visivel, coletado, diag, prov) {
         else{
             document.querySelector(vaznaocoletado).click();
         }
+    }
+    else{
+        document.querySelector(naoseaplica).click();
     }
 
     return;
@@ -339,8 +349,10 @@ async function waitForElementEnabled(selector, timeout = 30000) {
 function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
     var leitura = document.getElementById(leit).value;
     var lacre = document.getElementById(lacr).value;
+    var usuario = document.getElementById(usu).value;
     console.log(leitura);
     console.log(lacre);
+    console.log(usuario);
 
     if ( lacre == "" ) {
         var diag = `Hidrômetro com bom funcionamento, leitura ${leitura} confirmada.\nOrientamos o(a) usuário(a) ${usuario} a verificar as instalações hidráulicas do imóvel, a fim de identificar qualquer vazamento que possa estar influenciando no faturamento.`;
@@ -380,13 +392,12 @@ function VazInternNVisCol() { //Vaz. Interno
     var leitura = document.getElementById(leit).value;
     var lacre = document.getElementById(lacr).value;
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
-    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
     var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
     if ( lacre == "" ) {
-        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.';
     }
     else {
-        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.';
     }
 
     var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
@@ -466,14 +477,13 @@ function VazVisCol() { //Vazamento visível e coletado
     var leitura = document.getElementById(leit).value;
     var lacre = document.getElementById(lacr).value;
     var vaz = prompt('Digite o local do vazamento: Ex. na caixa de descarga ');
-    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
 
     if ( lacre == "" ) {
-        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.');
     }
 
     else {
-        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+' . Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+' . Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.');
     }
 
     var prov = ('Após analisarmos o seu pedido de revisão tarifária referente ao vazamento visível nas instalações hidráulicas da sua unidade usuária, verificamos que, de acordo com a Resolução ADASA nº 14/2011, Art. 118, o desconto sobre o consumo excedente só é aplicável quando há comprovação e subsequente eliminação de vazamento imperceptível nas instalações hidráulicas. Além disso, conforme o § 4º da mesma resolução, caso seja comprovado que o excesso de água não foi direcionado para a rede pública de esgotos sanitários, a tarifa de esgoto será calculada com base na média de consumo da unidade usuária. \nPortanto, devido ao fato de o vazamento ser visível e a água ter escoado para a rede de esgoto, não é possível conceder desconto tanto na tarifa de água quanto na de esgoto.');
@@ -486,14 +496,13 @@ function VazNegado() { //Vaz.Negado Mais de 2 LS.
     var leitura = document.getElementById(leit).value;
     var lacre = document.getElementById(lacr).value;
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
-    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
     var conta = prompt('Digite a(s) conta(s) que já receberam LS: Ex. 01/2023, 02/2023 e 03/2023');
 
     if ( lacre == "" ) {
-        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.');
     }
     else {
-        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.');
     }
 
     var prov = ('Conforme o ART. 118, §5º da Resolução 014/2011 da ADASA, o desconto será aplicado em, no máximo, duas faturas mensais subsequentes que comprovadamente foram influenciadas pelo vazamento confirmado pelo prestador de serviços. Esse desconto está limitado a uma ocorrência de vazamento em um período de 12 (doze) meses. \nInformamos que a solicitação de revisão não procede, uma vez que já foi concedido desconto por vazamento na(s) conta(s) ' +conta+ '. \nAtualizado vencimento da conta xx/2023.');
@@ -648,14 +657,13 @@ function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
     var leitura = document.getElementById(leit).value;
     var lacre = document.getElementById(lacr).value;
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
-    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
     var conta = prompt('Digite a(s) conta(s) que estão abaixo do LS: Ex. 01/2023, 02/2023 e 03/2023');
 
     if ( lacre == "" ) {
-        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível ' + vaz + '.');
     }
     else {
-        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível ' + vaz + '.');
     }
 
 
