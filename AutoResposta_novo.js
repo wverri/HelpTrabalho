@@ -1,0 +1,745 @@
+// ==UserScript==
+// @name        HelpGCOM_novo
+// @namespace   https://sistemas.caesb.df.gov.br/gcom/
+// @match       *sistemas.caesb.df.gov.br/gcom/*
+// @match       *sistemas.caesb/gcom/*
+// @version     1.05
+// @grant       none
+// @license     MIT
+// @description Auxiliar para trabalhos no GCOM!
+// ==/UserScript==
+
+var version = GM_info.script.version;
+
+// LISTAGEM COM TODOS OS IDT's
+// IDTs da tela de baixa
+var hidrometro = 'form:numHidrometro';
+var leit = 'form:leituraVistoria';
+var lacr = 'form:lacreInstaladoVistoria';
+
+var resposta = '#form\\:j_idt809 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+
+var diagnostico = '#form\\:j_idt814';
+var providencia = '#form\\:j_idt816';
+
+var vazcorrigidosim = '#form\\:j_idt796 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+var vazvisivel = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+var vaznaovisivel = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+var vazcoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+var vaznaocoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+var usuario = '#form\\:nomeContatoVistoria';
+
+var checkemaildiag = '#formEnviarEmail\\:j_idt2584 > div:nth-child(2) > span:nth-child(1)'
+var checkemailprov = '#formEnviarEmail\\:j_idt2586 > div:nth-child(2) > span:nth-child(1)'
+var checkemailgerar = '#formEnviarEmail\\:j_idt2590 > span:nth-child(1)'
+
+var elementPairs = [
+    ['#formConfirmaAnexoVistoriaEmail\\:j_idt2478 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoVistoriaEmail\\:j_idt2481']
+];
+
+
+// Define as estilizações do widget em um objeto CSS
+var widgetStyles = {
+    'position': 'fixed',
+    'top': '10%',
+    'right': '10px',
+    'background-color': '#FFFFFF',
+    'border': '1px solid #ddd',
+    'padding': '10px',
+    'box-shadow': '0 2px 5px rgba(0, 0, 0, 0.2)',
+    'font-size': '14px',
+    'font-family': 'Arial, sans-serif',
+    'z-index': '9999',
+    'width': '200px',
+    'border-radius': '5px'
+};
+
+// Define as estilizações dos botões em um objeto CSS
+var buttonStyles = {
+    'background-color': '#0b61a4',
+    'margin-bottom': '5px',
+    'display': 'none',
+    'width': '100%',
+    'color': 'white',
+    'border': 'none',
+    'padding': '5px 10px',
+    'text-align': 'center',
+    'text-decoration': 'none',
+    'font-size': '12px',
+    'font-weight': 'bold',
+    'border-radius': '5px'
+};
+
+// Cria o widget
+var myWidget = $('<div id="my-widget"></div>').css(widgetStyles);
+
+// Define as estilizações do botão de minimizar/maximizar
+var toggleButtonStyles = {
+    position: 'absolute',
+    top: '5px',
+    right: '5px',
+    background: 'transparent',
+    color: '#555',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+};
+
+// Cria o botão de minimizar/maximizar
+var toggleButton = $('<button>◱</button>').css(toggleButtonStyles);
+
+// Adiciona o evento de clique para alternar entre as versões maximizada e minimizada
+toggleButton.click(function() {
+    myWidget.toggleClass('minimized');
+    // Ajusta as estilizações conforme necessário para a versão minimizada
+    if (myWidget.hasClass('minimized')) {
+        myWidget.css({
+            width: '15px', // ou outro valor adequado
+            height: '15px', // ou outro valor adequado
+        });
+        // Esconde os SectionTitles quando minimizado
+        myWidget.find('div[style*="font-weight: bold"]').hide();
+    } else {
+        // Ajusta as estilizações para a versão maximizada
+        myWidget.css({
+            width: '200px', // ou outro valor adequado
+            height: 'auto', // ou outro valor adequado
+        });
+        // Mostra os SectionTitles quando maximizado
+        myWidget.find('div[style*="font-weight: bold"]').show();
+    }
+});
+
+// Adiciona o botão de minimizar/maximizar ao widget
+myWidget.append(toggleButton);
+
+
+// Adiciona o evento de arrastar ao widget
+myWidget.mousedown(function(e) {
+    var initialX = e.pageX - $(this).offset().left;
+    var initialY = e.pageY - $(this).offset().top;
+    var widgetPosition = myWidget.position();
+    var mouseX = e.pageX - widgetPosition.left;
+    var mouseY = e.pageY - widgetPosition.top;
+
+    $('body').mousemove(function(e) {
+        myWidget.css({
+            'left': e.pageX - mouseX,
+            'top': e.pageY - mouseY
+        });
+    });
+});
+
+// Remove o evento de arrastar ao soltar o botão do mouse
+$('body').mouseup(function() {
+    $('body').off('mousemove');
+});
+
+// Função auxiliar para criar botões
+var createButton = function(text) {
+    return $('<button>' + text + '</button>').css(buttonStyles);
+};
+
+// Função auxiliar para criar títulos de seção
+var createSectionTitle = function(text) {
+    return $('<div></div>').css({
+        'font-weight': 'bold',
+        'margin-bottom': '10px',
+        'color': '#333',
+        'cursor': 'pointer'
+    }).text(text);
+};
+
+var createButtonWithClick = function(text, clickHandler) {
+    var button = $('<button>' + text + '</button>').css(buttonStyles);
+    button.click(clickHandler);
+    return button;
+};
+
+// Adiciona os elementos ao widget
+myWidget.append(
+    createSectionTitle('--- REVISAO DE CONTAS ---'),
+    createButtonWithClick('Usuario Orientado Vazamento', function(){ UsuarioOrientadoVazamento(); }),
+    createButtonWithClick('Sem Vazam. Improcedente', function(){ SemVazamImprocedente(); }),
+    createButtonWithClick('Vazamento Interno Ñ Vis/Col', function(){ VazInternNVisCol(); }),
+    createButtonWithClick('Leitura informada pelo usuario', function(){ LeituraInformada(); }),
+    createButtonWithClick('Vazamento Coberto', function(){ VazCoberto(); }),
+    createButtonWithClick('Erro de leitura', function(){ ErroLeitura(); }),
+    createButtonWithClick('Agendamento de leitura', function(){ AgendLeitura(); }),
+    createButtonWithClick('Vazamento Visivel/Coletado', function(){ VazVisCol(); }),
+    createButtonWithClick('Vaz.Negado mais de 2 LS', function(){ VazNegado(); }),
+    createButtonWithClick('Distribuição de Consumo', function(){ DistribuicaoConsumo(); }),
+    createButtonWithClick('Vaz.Abaixo LS S/Esg', function(){ VazAbaixoLs(); }),
+    createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
+    createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
+    createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
+    createButtonWithClick('Multa Agend Fora Prazo', function(){ AgendLeituraForaPrazo(); }),
+    createSectionTitle('--- DADOS CADASTRAIS ---'),
+    createButtonWithClick('Alteração de categoria', function(){ AlteracaoCategoria(); }),
+    createButtonWithClick('Alteração de Unidades de Consumo', function(){ AlteracaoUnidadesConsumo(); }),
+    createButtonWithClick('Troca de HD**', function(){ TrocaHD(); }),
+    createButtonWithClick('Descad.Autoleitura', function(){ DescAutoLeitura(); }),
+    createSectionTitle('--- TARIFA SOCIAL ---'),
+    createButtonWithClick('Usuario Descadastr.', function(){ UsuarioDescadastr(); }),
+    createButtonWithClick('Fora da Lista', function(){ ForaDaLista(); }),
+    createButtonWithClick('Usuário já tem tar. social', function(){ UsuarioJaTemTarSocial(); }),
+    createButtonWithClick('Usuário vinculado', function(){ UsuarioVinculadoTarSocial(); }),
+    $('<div></div>').css({
+    'font-size': '8px',
+    'text-align': 'right',
+    'margin-top': '10px',
+    'font-weight': 'bold'
+    }).text('Ver. ' + version + ' Feito por Willian Verri'),
+);
+
+// Torna os botões visíveis ao clicar nos títulos de seção
+myWidget.find('div[style*="font-weight: bold"]').click(function() {
+    $(this).nextUntil('div').filter('button').slideToggle();
+});
+
+// Verifica se a URL corresponde à página de "baixa" do atendimento
+if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistoria/edicao')) {
+    $('body').append(myWidget);
+}
+
+
+(function() {
+    var checkExist = setInterval(function() {
+
+        if (window.location.href.includes('/app/atendimento/validarClienteCadastroVistoria/edicao')) {
+
+            //Verifica se o elemento #dlgEnviarEmailVistoria_title está presente
+            var dlgEnviarEmailElement = document.querySelector('#dlgEnviarEmailVistoria_title');
+            if (dlgEnviarEmailElement) {
+                // Verifica se os checkboxes estão marcados
+                var checkbox1 = document.querySelector(checkemaildiag);
+                var checkbox2 = document.querySelector(checkemailprov);
+                // Função para marcar um checkbox
+                function marcarCheckbox(checkbox) {
+                    checkbox.checked = true;
+                    // Dispara um evento de mudança, pois alguns scripts podem estar escutando isso
+                    var event = new Event('change');
+                    checkbox.dispatchEvent(event);
+                }
+                // Marca os checkboxes se não estiverem marcados
+                if (checkbox1 && !checkbox1.checked) {
+                    marcarCheckbox(checkbox1);
+                }
+                if (checkbox2 && !checkbox2.checked) {
+                    marcarCheckbox(checkbox2);
+                    var botaoGerarTextoEmail = document.querySelector(checkemailgerar);
+                    if (botaoGerarTextoEmail) {
+                        botaoGerarTextoEmail.click();
+                    }
+                }
+            }
+            for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
+                const confirmElement = document.querySelector(confirmElementSelector);
+                const confirmElementValue = document.querySelector(confirmElementValueSelector);
+
+                if (confirmElement && confirmElementValue && confirmElementValue.value === '') {
+                    const fileName = confirmElement.innerText.trim();
+                    const fileNameWithoutExtension = fileName.slice(0, -4);
+                    confirmElementValue.value = fileNameWithoutExtension;
+                }
+            }
+        }
+    }, 100);
+})();
+
+
+async function Revisao(vaz, visivel, coletado, diag, prov) {
+
+    //Revisao(vaz, visivel, coletado, diag, prov)
+    var clickresposta = document.querySelector(resposta);
+    console.log(clickresposta);
+
+    if (clickresposta !== null) {
+        clickresposta.click();
+    }
+
+    await waitForElementEnabled(diagnostico);
+
+    const diagn = document.querySelector(diagnostico);
+    const provd = document.querySelector(providencia);
+
+    if (diagn !== null && diagn !== false) {
+        diagn.value = diag;
+    }
+    if (provd !== null && provd !== false) {
+        provd.value = prov;
+    }
+
+    if (vaz == 1) {
+        document.querySelector(vazcorrigidosim).click();
+        if (visivel = 1){
+            document.querySelector(vazvisivel).click();
+        }
+        else{
+            document.querySelector(vaznaovisivel).click();
+        }
+        if (coletado = 1){
+            document.querySelector(vazcoletado).click();
+        }
+        else{
+            document.querySelector(vaznaocoletado).click();
+        }
+    }
+
+    return;
+
+}
+
+async function waitForElement(selector) {
+    const startTime = Date.now();
+    const timeout = 2000; // Tempo limite de 2 segundos
+
+    while (!document.querySelector(selector)) {
+        if (Date.now() - startTime > timeout) {
+            return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms antes de verificar novamente
+    }
+
+    return document.querySelector(selector);
+}
+
+// Função para esperar um elemento ser clicável
+async function waitForClickable(selector, timeout = 30000) {
+    const startTime = new Date().getTime();
+    while (true) {
+        const now = new Date().getTime();
+        if (now - startTime > timeout) {
+            throw new Error("Timeout waiting for element to be clickable");
+        }
+        const element = document.querySelector(selector);
+        if (element && !element.disabled && getComputedStyle(element).display !== 'none') {
+            return element;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
+
+async function waitForElementEnabled(selector, timeout = 30000) {
+    const startTime = Date.now();
+    while (true) {
+        const element = document.querySelector(selector);
+        if (element && !element.disabled) {
+            return element;
+        }
+        if (Date.now() - startTime > timeout) {
+            throw new Error('Timeout waiting for element to be enabled');
+        }
+        await new Promise(resolve => setTimeout(resolve, 100)); // espera 100ms antes de tentar novamente
+    }
+}
+
+//Revisao(vaz, visivel, coletado, diag, prov)
+
+function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    console.log(leitura);
+    console.log(lacre);
+
+    if ( lacre == "" ) {
+        var diag = `Hidrômetro com bom funcionamento, leitura ${leitura} confirmada.\nOrientamos o(a) usuário(a) ${usuario} a verificar as instalações hidráulicas do imóvel, a fim de identificar qualquer vazamento que possa estar influenciando no faturamento.`;
+    }
+    else {
+        var diag = `Hidrômetro com bom funcionamento, leitura ${leitura} confirmada, lacre ${lacre}.\nOrientamos o(a) usuário(a) ${usuario} a verificar as instalações hidráulicas do imóvel, a fim de identificar qualquer vazamento que possa estar influenciando no faturamento.`;
+    }
+    var prov = `Caso seja identificado um vazamento, é importante efetuar o registro fotográfico do local antes e depois da correção, além de providenciar o reparo imediato.\nApós o reparo, o usuário(a) deve encaminhar as fotos que comprovem a existência/correção do vazamento, juntamente com foto da numeração do hidrômetro e foto da leitura atual, em uma nova solicitação por meio do Autoatendimento no site da CAESB ou pelo Aplicativo.\nEssas medidas garantirão a revisão adequada das contas, conforme estabelecido pela Resolução 14/2011.`;
+
+    Revisao(0,0,0,diag,prov);
+};
+
+
+function SemVazamImprocedente() { //Sem Vazam. Improcedente
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var refs = prompt('Caso tenha atualizado vencimento, informar refs. Ex. 10/2023, 11/2023 e 12/2023 \nCaso contrário deixar em branco.');
+    if ( lacre == "" ) {
+        var diag = 'Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente e a leitura ' + leitura + ' foi confirmada e não foi encontrado nenhum indício de vazamento no local. Diante disso, concluímos que as contas foram faturadas de acordo com o consumo registrado pelo hidrômetro.'
+        }
+    else {
+        var diag = 'Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente e a leitura ' + leitura + ' foi confirmada. O lacre ' + lacre + ' está intacto e não foi encontrado nenhum indício de vazamento no local. Diante disso, concluímos que as contas foram faturadas de acordo com o consumo registrado pelo hidrômetro.';
+    }
+    if ( refs == "" ) {
+        var prov = 'Informamos que, de acordo com as normas e regulamentos vigentes, não há nenhuma prerrogativa para a concessão de desconto nesta situação relatada.';
+    }
+    else {
+        var prov = 'Informamos que, de acordo com as normas e regulamentos vigentes, não há nenhuma prerrogativa para a concessão de desconto nesta situação relatada.\n Atualizado vencimento da(s) conta(s) referência ' + refs + '.';
+    }
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function VazInternNVisCol() { //Vaz. Interno
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
+    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
+    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
+    if ( lacre == "" ) {
+        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+    }
+    else {
+        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+    }
+
+    var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
+
+    Revisao(1,0,0,diag,prov);
+};
+
+function VazCoberto() { //Vaz Coberto
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+
+    if ( lacre == "" ) {
+        var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' +leitura + ' foi confirmada. Usuário informa que sanou vazamento, porém local já estava tampado/coberto, não sendo possível verificar o vazamento sanado.');
+    }
+    else {
+        var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' +leitura + ' foi confirmada e lacre ' +lacre+ '. Usuário informa que sanou vazamento, porém local já estava tampado/coberto, não sendo possível verificar o vazamento sanado.');
+    }
+
+    var prov = ('A revisão de contas solicitada não pode ser concedida devido à falta de documentação comprobatória do conserto do vazamento imperceptível e/ou da realização da vistoria para verificação do mesmo. \nConforme a Resolução 014/2011 da ADASA, para obter o desconto mencionado, é necessário apresentar o termo de ocorrência de eliminação do vazamento imperceptível e comprovantes do material/serviço utilizado para reparar o vazamento. Alternativamente, é possível solicitar uma vistoria para verificar novamente o vazamento, desde que o mesmo esteja exposto para registro fotográfico. As fotos do conserto, juntamente com os comprovantes, podem ser apresentados em novo pedido de revisão pelo Autoatendimento no site da CAESB ou Aplicativo.')
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function ErroLeitura() { //Erro de leitura
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
+
+    if ( lacre == "" ) {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Houve erro de leitura.');
+    }
+    else {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+'. Houve erro de leitura.');
+    }
+
+    var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel');
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function AgendLeitura() { //Agendamento de leitura
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var conta = prompt('Digite a conta: Ex. 01/2023');
+
+    if ( lacre == "" ) {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Vistoria de agendamento de leitura realizada para retirada de multa por impedimento de leitura.');
+    }
+    else {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+' . Vistoria de agendamento de leitura realizada para retirada de multa por impedimento de leitura.');
+    }
+
+    var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel e retirada multa de impedimento de leitura.');
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function AgendLeituraForaPrazo() { //Agendamento de leitura aberta fora do prazo
+
+    var conta = prompt('Digite a conta: Ex. 01/2023');
+
+    var diag = ('Informamos que em caso de ocorrência impeditiva de leitura, a conta de água é faturada pela média de consumo do imóvel dos últimos doze meses e quando ocorre dois ou mais impedimentos consecutivos passa a' +
+                ' ser cobrada multa por impedimento de leitura.\n A multa de impedimento de leitura pode ser retirada mediante AGENDAMENTO de leitura no MESMO MÊS em que é lançada a multa, onde o usuário ao solicitar o ' +
+                'agendamento informa a data e o período, matutino ou vespertino, para o qual gostaria que fosse realizada a vistoria, onde será coletada a leitura atual e feita a revisão de contas. ');
+
+    var prov = ('Conta referência ' +conta+ ' mantida, pedido de revisão indeferido, pois foi solicitado o agendamento APÓS o faturamento da conta seguinte ao impedimento gerador da multa. \n' +
+               'Salientamos ainda que o usuário tem a opção de solicitar o remanejamento do hidrômetro para fora do imóvel, dando acesso à leitura, ou se cadastrar na Auto Leitura pelo site da CAESB, sendo necessário informar a leitura mensalmente pelo site.');
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function VazVisCol() { //Vazamento visível e coletado
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var vaz = prompt('Digite o local do vazamento: Ex. na caixa de descarga ');
+    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
+
+    if ( lacre == "" ) {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+
+    else {
+        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+' . Vazamento interno sanado, visível e coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+
+    var prov = ('Após analisarmos o seu pedido de revisão tarifária referente ao vazamento visível nas instalações hidráulicas da sua unidade usuária, verificamos que, de acordo com a Resolução ADASA nº 14/2011, Art. 118, o desconto sobre o consumo excedente só é aplicável quando há comprovação e subsequente eliminação de vazamento imperceptível nas instalações hidráulicas. Além disso, conforme o § 4º da mesma resolução, caso seja comprovado que o excesso de água não foi direcionado para a rede pública de esgotos sanitários, a tarifa de esgoto será calculada com base na média de consumo da unidade usuária. \nPortanto, devido ao fato de o vazamento ser visível e a água ter escoado para a rede de esgoto, não é possível conceder desconto tanto na tarifa de água quanto na de esgoto.');
+
+    Revisao(1,1,1,diag,prov);
+};
+
+function VazNegado() { //Vaz.Negado Mais de 2 LS.
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
+    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
+    var conta = prompt('Digite a(s) conta(s) que já receberam LS: Ex. 01/2023, 02/2023 e 03/2023');
+
+    if ( lacre == "" ) {
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+    else {
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+
+    var prov = ('Conforme o ART. 118, §5º da Resolução 014/2011 da ADASA, o desconto será aplicado em, no máximo, duas faturas mensais subsequentes que comprovadamente foram influenciadas pelo vazamento confirmado pelo prestador de serviços. Esse desconto está limitado a uma ocorrência de vazamento em um período de 12 (doze) meses. \nInformamos que a solicitação de revisão não procede, uma vez que já foi concedido desconto por vazamento na(s) conta(s) ' +conta+ '. \nAtualizado vencimento da conta xx/2023.');
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function DescAutoLeitura() { // Descadastrado da auto leitura mes
+
+    const modal = document.createElement('div');
+    var opcao;
+    modal.className = 'modal';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '9999';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.height = 'auto';
+    modal.innerHTML = `
+        <div class="modal-content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 10vh;">
+            <h3>Escolha uma opção</h3>
+            <button id="opcao1">Duas ocorrências de autoleitura não informada</button>
+            <button id="opcao2">Leitura não realizada em ABRIL</button>
+            <button id="opcao3">Leitura não realizada em OUTUBRO</button>
+        </div>
+    `;
+
+    modal.querySelector('#opcao1').addEventListener('click', function() {
+        opcao = 'duasnaolidas';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, em caso de não informação de autoleitura por dois meses seguidos, usuário é automaticamente descadastrado do sistema de autoleitura.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(0,0,0,diag,prov);
+    });
+
+    modal.querySelector('#opcao2').addEventListener('click', function() {
+        opcao = 'abril';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
+            'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(0,0,0,diag,prov);
+    });
+
+    modal.querySelector('#opcao3').addEventListener('click', function() {
+        opcao = 'outubro';
+        modal.remove();
+        HoraAtual();
+        var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
+            'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
+        var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
+        Revisao(0,0,0,diag,prov);
+    });
+
+    document.body.appendChild(modal);
+};
+
+function AlteracaoCategoria() { // Alteração de categoria
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var categoriaAtual = prompt('Digite a categoria anterior: ');
+    var categoriaNova = prompt('Digite a nova categoria: ');
+
+    var diag;
+    if (lacre == "") {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e em bom funcionamento, abastece imóvel de categoria ' + categoriaNova + '.';
+    } else {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e lacre ' + lacre + ' e em bom funcionamento, abastece imóvel de categoria ' + categoriaNova + '.';
+    }
+
+    var prov = 'Estivemos em seu endereço e constatamos alterações nos dados cadastrais deste imóvel. Diante do exposto e em atenção ao Artigo 70 da Resolução ADASA nº 14/2011, realizaremos a atualização em nosso sistema, conforme abaixo.\n' +
+               'Alterado da categoria ' + categoriaAtual + ' para ' + categoriaNova + 'com efeito à partir do próximo faturamento.\n' +
+               'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
+               'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
+
+    Revisao(0,0,0,diag,prov);
+}
+
+function AlteracaoUnidadesConsumo() { // Alteração de Unidades de Consumo
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var usuario = prompt('Digite o nome do usuario: ');
+    var unidadesConsumoAtual = prompt('Digite o nº de Unidades de Consumo anterior: ');
+    var unidadesConsumoNova = prompt('Digite o novo nº de Unidades de Consumo: ');
+
+    var diag;
+    if (lacre == "") {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e em bom funcionamento, abastece imóvel com ' + unidadesConsumoNova + ' unidades de consumo.';
+    } else {
+        diag = 'Hidrômetro com leitura ' + leitura + ' e lacre ' + lacre + ' e em bom funcionamento, abastece imóvel com ' + unidadesConsumoNova + ' unidades de consumo.';
+    }
+
+    var prov = 'Estivemos em seu endereço e constatamos alterações nos dados cadastrais deste imóvel. Diante do exposto e em atenção ao Artigo 70 da Resolução ADASA nº 14/2011, realizaremos a atualização em nosso sistema, conforme abaixo.\n' +
+               'Alterado de ' + unidadesConsumoAtual + ' unidades de consumo para ' + unidadesConsumoNova + ' unidades de consumo com efeito à partir do próximo faturamento.\n' +
+               'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
+               'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
+
+    Revisao(0,0,0,diag,prov);
+}
+
+
+function DistribuicaoConsumo() { // Distribuição de Consumo
+
+    const input = prompt('Copie e cole da FICHA a distribuição');
+    // Regex para extrair as informações relevantes do input
+    const refsRegex = /(\d{2}\/\d{4})(?:,|$)/g;
+    const refsMatches = Array.from(input.matchAll(refsRegex), match => match[1]);
+    const totalVolumeRegex = /volume total de (\d+m³)/;
+    const totalVolumeMatch = input.match(totalVolumeRegex);
+    const monthsRegex = /resultando em (\d+) meses/;
+    const monthsMatch = input.match(monthsRegex);
+    const firstMonthRegex = /sendo o primeiro de (\d+m³)/;
+    const firstMonthMatch = input.match(firstMonthRegex);
+
+
+    // Variáveis com as informações extraídas
+    const refs = refsMatches.slice(-2); // Pega as duas últimas referências
+    const totalVolume = totalVolumeMatch[1];
+    const months = parseInt(monthsMatch[1]);
+    const firstMonth = firstMonthMatch[1];
+
+    // Frase 1
+    const lastRef = refs[1];
+    const previousMonths = refsMatches.length - 1;
+    const frase1 = `Houve acúmulo de consumo na conta referência ${lastRef} por ocorrência impeditiva no(s) ${previousMonths} mes(es) anterior(es).`;
+
+    // Frase 2
+    const firstRef = refsMatches[0];
+    const frase2 = `Conta referência ${lastRef} refaturada pela distribuição do consumo dos meses ${firstRef} a ${lastRef}, com consumo total de ${totalVolume} em ${months} meses.`;
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+
+    if ( lacre == "" ) {
+        var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' + leitura + ' foi confirmada. Não foi encontrado nenhum indício de vazamento no local. \n' + frase1);
+    }
+    else {
+        var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' + leitura + ' foi confirmada e o lacre ' + lacre + ' está intacto. Não foi encontrado nenhum indício de vazamento no local. \n' + frase1);
+    }
+
+    var prov = frase2;
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
+
+    var leitura = document.getElementById(leit).value;
+    var lacre = document.getElementById(lacr).value;
+    var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
+    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
+    var conta = prompt('Digite a(s) conta(s) que estão abaixo do LS: Ex. 01/2023, 02/2023 e 03/2023');
+
+    if ( lacre == "" ) {
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+    else {
+        var diag = ('Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante);
+    }
+
+
+    var prov = ('Conforme ART. 118, §3º da resolução 014/2011 da ADASA o desconto na tarifa de água será no volume que ultrapassar o Limite Superior, sendo este 80% do consumo médio dos últimos 12 meses do imóvel. Conta(s) referência ' + conta + ' com consumo abaixo do Limite Superior.');
+
+    Revisao(1,0,0,diag,prov);
+};
+
+async function TrocaHD() { // Troca de HD
+
+    var leitura = prompt('Digite a leitura: ');
+    var lacre = prompt('Digite o nº do lacre atual: ');
+    var usuario = prompt('Digite o nome do usuario: ');
+    var motivo = prompt('Digite o motivo da troca: (parado, danificado, etc)');
+    var hdnovo = prompt('Digite o novo HIDRÔMETRO: (Y20S123456) ');
+    var lacrenovo = prompt('Digite o novo LACRE: ');
+    var hd = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
+
+    if (lacre == "") {
+        diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + '.');
+    } else {
+        diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + ' e lacre ' + lacre + '.');
+    }
+    var prov = ('Hidrômetro substituído pelo ' + hdnovo + ', lacre ' + lacrenovo + ' e leitura 0.');
+
+    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    /*
+    PrimeFaces.ab({s:'form1:tbHidro:0:j_idt638',p:'form1:tbHidro:0:j_idt638',u:'formSubstituicaoHidrometro',onco:function(xhr,status,args){PF('dlgSubstituicaoHidrometro').show();}});
+
+    const sub = await waitForElement('#formSubstituicaoHidrometro\\:pnlHidAntigo_header > span:nth-child(1)');
+    var nleit = document.getElementById("#formSubstituicaoHidrometro\\:j_idt1144");
+    var situ = document.getElementById("formSubstituicaoHidrometro:novaSitu_8");
+    var pesqhd = document.evaluate("/html/body/div[22]/div[2]/form[2]/div/div[2]/table/tbody/tr/td[9]/button/span[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    if (nleit !== null) {
+        nleit.value = leitura;
+    }
+    if (situ) {
+        situ.click();
+    }
+    if (pesqhd) {
+        pesqhd.click();
+        const nhd = await waitForElement('#formPesquisarHidrometro\\:j_idt1335');
+        nhd.value = hdnovo;
+        const pesq = document.evaluate("/html/body/div[22]/div[2]/form[1]/span/table/tbody/tr/td[2]/table/tbody/tr/td/button/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();
+        const check = await waitForElement('/html/body/div[22]/div[2]/form[2]/div/div[2]/table/tbody/tr/td[9]/button/span[1]');
+        check.click();
+    }
+    var leitn = document.getElementByID('#formSubstituicaoHidrometro\\:j_idt1159').value = 0;
+    */
+};
+
+function UsuarioDescadastr() { // Tarifa Social - Usuario Descadastr.
+    var data = prompt('Informe a data que usuário foi descadastrado (ficha): ');
+    var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. \nCliente revogado por não estar mais nos critérios estabelecidos de acordo com informações recebidas da SEDES/GDF em ' + data + '.');
+    var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informaçes encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no ltimo relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
+    Revisao(0,0,0,diag,prov);
+};
+
+function MultaImpCorte() { //Multa de impedimento de corte - negado
+    var diag = `Comunicamos que, de acordo com as normas estabelecidas na Resolução ADASA nº 03/2012 (atualizada pela Resolução nº 21/2023) e na Resolução ADASA nº 11/2014, bem como na Cláusula Oitava deste, qualquer impedimento ao acesso ao  padrão de ligação de água, incluindo o cavalete e o hidrômetro para a realização da leitura, vistoria preventiva ou para a suspensão do fornecimento de água constitui uma infração passível de penalidade.
+                \nNesse sentido, destacamos que o prestador de serviços está autorizado a aplicar a penalidade de multa sem a necessidade de iniciar procedimentos adicionais quando ocorrer impedimento ao acesso ao hidrômetro para a suspensão do fornecimento de água, conforme estipulado no artigo 31 da Resolução ADASA nº 03/2012. A multa a ser aplicada será calculada com base nos critérios estabelecidos no artigo 5º-C da mesma resolução.`;
+    var prov = `Alertamos que o não pagamento das contas constitui descumprimento contratual, sujeitando o usuário à suspensão do serviço de abastecimento de água, conforme previsto no artigo 82, §3º, e no artigo 121, inciso I, da Resolução ADASA nº 11/2014, onde o usuário é notificado mensalmente nas contas de consumo mensal sobre as contas em aberto no imóvel e a possibilidade de corte em caso de permanência no inadimplemento.
+                \nPedido de revisão indeferido, conta mantida.`;
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function ForaDaLista() { // Tarifa Social - Fora da lista
+    var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre.');
+    var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no último relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
+    Revisao(0,0,0,diag,prov);
+};
+
+function UsuarioJaTemTarSocial() { // Tarifa Social - Usuário já tem tar. social
+    var inscricao = document.evaluate("/html/body/div[8]/div/form[1]/div[1]/div/table/tbody/tr/td[1]/table[2]/tbody/tr/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var diag = ('Informamos que o imóvel de inscrição ' + inscricao + ' já possui o benefício de tarifa social.');
+    var prov = ('Salientamos que para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. O cadastro na tarifa social depende exclusivamente das informaçes encaminhadas pela SEDES/GDF e a alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
+    Revisao(0,0,0,diag,prov);
+};
+
+function UsuarioVinculadoTarSocial() { // Tarifa Social - Usuário vinculado
+    var inscricao = document.evaluate("/html/body/div[8]/div/form[1]/div[1]/div/table/tbody/tr/td[1]/table[2]/tbody/tr/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var diag = ('Usuário é beneficiário de tarifa social e solicita vinculação do imóvel de inscrição ' + inscricao + ' para o benefício.');
+    var prov = ('Imóvel selecionado para concessão de tarifa social, alteração terá efeito à partir do próximo faturamento.');
+    Revisao(0,0,0,diag,prov);
+};

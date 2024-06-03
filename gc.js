@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.30
+// @version     2.50
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -12,6 +12,80 @@
 // ==/UserScript==
 
 var version = GM_info.script.version;
+
+// LISTAGEM COM TODOS OS IDT's
+
+// Colocar nomes dos anexos automaticamente
+const elementPairs = [
+    ['#formConfirmaAnexo\\:j_idt868 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt872'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
+    ['#formConfirmaAnexo\\:j_idt1787 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1791'],  // Anexo na tela de baixa OSC - ANEXO OSC
+    ['#formConfirmaAnexoEmail\\:j_idt2002 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2005'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
+    ['#formClienteConfirmaAnexo\\:j_idt618 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
+    ['#formConfirmaAnexo\\:j_idt749 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt752'],
+    ['#formCadastroAnexo\\:j_idt710 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt713'],
+];
+
+// Adiciona botões na função de REFATURAR CONTA.
+const contaTitleElement = document.querySelector('#j_idt687_title');
+// Adiciona botão na função de atualizar vencimento.
+const AttVencElement = document.querySelector('#j_idt665_title');
+// Text area da tela de atualizar vencimento de conta
+const textarea2idt = '#formVencimento\\:j_idt683';
+// Text area da tela de refaturamento
+const textareaidt = '#formAlteracaoConta\\:j_idt749';
+// Leitura da tela de refaturamento
+const leitidt = '#formAlteracaoConta\\:j_idt724';
+// botão de media no esgoto e leitura criada nao na tela de refaturamento.
+const mediaesgoto = '#formAlteracaoConta\\:j_idt740 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const leituracriadanao = '#formAlteracaoConta\\:j_idt744 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+
+// Abrir anexos na tela de atendimento
+const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt656_data';
+// Tela de abrir anexos na tela de atendimento
+const prefix3 = 'abas:formAtendimentoAnexo:j_idt656:';
+const menuId3 = 'j_idt662_menu';
+const abrir3 = 'j_idt665';
+const prefix4 = 'abas:formAtendimentoAnexo:j_idt666:';
+const menuId4 = 'j_idt672_menu';
+const abrir4 = 'j_idt673';
+
+// Tela de abrir anexos na tela de baixa
+// Anexos do atendimento
+const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1765:';
+const menuId1 = 'j_idt1771_menu';
+const abrir1 = 'j_idt1772';
+// Anexos da Ordem de Serviço
+const prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
+const menuId2 = 'j_idt1759_menu';
+const abrir2 = 'j_idt1762';
+
+// CheckBox do enviar email resposta
+const checkemail1 = 'formEnviarEmail:j_idt1811_input';
+const checkemail2 = 'formEnviarEmail:j_idt1813_input';
+const botaoemail = 'formEnviarEmail:j_idt1817';
+
+// Tela de Baixa - usuário, leitura e titulo de anexar.
+const tagusuario = '#form1\\:j_idt518';
+const tagleitura = '#form1\\:j_idt520';
+const taganexar = '#form1\\:j_idt453_header';
+
+// Aplicação de crédito na tela de crédito
+const inscricaoSelector = '#form1\\:inscricao';
+const contaRefSelector = '#form1\\:j_idt473';
+const lupaSelector = 'form1:j_idt475';
+const dlg2TitleSelector = 'dlg2_title';
+const tableLancamentoSelector = "#form3\\:tableLancamento_data > tr";
+const form3Selector = "#form3";
+const j_idt680Selector = "#form3\\:j_idt680 > span.ui-button-text.ui-c";
+const resultContainerSelector = "#resultContainer > div:nth-child(3)";
+const inscricaoInput2Selector = '#form1\\:inscricao';
+const contaRefInput2Selector = '#form1\\:j_idt473';
+const observacaoinput = '#form1\\:j_idt494';
+
+// Identificadores usados nas chamadas PrimeFaces.ab()
+const pfInscricaoId = "form1:inscricao";
+const pfContaRefId = "form1:j_idt473";
+const pfDlgEdicaoShow = "j_idt380:j_idt382";
 
 // Define as estilizações do widget em um objeto CSS
 var widgetStyles = {
@@ -195,61 +269,6 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
     $('body').append(myWidget);
 }
 
-// LISTAGEM COM TODOS OS IDT's
-
-// Colocar nomes dos anexos automaticamente
-const elementPairs = [
-    ['#formConfirmaAnexo\\:j_idt868 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt872'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
-    ['#formConfirmaAnexo\\:j_idt1787 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1791'],  // Anexo na tela de baixa OSC - ANEXO OSC
-    ['#formConfirmaAnexoEmail\\:j_idt2002 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2005'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
-    ['#formClienteConfirmaAnexo\\:j_idt618 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formClienteConfirmaAnexo\\:descricaoArquivo'],
-    ['#formConfirmaAnexo\\:j_idt749 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt752'],
-    ['#formCadastroAnexo\\:j_idt710 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt713'],
-];
-
-// Adiciona botões na função de REFATURAR CONTA.
-const contaTitleElement = document.querySelector('#j_idt687_title');
-// Adiciona botão na função de atualizar vencimento.
-const AttVencElement = document.querySelector('#j_idt665_title');
-// Text area da tela de atualizar vencimento de conta
-const textarea2idt = '#formVencimento\\:j_idt683';
-// Text area da tela de refaturamento
-const textareaidt = '#formAlteracaoConta\\:j_idt749';
-// Leitura da tela de refaturamento
-const leitidt = '#formAlteracaoConta\\:j_idt724';
-// botão de media no esgoto e leitura criada nao na tela de refaturamento.
-const mediaesgoto = '#formAlteracaoConta\\:j_idt740 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-const leituracriadanao = '#formAlteracaoConta\\:j_idt744 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-
-// Abrir anexos na tela de atendimento
-const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt656_data';
-// Tela de abrir anexos na tela de atendimento
-const prefix3 = 'abas:formAtendimentoAnexo:j_idt656:';
-const menuId3 = 'j_idt662_menu';
-const abrir3 = 'j_idt665';
-const prefix4 = 'abas:formAtendimentoAnexo:j_idt666:';
-const menuId4 = 'j_idt672_menu';
-const abrir4 = 'j_idt673';
-
-// Tela de abrir anexos na tela de baixa
-// Anexos do atendimento
-const prefix1 = 'formOsAnexoBean:abasAtendimento:j_idt1765:';
-const menuId1 = 'j_idt1771_menu';
-const abrir1 = 'j_idt1772';
-// Anexos da Ordem de Serviço
-const prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
-const menuId2 = 'j_idt1759_menu';
-const abrir2 = 'j_idt1762';
-
-// CheckBox do enviar email resposta
-const checkemail1 = 'formEnviarEmail:j_idt1811_input';
-const checkemail2 = 'formEnviarEmail:j_idt1813_input';
-const botaoemail = 'formEnviarEmail:j_idt1817';
-
-// Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuario = '#form1\\:j_idt518';
-const tagleitura = '#form1\\:j_idt520';
-const taganexar = '#form1\\:j_idt453_header';
 
 (function() {
     var checkExist = setInterval(function() {
@@ -904,6 +923,22 @@ async function waitForElementEnabled(selector, timeout = 30000) {
             throw new Error('Timeout waiting for element to be enabled');
         }
         await new Promise(resolve => setTimeout(resolve, 100)); // espera 100ms antes de tentar novamente
+    }
+}
+
+// Função para esperar um elemento ser clicável
+async function waitForClickable(selector, timeout = 30000) {
+    const startTime = new Date().getTime();
+    while (true) {
+        const now = new Date().getTime();
+        if (now - startTime > timeout) {
+            throw new Error("Timeout waiting for element to be clickable");
+        }
+        const element = document.querySelector(selector);
+        if (element && !element.disabled && getComputedStyle(element).display !== 'none') {
+            return element;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
 
@@ -1828,43 +1863,45 @@ function PopUpRefatCred() {
     }
 
     async function applyCredit() {
+
         console.log("Aplicando crédito");
         const { resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento, insc, descontoAgua, descontoEsgoto } = calculateBilling();
 
         // Simula o clique no menu Concessão de Crédito na Conta
-        PrimeFaces.ab({s:"j_idt380:j_idt382",u:"form1",onco:function(xhr,status,args){PF('dlgEdicao').show();}});
+        PrimeFaces.ab({s: pfDlgEdicaoShow, u: "form1", onco: function(xhr, status, args) { PF('dlgEdicao').show(); }});
 
         // Insere o valor da inscrição
-        const inscricaoInput = await waitForElement('#form1\\:inscricao');
+        const inscricaoInput = await waitForElement(inscricaoSelector);
         console.log(inscricaoInput);
         console.log(insc);
+
         // Dispara o evento valueChange diretamente via PrimeFaces
         PrimeFaces.ab({
-            s: "form1:inscricao",
+            s: pfInscricaoId,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: "form1:inscricao",
-            params: [{name: 'form1:inscricao', value: insc}]
+            p: pfInscricaoId,
+            params: [{name: pfInscricaoId, value: insc}]
         });
 
         // Insere o valor da contaRef
-        const contaRefInput = await waitForElement('#form1\\:j_idt473');
+        const contaRefInput = await waitForElement(contaRefSelector);
         console.log(contaRefInput);
         console.log(contaRef);
         PrimeFaces.ab({
-            s: "form1:j_idt473",
+            s: pfContaRefId,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: "form1:j_idt473",
-            params: [{name: 'form1:j_idt473', value: contaRef}]
+            p: pfContaRefId,
+            params: [{name: pfContaRefId, value: contaRef}]
         });
 
         // Simula o clique na lupa
-        PrimeFaces.ab({s:"form1:j_idt475",u:"form3"});
+        PrimeFaces.ab({s: lupaSelector, u: "form3"});
 
         // Espera o novo elemento aparecer
-        await waitForElement('dlg2_title');
+        await waitForElement(dlg2TitleSelector);
 
         // Aqui você precisaria de uma lógica para verificar a linha correta e clicar no checkbox e na opção PARCIAL
-        const rows = document.querySelectorAll("#form3\\:tableLancamento_data > tr");
+        const rows = document.querySelectorAll(tableLancamentoSelector);
 
         var descontosaguaaplicado = false;
 
@@ -1872,22 +1909,29 @@ function PopUpRefatCred() {
             rows.forEach(async (row, index) => {
                 const tarifaCell = row.cells[2].textContent;
                 if (tarifaCell.includes("TARIFA VARIAVEL DE AGUA")) {
-
                     console.log("Achei linha tarifa de agua!");
                     console.log(row);
 
                     // Checkbox
+                    /*
                     const checkboxDiv = row.querySelector("td:nth-child(1) > div.ui-chkbox > div.ui-chkbox-box");
                     if (checkboxDiv) {
-                        console.log("primeiro checkbox");
-                        console.log(checkboxDiv);
+                        console.log("primeiro checkbox: ", checkboxDiv);
                         checkboxDiv.click();  // Dispara o clique no div que simula a checkbox
                     }
+                    */
+
+                    const element = document.evaluate(`//*[@id="form3:tableLancamento_data"]/tr[${index+1}]/td/div/div[2]`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element) {
+                        element.click();
+                    } else {
+                        console.error('Elemento não encontrado para o índice:', index);
+                    }
+
                     // Selecionar a opção "Parcial"
                     try {
                         const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
-                        console.log("check parcial");
-                        console.log(radioParcial);
+                        console.log("check parcial: ", radioParcial);
                         radioParcial.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
                         console.log("O elemento radioParcial está desabilitado e não pode ser clicado.");
@@ -1895,9 +1939,9 @@ function PopUpRefatCred() {
                     }
 
                     // Inserir o valor do desconto na Água
-                    console.log("tentando colocar o desconto");
+                    console.log("tentando colocar o desconto de agua");
                     try {
-                        const descontoAguaInput = await waitForElementEnabled("input[id$='j_idt676']");
+                        const descontoAguaInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt676`);
                         console.log("desconto agua");
                         console.log(descontoAguaInput);
                         descontoAguaInput.value = descontoAgua;
@@ -1913,29 +1957,40 @@ function PopUpRefatCred() {
             descontosaguaaplicado = true;
         }
 
+        while(!descontosaguaaplicado){
+            // Espera ativa até que ambos os descontos sejam aplicados
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
         var descontosesgotoaplicado = false;
 
         if (descontoEsgoto != '0,00'){
             rows.forEach(async (row, index) => {
                 const tarifaCell = row.cells[2].textContent;
                 if (tarifaCell.includes("TARIFA VARIAVEL DE ESGOTO")) {
-
+                    // Código para aplicar descontos no esgoto
                     console.log("Achei linha tarifa de esgoto!");
                     console.log(row);
 
                     // Checkbox
+                    /*
                     const checkboxDiv2 = row.querySelector("td:nth-child(1) > div.ui-chkbox > div.ui-chkbox-box");
                     if (checkboxDiv2) {
-                        console.log("primeiro checkbox");
-                        console.log(checkboxDiv2);
+                        console.log("segundo checkbox: ", checkboxDiv2);
                         checkboxDiv2.click();  // Dispara o clique no div que simula a checkbox
+                    }
+                    */
+                    const element = document.evaluate(`//*[@id="form3:tableLancamento_data"]/tr[${index+1}]/td/div/div[2]`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element) {
+                        element.click();
+                    } else {
+                        console.error('Elemento não encontrado para o índice:', index);
                     }
 
                     // Selecionar a opção "Parcial"
                     try {
                         const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
-                        console.log("check parcial");
-                        console.log(radioParcial2);
+                        console.log("check parcial: ", radioParcial2);
                         radioParcial2.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
                         console.log("O elemento radioParcial está desabilitado e não pode ser clicado.");
@@ -1943,9 +1998,9 @@ function PopUpRefatCred() {
                     }
 
                     // Inserir o valor do desconto no Esgoto
-                    console.log("tentando colocar o desconto");
+                    console.log("tentando colocar o desconto de esgoto");
                     try {
-                        const descontoEsgotoInput = await waitForElementEnabled("input[id$='j_idt676']");
+                        const descontoEsgotoInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt676`);
                         console.log("desconto esgoto");
                         console.log(descontoEsgotoInput);
                         descontoEsgotoInput.value = descontoEsgoto;
@@ -1968,38 +2023,36 @@ function PopUpRefatCred() {
 
         console.log("descontos aplicados");
 
-        document.querySelector("#form3\\:j_idt680 > span.ui-button-text.ui-c").click();
+        document.querySelector(j_idt680Selector).click();
 
-        var resultado = document.querySelector("#resultContainer > div:nth-child(3)").innerText;
+        var resultado = document.querySelector(resultContainerSelector).innerText;
         console.log(resultado);
 
-        document.querySelector("#form1\\:j_idt494").value = resultado;
+        document.querySelector(observacaoinput).value = resultado;
 
-        var inscricaoInput2 = await waitForElement('#form1\\:inscricao');
+        var inscricaoInput2 = await waitForElement(inscricaoInput2Selector);
         console.log(inscricaoInput2);
         console.log(insc);
         // Dispara o evento valueChange diretamente via PrimeFaces
         PrimeFaces.ab({
-            s: "form1:inscricao",
+            s: pfInscricaoId,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: "form1:inscricao",
-            params: [{name: 'form1:inscricao', value: document.getElementById('insc').value}]
+            p: pfInscricaoId,
+            params: [{name: pfInscricaoId, value: document.getElementById('insc').value}]
         });
         inscricaoInput2.value = insc;
 
         // Insere o valor da contaRef
-        var contaRefInput2 = await waitForElement('#form1\\:j_idt473');
+        var contaRefInput2 = await waitForElement(contaRefInput2Selector);
         console.log(contaRefInput2);
         console.log(contaRef);
         PrimeFaces.ab({
-            s: "form1:j_idt473",
+            s: pfContaRefId,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: "form1:j_idt473",
-            params: [{name: 'form1:j_idt473', value: document.getElementById('contaRef').value}]
+            p: pfContaRefId,
+            params: [{name: pfContaRefId, value: document.getElementById('contaRef').value}]
         });
         contaRefInput2.value = contaRef;
-
-
     }
 
     function displayResults(data) {
