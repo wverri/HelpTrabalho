@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.50
+// @version     2.60
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -68,6 +68,9 @@ const botaoemail = 'formEnviarEmail:j_idt1817';
 const tagusuario = '#form1\\:j_idt518';
 const tagleitura = '#form1\\:j_idt520';
 const taganexar = '#form1\\:j_idt453_header';
+
+// Tela de Baixa, informações da OSC
+const logradouroidt = '#form1\\:obsPanel';
 
 // Aplicação de crédito na tela de crédito
 const inscricaoSelector = '#form1\\:inscricao';
@@ -251,6 +254,12 @@ myWidget.append(
     createButtonWithClick('Inq.Sem.Cons.', function(){ InqSemCons(); }),
     createButtonWithClick('Inq.Cons.Final', function(){ InqConsFinal(); }),
     createButtonWithClick('Corte ñ exec.', function(){ CorteNExec(); }),
+    createSectionTitle('--- NOVA LIGAÇÃO ---'),
+    createButtonWithClick('Falta Doc.Imovel e Termo', function(){ FaltaDocImovelTermo(); }),
+    createButtonWithClick('Falta Termo', function(){ FaltaTermo(); }),
+    createButtonWithClick('Debitos CPF', function(){ DebitosCPF(); }),
+    createButtonWithClick('Alt Titularidade', function(){ AltTitularidade(); }),
+    createButtonWithClick('Aberta OS de NovaLigação', function(){ AbertaOSNovaLigacao(); }),
     $('<div></div>').css({
     'font-size': '8px',
     'text-align': 'right',
@@ -1519,6 +1528,77 @@ function VazDepoisCavalete() { //Vaz depois cavalete
         }
     });
 };
+
+// ----------- NOVA LIGAÇÃO -----------
+function FaltaDocImovelTermo() { // Falta Documento do Imóvel e Termo
+    var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var logradouro = extractLogradouro();
+    var diag = 'Usuário(a) ' + titular + ' solicita nova ligação de água para o enderenço ' + logradouro + '. Porém não apresentou documento de propriedade/posse do imóvel completo e Termo de Solicitação de Serviços.';
+    var prov = 'Para solicitação de nova ligação de água/desmembramento, é necessário que o requerente apresente documento que comprove vínculo de propriedade/posse com o imóvel como IPTU, escritura ou cessão de direitos. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de nova ligação por terceiros.';
+    Titularidade(diag, prov);
+};
+
+function FaltaTermo() { // Falta Termo
+    var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var logradouro = extractLogradouro();
+    var diag = 'Usuário(a) ' + titular + ' solicita nova ligação de água para o enderenço ' + logradouro + '. Porém não apresentou Termo de Solicitação de Serviços preenchido e assinado.';
+    var prov = 'Para solicitação de nova ligação de água/desmembramento, é necessário que o requerente apresente documento que comprove vínculo de propriedade/posse com o imóvel como IPTU, escritura ou cessão de direitos. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de nova ligação por terceiros.';
+    Titularidade(diag, prov);
+};
+
+function DebitosCPF() { // Debitos CPF
+    var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var logradouro = extractLogradouro();
+    var diag = 'Usuário(a) ' + titular + ' solicita nova ligação de água para o enderenço ' + logradouro + '. Porém possui débitos junto a CAESB vinculados ao seu CPF, sendo necessário realizar o pagamento ou negociação dos débitos para continuidade da solicitação.';
+    var prov = 'Para solicitação de nova ligação de água/desmembramento, é necessário que o requerente apresente documento que comprove vínculo de propriedade/posse com o imóvel como IPTU, escritura ou cessão de direitos. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de nova ligação por terceiros.';
+    Titularidade(diag, prov);
+};
+
+function AltTitularidade() { // Alteração para Titularidade errada
+    var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var logradouro = extractLogradouro();
+    var diag = 'Usuário(a) ' + titular + ' solicita nova ligação de água para o enderenço ' + logradouro + '. Porém local já possui ligação de água, portanto deve ser aberta como "Alteração de Titularidade" para correto preenchimento do Termo de Solicitação de Serviço.';
+    var prov = 'Para solicitação de alteração de titularidade de conta, é necessário que o requerente apresente documento que comprove vínculo com o imóvel, seja de propriedade como IPTU, escritura ou cessão de direitos, seja de locação com contrato de locação tendo firma reconhecida em cartório de locador e locatário ou assinatura digital válida. O documento e a solicitação devem estar em nome daquele que ficará como titular financeiro pelo imóvel e este não pode ter débitos em aberto junto à CAESB. Vale ressaltar que não é permitida a solicitação de alteração por terceiros ou por aqueles que já são os atuais titulares da conta.';
+    Titularidade(diag, prov);
+};
+
+function AbertaOSNovaLigacao() { // Aberta OS para Nova Ligação
+    var titular = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[3]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
+    var logradouro = extractLogradouro();
+    var protocolo = prompt('Informe o protocolo da OS de novaligação/desmembramento: ');
+    var diag = 'Usuário(a) ' + titular + ' solicita nova ligação de água para o enderenço ' + logradouro + '.';
+    var prov = 'Sua solicitação de nova ligação/desmembramento foi aprovada e poderá ser acompanhada pelo protocolo nº ' + protocolo +'.';
+    Titularidade(diag, prov);
+};
+
+function extractLogradouro() {
+    try {
+        // Select the element with the given CSS selector
+        const element = document.querySelector(logradouroidt);
+        if (!element) {
+            console.error('Element not found');
+            return;
+        }
+
+        // Extract the text content from the element
+        const textContent = element.textContent;
+        console.log('Text content:', textContent);
+
+        // Use regex to extract the Logradouro part
+        const logradouroMatch = textContent.match(/;\s*Logradouro:\s*([^;]+);/);
+        if (logradouroMatch && logradouroMatch[1]) {
+            const logradouro = logradouroMatch[1].trim();
+            console.log('Extracted Logradouro:', logradouro);
+            return logradouro;
+        } else {
+            console.error('Logradouro not found in the text');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error extracting Logradouro:', error);
+        return null;
+    }
+}
 
 
 function AbrirAnexos() { //Abrir todos os anexos.
