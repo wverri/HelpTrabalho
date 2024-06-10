@@ -3,13 +3,56 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     1.18
+// @version     3.00
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
 // ==/UserScript==
 
 var version = GM_info.script.version;
+
+
+function getDynamicIdByText(startingPattern, targetText, modif=0, targetIndex=0) {
+    const elements = document.querySelectorAll('[id^="' + startingPattern + '"]');
+    let matchedIds = [];
+
+    for (const element of elements) {
+        const id = element.id;
+        const elementText = element.textContent.trim();
+
+        if (id && elementText.includes(targetText)) {
+            matchedIds.push({id, elementText});
+        }
+    }
+
+    // Se targetIndex for -1, considera o último elemento
+    if (targetIndex === -1) {
+        targetIndex = matchedIds.length - 1;
+    }
+
+    if (targetIndex >= 0 && targetIndex < matchedIds.length) {
+        const { id } = matchedIds[targetIndex];
+        if (modif != 0) {
+            // Extrai o número do ID atual (assumindo que o formato é "j_idtNNN")
+            let currentNumber = parseInt(id.match(/\d+/)[0]);
+            // Incrementa o número para obter o próximo número
+            const nextNumber = currentNumber + modif;
+            const regex = new RegExp("(\\d+)(?!.*\\d)");
+            const idnew = id.replace(regex, nextNumber);
+            return idnew;
+        }
+        return id;
+    }
+
+    return null; // Retorna null se nenhum elemento correspondente for encontrado no índice especificado
+}
+
+function formatCSSSelector(id) {
+    if (id) {
+        return '#' + id.replace(/(:|\.|\[|\]|,|=|@)/g, "\\$1");
+    }
+    return null;
+}
 
 // LISTAGEM COM TODOS OS IDT's
 // IDTs da tela de baixa
@@ -18,26 +61,44 @@ var leit = 'form:leituraVistoria';
 var lacr = 'form:lacreInstaladoVistoria';
 var usu = 'form:nomeContatoVistoria';
 
-var resposta = '#form\\:j_idt809 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+const checkemaildiagID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Diagnóstico', 3);
+const checkemailprovID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Providência', 5);
+const checkemailgerarID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Gerar texto do Email', 9);
 
-var diagnostico = '#form\\:j_idt814';
-var providencia = '#form\\:j_idt816';
+var checkemaildiag = (formatCSSSelector(checkemaildiagID) + ' > div:nth-child(2) > span:nth-child(1)');
+var checkemailprov = (formatCSSSelector(checkemailprovID) + ' > div:nth-child(2) > span:nth-child(1)');
+var checkemailgerar = (formatCSSSelector(checkemailgerarID));
 
-var vazcorrigidosim = '#form\\:j_idt796 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-var vazvisivel = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-var vaznaovisivel = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-var vazcoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-var vaznaocoletado = '#form\\:j_idt799 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
-var usuario = '#form\\:nomeContatoVistoria';
-var naoseaplica = '#form\\:naoSeAplicaVistoria > div:nth-child(2) > span:nth-child(1)';
 
-var checkemaildiag = '#formEnviarEmail\\:j_idt2584 > div:nth-child(2) > span:nth-child(1)';
-var checkemailprov = '#formEnviarEmail\\:j_idt2586 > div:nth-child(2) > span:nth-child(1)';
-var checkemailgerar = '#formEnviarEmail\\:j_idt2590';
+const respostaID = getDynamicIdByText('form\\:j_idt', 'Sim', 0, -1);
+const diagnosticoID = getDynamicIdByText('form\\:j_idt', 'Diagnóstico*:', 1, -1);
+const providenciaID = getDynamicIdByText('form\\:j_idt', 'Providência*:', 1, -1);
+
+var resposta = (formatCSSSelector(respostaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+var diagnostico = formatCSSSelector(diagnosticoID);
+var providencia = formatCSSSelector(providenciaID);
+ 
+const vazcorrigidosimID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',2,-1);
+const vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
+const vaznaovisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
+const vazcoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
+const vaznaocoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
+
+var vazcorrigidosim = (formatCSSSelector(vazcorrigidosimID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+var vazvisivel = (formatCSSSelector(vazvisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+var vaznaovisivel = (formatCSSSelector(vaznaovisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+var vazcoletado = (formatCSSSelector(vazcoletadoID) + '> tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+var vaznaocoletado = (formatCSSSelector(vaznaocoletadoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+
+
+const nomeANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Arquivo selecionado:');
+const descricaoANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Descrição do arquivo:*',1);
 
 var elementPairs = [
-    ['#formConfirmaAnexoVistoriaEmail\\:j_idt2478 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoVistoriaEmail\\:j_idt2481']
+    [formatCSSSelector(nomeANEXO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXO)]
 ];
+
+const naoseaplica = '#form\\:naoSeAplicaVistoria > div:nth-child(2) > span:nth-child(1)';
 
 
 // Define as estilizações do widget em um objeto CSS
@@ -164,7 +225,7 @@ myWidget.append(
     createButtonWithClick('Usuario Orientado Vazamento', function(){ UsuarioOrientadoVazamento(); }),
     createButtonWithClick('Sem Vazam. Improcedente', function(){ SemVazamImprocedente(); }),
     createButtonWithClick('Vazamento Interno Ñ Vis/Col', function(){ VazInternNVisCol(); }),
-    createButtonWithClick('Leitura informada pelo usuario', function(){ LeituraInformada(); }),
+    //createButtonWithClick('Leitura informada pelo usuario', function(){ LeituraInformada(); }),
     createButtonWithClick('Vazamento Coberto', function(){ VazCoberto(); }),
     createButtonWithClick('Erro de leitura', function(){ ErroLeitura(); }),
     createButtonWithClick('Agendamento de leitura', function(){ AgendLeitura(); }),
@@ -533,7 +594,6 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
     modal.querySelector('#opcao1').addEventListener('click', function() {
         opcao = 'duasnaolidas';
         modal.remove();
-        HoraAtual();
         var diag = 'Conforme informado no termo de autoleitura, em caso de não informação de autoleitura por dois meses seguidos, usuário é automaticamente descadastrado do sistema de autoleitura.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
         Revisao(0,0,0,diag,prov);
@@ -542,7 +602,6 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
     modal.querySelector('#opcao2').addEventListener('click', function() {
         opcao = 'abril';
         modal.remove();
-        HoraAtual();
         var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
             'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
@@ -552,7 +611,6 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
     modal.querySelector('#opcao3').addEventListener('click', function() {
         opcao = 'outubro';
         modal.remove();
-        HoraAtual();
         var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
             'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
