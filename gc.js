@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     2.60
+// @version     3.00
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -13,10 +13,181 @@
 
 var version = GM_info.script.version;
 
+// Função para obter ID dinâmico com base no texto
+function getDynamicIdByText(startingPattern, targetText, modif, targetIndex=0) {
+    const elements = document.querySelectorAll('[id^="' + startingPattern + '"]');
+    let matchedIds = [];
+
+    for (const element of elements) {
+        const id = element.id;
+        const elementText = element.textContent.trim();
+
+        if (id && elementText.includes(targetText)) {
+            matchedIds.push({id, elementText});
+        }
+    }
+
+    // Se targetIndex for -1, considera o último elemento
+    if (targetIndex === -1) {
+        targetIndex = matchedIds.length - 1;
+    }
+
+    if (targetIndex >= 0 && targetIndex < matchedIds.length) {
+        const { id } = matchedIds[targetIndex];
+        if (modif > 0) {
+            // Extrai o número do ID atual (assumindo que o formato é "j_idtNNN")
+            let currentNumber = parseInt(id.match(/\d+/)[0]);
+            // Incrementa o número para obter o próximo número
+            const nextNumber = currentNumber + modif;
+            const regex = new RegExp("(\\d+)(?!.*\\d)");
+            const idnew = id.replace(regex, nextNumber);
+            return idnew;
+        }
+        return id;
+    }
+
+    return null; // Retorna null se nenhum elemento correspondente for encontrado no índice especificado
+}
+
+function formatCSSSelector(id) {
+    if (id) {
+        return '#' + id.replace(/(:|\.|\[|\]|,|=|@)/g, "\\$1");
+    }
+    return null;
+}
+
+function safeQuerySelector(selector) {
+    try {
+        return document.querySelector(selector);
+    } catch (e) {
+        console.error('Seletor inválido:', selector, e);
+        return null; // Retorna null se o seletor for inválido
+    }
+}
+
+function extractIds(tbodyidtID, mod) {
+    let ids = {}; 
+    const parts = tbodyidtID.split(':');
+    const j_idtPart = parts.find(part => part.startsWith('j_idt'));
+    if (j_idtPart) {
+        const number = j_idtPart.match(/\d+/)[0];
+        ids['prefix'] = parts.slice(0, parts.indexOf(j_idtPart) + 1).join(':');
+        ids['menuId'] = parts[4];
+        ids['abrir'] = 'j_idt' + (parseInt(number) + mod);
+    }
+    return ids;
+}
+
+
+// Exemplo de uso da função getDynamicIdByText
+const contaTitleElementID = getDynamicIdByText('j_idt', 'Conta', 0);
+const AttVencElementID = getDynamicIdByText('j_idt', 'Alterar Data Vencimento', 0);
+const textarea2idtID = getDynamicIdByText('formVencimento\\:j_idt', 'Justificativa: *', 1);
+const textareaidtID = getDynamicIdByText('formAlteracaoConta\\:j_idt', 'Justificativa: *', 1);
+const leitidtID = getDynamicIdByText('formAlteracaoConta\\:j_idt', 'Leitura: *', 2);
+const esgotomediaID = getDynamicIdByText('formAlteracaoConta:j_idt', 'Esgoto pela média?', 1);
+const leituracriadanaoID = getDynamicIdByText('formAlteracaoConta:j_idt', 'Leitura Criada:', 1);
+
+// Substitua os IDs hardcoded nos seletores por essas variáveis
+const contaTitleElement = safeQuerySelector('#' + contaTitleElementID + '_title');
+const AttVencElement = safeQuerySelector('#' + AttVencElementID + '_title');
+const textarea2idt = formatCSSSelector(textarea2idtID);
+const textareaidt = formatCSSSelector(textareaidtID);
+const leitidt = formatCSSSelector(leitidtID);
+const mediaesgoto = (formatCSSSelector(esgotomediaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+const leituracriadanao = (formatCSSSelector(leituracriadanaoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+
+// CheckBox do enviar email resposta
+const checkemail1ID = getDynamicIdByText('formEnviarEmail:', 'Diagnóstico', 3);
+const checkemail2ID = getDynamicIdByText('formEnviarEmail:', 'Providência', 5);
+const botaoemailID = getDynamicIdByText('formEnviarEmail:', 'Gerar texto do Email', 9);
+
+const checkemail1 = (checkemail1ID + '_input');
+const checkemail2 = (checkemail2ID + '_input');
+const botaoemail = botaoemailID;
+
+// Tela de Baixa - usuário, leitura e titulo de anexar.
+const tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS:', 1, 3);
+const tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro:', 1, 3);
+const taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
+
+const tagusuario = formatCSSSelector(tagusuarioID);
+const tagleitura = formatCSSSelector(tagleituraID);
+const taganexar = (formatCSSSelector(taganexarID) + '_header');
+
+// Tela de abrir anexos na tela de baixa
+// Anexos da OS
+let anexoOSID, idsOS, prefix2, menuId2, abrir2;
+/* anexoOSID = getDynamicIdByText('formOsAnexoBean:abasAtendimento:tableAtendimento:', 'Download', 0);
+if (anexoOSID) {
+    idsOS = extractIds(anexoOSID, 3);
+    prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
+    menuId2 = idsOS['menuId'];
+    abrir2 = idsOS['abrir'];
+} */
+// Anexos do atendimento
+let anexoatendimentoID, idsAT, prefix1, menuId1, abrir1;
+/* anexoatendimentoID = getDynamicIdByText('formOsAnexoBean:abasAtendimento', 'Download', 0);
+if (anexoatendimentoID) {
+    idsAT = extractIds(anexoatendimentoID, 7);
+    prefix1 = idsAT['prefix'];
+    menuId1 = idsAT['menuId'];
+    abrir1 = idsAT['abrir'];
+} */
+
+// Abrir anexos na tela de atendimento
+let tbodyidtID, tbodyidt, prefix3, menuId3, abrir3;
+/* tbodyidtID = getDynamicIdByText('abas:formAtendimentoAnexo', 'Download', 0);
+if (tbodyidtID){
+    const ids = extractIds(tbodyidtID, 9); // modificador de +9 para o 'abrir'
+    tbodyidt = (formatCSSSelector(ids['prefix']) + '_data');
+    const prefix3 = ids['prefix'];
+    const menuId3 = ids['menuId'];
+    const abrir3 = ids['abrir'];
+} */
+
+let tbodyidtID2, tbodyidt2, prefix4, menuId4, abrir4;
+/* tbodyidtID2 = getDynamicIdByText('abas:formAtendimentoAnexo', 'Download', 0, -1); // ultimo elemento da lista
+if (tbodyidtID2){
+    const ids2 = extractIds(tbodyidtID2, 7); // modificador de +9 para o 'abrir'
+    const tbodyidt2 = (formatCSSSelector(ids2['prefix']) + '_data');
+    const prefix4 = ids2['prefix'];
+    const menuId4 = ids2['menuId'];
+    const abrir4 = ids2['abrir'];
+} */
+
+const nomeANEXOatendimentoOSC = getDynamicIdByText('formConfirmaAnexo\\:j_idt', 'Arquivo enviado:', -1);
+const descricaoANEXOatendimentoOSC = getDynamicIdByText('formConfirmaAnexo\\:j_idt', 'Descrição: *');
+
+const nomeANEXObaixaOSC = getDynamicIdByText('formConfirmaAnexo\\:j_idt', 'Arquivo enviado:');
+const descricaoANEXObaixaOSC = getDynamicIdByText('formConfirmaAnexo\\:j_idt', 'Descrição: *', 1);
+
+const nomeANEXObaixaATENDIMENTO = getDynamicIdByText('formConfirmaAnexoEmail\\:j_idt', 'Arquivo selecionado:');
+const descricaoANEXObaixaATENDIMENTO = getDynamicIdByText('formConfirmaAnexoEmail\\:j_idt', 'Descrição do arquivo:', 1);
+
+const nomeANEXOcliente = getDynamicIdByText('formClienteConfirmaAnexo', 'Arquivo selecionado:', 0, 1);
+const descricaoANEXOcliente = '#formClienteConfirmaAnexo\\:descricaoArquivo';
+
+const nomeANEXOclienteimovel = getDynamicIdByText('formConfirmaAnexo\\:j_idt', '', 0, 0);
+const descricaoANEXOclienteimovel = getDynamicIdByText('formConfirmaAnexo\\:j_idt', 'Descrição do arquivo:', 1);
+
+const nomeANEXOcadastro = getDynamicIdByText('formCadastroAnexo\\:j_idt', 'Arquivo:');
+const descricaoANEXOcadastro = getDynamicIdByText('formCadastroAnexo\\:j_idt', 'Descrição:*', 1);
+
+const elementPairs = [
+    [formatCSSSelector(nomeANEXOatendimentoOSC) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOatendimentoOSC)],
+    [formatCSSSelector(nomeANEXObaixaOSC) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXObaixaOSC)],
+    [formatCSSSelector(nomeANEXObaixaATENDIMENTO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXObaixaATENDIMENTO)],
+    [formatCSSSelector(nomeANEXOcliente) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', descricaoANEXOcliente],
+    [formatCSSSelector(nomeANEXOclienteimovel) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOclienteimovel)],
+    [formatCSSSelector(nomeANEXOcadastro) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOcadastro)]
+]
+
+
 // LISTAGEM COM TODOS OS IDT's
 
 // Colocar nomes dos anexos automaticamente
-const elementPairs = [
+/* const elementPairs = [
     ['#formConfirmaAnexo\\:j_idt868 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt872'],  // Anexo na tela Atendimento da Ordem de serviço (Anexos do Atendimento)
     ['#formConfirmaAnexo\\:j_idt1787 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt1791'],  // Anexo na tela de baixa OSC - ANEXO OSC
     ['#formConfirmaAnexoEmail\\:j_idt2002 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexoEmail\\:j_idt2005'],  // ANEXO DA BAIXA DA OSC - ATENDIMENTO
@@ -24,11 +195,12 @@ const elementPairs = [
     ['#formConfirmaAnexo\\:j_idt749 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', '#formConfirmaAnexo\\:j_idt752'],
     ['#formCadastroAnexo\\:j_idt710 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)', '#formCadastroAnexo\\:j_idt713'],
 ];
-
+ */
+/*  Está sendo usando o getDynamicIdByText acima
 // Adiciona botões na função de REFATURAR CONTA.
-const contaTitleElement = document.querySelector('#j_idt687_title');
+const contaTitleElement = safeQuerySelector('#j_idt687_title');
 // Adiciona botão na função de atualizar vencimento.
-const AttVencElement = document.querySelector('#j_idt665_title');
+const AttVencElement = safeQuerySelector('#j_idt665_title');
 // Text area da tela de atualizar vencimento de conta
 const textarea2idt = '#formVencimento\\:j_idt683';
 // Text area da tela de refaturamento
@@ -38,6 +210,17 @@ const leitidt = '#formAlteracaoConta\\:j_idt724';
 // botão de media no esgoto e leitura criada nao na tela de refaturamento.
 const mediaesgoto = '#formAlteracaoConta\\:j_idt740 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
 const leituracriadanao = '#formAlteracaoConta\\:j_idt744 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)';
+
+// CheckBox do enviar email resposta
+const checkemail1 = 'formEnviarEmail:j_idt1811_input';
+const checkemail2 = 'formEnviarEmail:j_idt1813_input';
+const botaoemail = 'formEnviarEmail:j_idt1817';
+
+// Tela de Baixa - usuário, leitura e titulo de anexar.
+const tagusuario = '#form1\\:j_idt518';
+const tagleitura = '#form1\\:j_idt520';
+const taganexar = '#form1\\:j_idt453_header';
+ 
 
 // Abrir anexos na tela de atendimento
 const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt656_data';
@@ -58,19 +241,7 @@ const abrir1 = 'j_idt1772';
 const prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
 const menuId2 = 'j_idt1759_menu';
 const abrir2 = 'j_idt1762';
-
-// CheckBox do enviar email resposta
-const checkemail1 = 'formEnviarEmail:j_idt1811_input';
-const checkemail2 = 'formEnviarEmail:j_idt1813_input';
-const botaoemail = 'formEnviarEmail:j_idt1817';
-
-// Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuario = '#form1\\:j_idt518';
-const tagleitura = '#form1\\:j_idt520';
-const taganexar = '#form1\\:j_idt453_header';
-
-// Tela de Baixa, informações da OSC
-const logradouroidt = '#form1\\:obsPanel';
+*/
 
 // Aplicação de crédito na tela de crédito
 const inscricaoSelector = '#form1\\:inscricao';
@@ -285,7 +456,7 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         if (window.location.href.includes('app/atendimento/os/baixa')) {
 
             // Verifica se o elemento #dlgEnviarEmail1_title está presente
-            var dlgEnviarEmailElement = document.querySelector('html body div#dlgEnviarEmail1.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-shadow.ui-hidden-container.ui-dialog-absolute.ui-draggable[aria-hidden="false"]');
+            var dlgEnviarEmailElement = safeQuerySelector('html body div#dlgEnviarEmail1.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-shadow.ui-hidden-container.ui-dialog-absolute.ui-draggable[aria-hidden="false"]');
             if (dlgEnviarEmailElement) {
                 // Verifica se os checkboxes estão marcados
                 var checkbox1 = document.getElementById(checkemail1);
@@ -311,66 +482,121 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
             }
         }
 
-
         // Botão de Abrir Anexos na tela de Atendimento
-        const tabElement = document.querySelector('li.ui-state-default.ui-corner-top.ui-tabs-selected.ui-state-active[aria-selected="true"]');
-        const tbody = document.querySelector(tbodyidt);
+        if (window.location.href.includes('app/atendimento/principal/atendimentoVisualizacao')) {
+            
+            // Pegar todos os IDT's
+            tbodyidtID = getDynamicIdByText('abas:formAtendimentoAnexo', 'Download', 0);
+            if (tbodyidtID){
+                const ids = extractIds(tbodyidtID, 9); // modificador de +9 para o 'abrir'
+                tbodyidt = (formatCSSSelector(ids['prefix']) + '_data');
+                prefix3 = ids['prefix'] + ':';
+                menuId3 = ids['menuId'];
+                abrir3 = ids['abrir'];
+            }
 
-        if (tabElement && (!tabElement.nextSibling || tabElement.nextSibling.nodeName !== 'BUTTON') && tbody ) { //
-            console.log('Entrou');
+            tbodyidtID2 = getDynamicIdByText('abas:formAtendimentoAnexo', 'Download', 0, -1); // ultimo elemento da lista
+            if (tbodyidtID2){
+                const ids2 = extractIds(tbodyidtID2, 7); // modificador de +9 para o 'abrir'
+                tbodyidt2 = (formatCSSSelector(ids2['prefix']) + '_data');
+                prefix4 = ids2['prefix'] + ':';
+                menuId4 = ids2['menuId'];
+                abrir4 = ids2['abrir'];
+            }
 
-            // Cria um botão
-            var button = document.createElement('button');
-            button.textContent = 'Abrir todos os anexos';
-            button.addEventListener('click', function() {
-                AbrirAnexosAtendimento();
-            });
+            // Verificar e adicionar botão
+            const tabElement = safeQuerySelector('li.ui-state-default.ui-corner-top.ui-tabs-selected.ui-state-active[aria-selected="true"]');
+            const tbody = safeQuerySelector(tbodyidt);
 
-            // Aplica estilos ao botão
-            button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
+            if (tabElement && (!tabElement.nextSibling || tabElement.nextSibling.nodeName !== 'BUTTON') && tbody ) { //
+                console.log('Entrou');
 
-            // Insere o botão após o elemento <li>
-            tabElement.parentNode.insertBefore(button, tabElement.nextSibling);
+                // Cria um botão
+                var button = document.createElement('button');
+                button.textContent = 'Abrir todos os anexos';
+                button.addEventListener('click', function() {
+                    AbrirAnexosAtendimento();
+                });
 
+                // Aplica estilos ao botão
+                button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
+
+                // Insere o botão após o elemento <li>
+                tabElement.parentNode.insertBefore(button, tabElement.nextSibling);
+
+            }
         }
 
         // Adiciona botão de abrir anexos na tela de ANEXOS - BAIXA
-        const baixaElement = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelArquivos_header");
-        const baixaElement2 = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelAtendimentoArquivos_header");
-        if (baixaElement && (countElements(prefix2, menuId2, 20) > 0) && (!baixaElement.nextSibling || baixaElement.nextSibling.nodeName !== 'BUTTON')) {
-            console.log('Botão anexos tela baixa');
-            // Cria um botão
-            var button = document.createElement('button');
-            button.textContent = 'Abrir todos os anexos';
-            button.addEventListener('click', function() {
-                event.preventDefault();
-                AbrirAnexos();
-            });
+        if (window.location.href.includes('app/atendimento/os/baixa')) {
 
-            // Aplica estilos ao botão
-            button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
+            // console.log('Verificar anexos da OSC:');
+            // Anexos da OSC
+            anexoOSID = getDynamicIdByText('formOsAnexoBean:abasAtendimento:tableAtendimento:', 'Download', 0);
+            if (anexoOSID) {
+                idsOS = extractIds(anexoOSID, 3);
+                prefix2 = 'formOsAnexoBean:abasAtendimento:tableAtendimento:';
+                menuId2 = idsOS['menuId'];
+                abrir2 = idsOS['abrir'];
+            }
+            // console.log(prefix2);
+            // console.log(menuId2);
+            // console.log(abrir2);
 
-            // Insere o botão após o elemento <li>
-            baixaElement.parentNode.insertBefore(button, baixaElement.nextSibling);
+            // console.log('Verificar anexos do atendimento:');
+            // Anexos do atendimento
+            anexoatendimentoID = getDynamicIdByText('formOsAnexoBean:abasAtendimento', 'Download', 0);
+            if (anexoatendimentoID) {
+                idsAT = extractIds(anexoatendimentoID, 7);
+                prefix1 = (idsAT['prefix'] + ':');
+                menuId1 = idsAT['menuId'];
+                abrir1 = idsAT['abrir'];
+            }
+            // console.log(prefix1);
+            // console.log(menuId1);
+            // console.log(abrir1);
+
+
+            const baixaElement = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelArquivos_header");            
+            
+            if (baixaElement && (countElements(prefix2, menuId2, 20) > 0) && (!baixaElement.nextSibling || baixaElement.nextSibling.nodeName !== 'BUTTON')) {
+                console.log('Botão anexos tela baixa - OSC');
+                // Cria um botão
+                var button = document.createElement('button');
+                button.textContent = 'Abrir todos os anexos';
+                button.addEventListener('click', function() {
+                    event.preventDefault();
+                    AbrirAnexos();
+                });
+
+                // Aplica estilos ao botão
+                button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
+
+                // Insere o botão após o elemento <li>
+                baixaElement.parentNode.insertBefore(button, baixaElement.nextSibling);
+            }
+
+            const baixaElement2 = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelAtendimentoArquivos_header");
+
+            if (baixaElement2 && (countElements(prefix1, menuId1, 20) > 0) && (!baixaElement2.nextSibling || baixaElement2.nextSibling.nodeName !== 'BUTTON')) {
+                console.log('Botão anexos tela baixa - Atendimento');
+                // Cria um botão
+                var button = document.createElement('button');
+                button.textContent = 'Abrir todos os anexos';
+                button.addEventListener('click', function() {
+                    event.preventDefault();
+                    AbrirAnexos();
+                });
+
+                // Aplica estilos ao botão
+                button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
+
+                // Insere o botão após o elemento <li>
+                baixaElement2.parentNode.insertBefore(button, baixaElement2.nextSibling);
+            }
         }
-        if (baixaElement2 && (countElements(prefix1, menuId1, 20) > 0) && (!baixaElement2.nextSibling || baixaElement2.nextSibling.nodeName !== 'BUTTON')) {
-            console.log('Botão anexos tela baixa');
-            // Cria um botão
-            var button = document.createElement('button');
-            button.textContent = 'Abrir todos os anexos';
-            button.addEventListener('click', function() {
-                event.preventDefault();
-                AbrirAnexos();
-            });
 
-            // Aplica estilos ao botão
-            button.style.cssText = 'background-color: #0b61a4; color: white; border: none; padding: 5px 10px; text-align: center; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 5px; margin-left: 10px;';
-
-            // Insere o botão após o elemento <li>
-            baixaElement2.parentNode.insertBefore(button, baixaElement2.nextSibling);
-        }
-
-        const targetElement = document.querySelector('#form1\\:dadosBaixa_header');
+        const targetElement = safeQuerySelector('#form1\\:dadosBaixa_header');
         if (targetElement && (!targetElement.nextSibling || targetElement.nextSibling.nodeName !== 'BUTTON')) {
             const button = document.createElement('button');
             button.textContent = 'Data Atual';
@@ -386,8 +612,8 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         }
 
         for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
-            const confirmElement = document.querySelector(confirmElementSelector);
-            const confirmElementValue = document.querySelector(confirmElementValueSelector);
+            const confirmElement = safeQuerySelector(confirmElementSelector);
+            const confirmElementValue = safeQuerySelector(confirmElementValueSelector);
 
             if (confirmElement && confirmElementValue && confirmElementValue.value === '') {
                 const fileName = confirmElement.innerText.trim();
@@ -397,7 +623,6 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         }
 
         // Adiciona botões na função de refaturar conta.
-        //const contaTitleElement = document.querySelector('#j_idt674_title');
         if (contaTitleElement && (!contaTitleElement.nextSibling || contaTitleElement.nextSibling.nodeName !== 'BUTTON') && contaTitleElement.innerText.trim() === 'Conta') {
             const createButton = (text, clickHandler) => {
                 const button = document.createElement('button');
@@ -421,7 +646,6 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         }
 
         // Adiciona botão na função de atualizar vencimento.
-        //const AttVencElement = document.querySelector('#j_idt655_title');
         if (AttVencElement && (!AttVencElement.nextSibling || AttVencElement.nextSibling.nodeName !== 'BUTTON') && AttVencElement.innerText.trim() === 'Alterar Data Vencimento') {
             const createButton = (text, clickHandler) => {
                 const button = document.createElement('button');
@@ -439,7 +663,7 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         if (window.location.href.includes('app/atendimento/os/baixa')) {
             if ($('#ui-datepicker-div').is(':visible')) {
                 // Verifique se o campo de texto já foi adicionado
-                var sliderHandles = document.querySelectorAll(".ui-slider-handle");
+                var sliderHandles = safeQuerySelectorAll(".ui-slider-handle");
                 var textField = sliderHandles[0].nextSibling;
                 if (!textField || textField.tagName !== 'INPUT') {
                     // Crie o campo de texto ao lado do elemento de slider
@@ -553,7 +777,7 @@ function AttVenc() {
         datarefat.value = newDate;
     }
     var OSC = prompt('Digite o número da OSC de revisão improcedente: ');
-    const textarea2 = document.querySelector(textarea2idt);
+    const textarea2 = safeQuerySelector(textarea2idt);
     if (textarea2) {
         textarea2.value = `Revisão improcedente conforme OSC ${OSC}. Atualizado vencimento.`;
     }
@@ -584,14 +808,14 @@ function updateVencimento() {
 }
 
 function EsgMda() {
-    const esgMDA = document.querySelector(mediaesgoto);
+    const esgMDA = safeQuerySelector(mediaesgoto);
     if (esgMDA) {
         esgMDA.click();
     }
 }
 
 function LeituraCriadaN() {
-    const leitcriada = document.querySelector(leituracriadanao);
+    const leitcriada = safeQuerySelector(leituracriadanao);
     if (leitcriada) {
         leitcriada.click();
     }
@@ -648,14 +872,14 @@ function refatVazamento() {
         const oscNumero = modal.querySelector('#oscNumeroInput').value;
 
         if (refatLS && qualLS) {
-            document.querySelector('li[data-label="Ocorrência Resolvida (91)"]').click();
-            document.querySelector('li[data-label="Limite Superior"]').click();
+            safeQuerySelector('li[data-label="Ocorrência Resolvida (91)"]').click();
+            safeQuerySelector('li[data-label="Limite Superior"]').click();
         }
         if (refatEsgoto) {
             EsgMda();
         }
 
-        const textarea = document.querySelector(textareaidt);
+        const textarea = safeQuerySelector(textareaidt);
         console.log(textarea);
         if (textarea) {
             if (refatLS && qualLS && refatEsgoto) {
@@ -679,11 +903,11 @@ function refatCavalete() {
     updateVencimento();
     var OSC = prompt('Digite o número da OSC de vazamento no cavalete sanado pela CAESB: ');
     var data = prompt('Digite a data do vazamento sanado no formato dd/mm/aaaa:');
-    document.querySelector('li[data-label="Vazamento Após o Hidrômetro (71)"]').click();
-    document.querySelector('li[data-label="Média"]').click();
+    safeQuerySelector('li[data-label="Vazamento Após o Hidrômetro (71)"]').click();
+    safeQuerySelector('li[data-label="Média"]').click();
     EsgMda();
     LeituraCriadaN();
-    const textarea = document.querySelector(textareaidt);
+    const textarea = safeQuerySelector(textareaidt);
     if (textarea) {
         textarea.value = `Vazamento após o hidrômetro sanado pela CAESB em ${data} pela OSM ${OSC}. Refat p/ média de consumo.`;
     }
@@ -693,13 +917,13 @@ function agendLeitura() {
     var leitura = prompt('Digite a leitura no dia da vistoria: ');
     var data = prompt('Digite a data da vistoria informada no formato dd/mm/aaaa \nou deixe em branco se for a mesma da leitura:');
     var OSC = prompt('Digite o número da OSC de agendamento: ');
-    document.querySelector('li[data-label="Ocorrência Resolvida (91)"]').click();
-    document.querySelector('li[data-label="Medido"]').click();
-    const leit = document.querySelector(leitidt);
+    safeQuerySelector('li[data-label="Ocorrência Resolvida (91)"]').click();
+    safeQuerySelector('li[data-label="Medido"]').click();
+    const leit = safeQuerySelector(leitidt);
     leit.value = leitura;
     const dataleitura = document.getElementById('formAlteracaoConta:dataLeitura_input');
     if (dataleitura) { dataleitura.value = data; }
-    const textarea = document.querySelector(textareaidt);
+    const textarea = safeQuerySelector(textareaidt);
     if (textarea) { textarea.value = `Retirada multa de impedimento de leitura mediante agendamento OSC ${OSC} com leitura ${leitura} em ${data}.`; }
     LeituraCriadaN();
     updateVencimento();
@@ -710,13 +934,13 @@ function leituraInformada() {
     var leitura = prompt('Digite a leitura informada pelo usuário: ');
     var data = prompt('Digite a data da leitura informada no formato dd/mm/aaaa \nou deixe em branco se for a mesma da leitura::');
     var OSC = prompt('Digite o número da OSC: ');
-    document.querySelector('li[data-label="Leitura Informada Pelo Usuário (84)"]').click();
-    document.querySelector('li[data-label="Medido"]').click();
-    const leit = document.querySelector(leitidt);
+    safeQuerySelector('li[data-label="Leitura Informada Pelo Usuário (84)"]').click();
+    safeQuerySelector('li[data-label="Medido"]').click();
+    const leit = safeQuerySelector(leitidt);
     leit.value = leitura;
     const dataleitura = document.getElementById('formAlteracaoConta:dataLeitura_input');
     if (dataleitura) { dataleitura.value = data; }
-    const textarea = document.querySelector(textareaidt);
+    const textarea = safeQuerySelector(textareaidt);
     if (textarea) { textarea.value = `Leitura informada pelo usuário de ${leitura} em ${data} conforme OSC ${OSC}.`; }
     LeituraCriadaN();
     updateVencimento();
@@ -726,7 +950,7 @@ function leituraInformada() {
 function sliderHora(hora) {
     console.log("Entrou na função hora: " + hora + "h.");
 
-    const table = document.querySelector('.ui-datepicker-calendar');
+    const table = safeQuerySelector('.ui-datepicker-calendar');
     const activeDay = table.querySelector('.ui-state-active');
     const month = activeDay.parentElement.dataset.month;
     const year = activeDay.parentElement.dataset.year;
@@ -744,13 +968,13 @@ function sliderHora(hora) {
         horaPosicao = (123 * hora) / 23;
     }
 
-    const sliderHandleHora = document.querySelector(".ui_tpicker_hour_slider");
+    const sliderHandleHora = safeQuerySelector(".ui_tpicker_hour_slider");
     moverSlider(sliderHandleHora, horaPosicao);
 }
 
 function sliderMinuto(minuto) {
     const minutoPosicao = (123 * minuto) / 59;
-    const sliderHandleMinuto = document.querySelector(".ui_tpicker_minute_slider");
+    const sliderHandleMinuto = safeQuerySelector(".ui_tpicker_minute_slider");
     moverSlider(sliderHandleMinuto, minutoPosicao);
 }
 
@@ -787,12 +1011,12 @@ function HoraAtual() { //Colocar Hora Atual
     document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[1]/td/table/tbody/tr/td/span/button/span[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();
 
     // Hora Inicio
-    var sliderHandleHora = document.querySelector(".ui_tpicker_hour_slider");
+    var sliderHandleHora = safeQuerySelector(".ui_tpicker_hour_slider");
     var hinicio = minuto < 10 ? (123 * (hora - 1)) / hora : 123;
     moverSlider(sliderHandleHora, hinicio);
 
     // Minuto Inicio
-    var sliderHandleMinuto = document.querySelector(".ui_tpicker_minute_slider");
+    var sliderHandleMinuto = safeQuerySelector(".ui_tpicker_minute_slider");
     var minicio = minuto < 10 ? 112 : (123 * (minuto - 10)) / minuto;
     moverSlider(sliderHandleMinuto, minicio);
 
@@ -800,11 +1024,11 @@ function HoraAtual() { //Colocar Hora Atual
     document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[2]/td/table/tbody/tr/td/span/button/span[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();
 
     // Hora Fim
-    sliderHandleHora = document.querySelector(".ui_tpicker_hour_slider");
+    sliderHandleHora = safeQuerySelector(".ui_tpicker_hour_slider");
     moverSlider(sliderHandleHora, 123);
 
     // Minuto Fim
-    sliderHandleMinuto = document.querySelector(".ui_tpicker_minute_slider");
+    sliderHandleMinuto = safeQuerySelector(".ui_tpicker_minute_slider");
     moverSlider(sliderHandleMinuto, 123);
 };
 
@@ -911,20 +1135,20 @@ async function waitForElement(selector) {
     const startTime = Date.now();
     const timeout = 2000; // Tempo limite de 2 segundos
 
-    while (!document.querySelector(selector)) {
+    while (!safeQuerySelector(selector)) {
         if (Date.now() - startTime > timeout) {
             return;
         }
         await new Promise(resolve => setTimeout(resolve, 100)); // Espera 100ms antes de verificar novamente
     }
 
-    return document.querySelector(selector);
+    return safeQuerySelector(selector);
 }
 
 async function waitForElementEnabled(selector, timeout = 30000) {
     const startTime = Date.now();
     while (true) {
-        const element = document.querySelector(selector);
+        const element = safeQuerySelector(selector);
         if (element && !element.disabled) {
             return element;
         }
@@ -943,7 +1167,7 @@ async function waitForClickable(selector, timeout = 30000) {
         if (now - startTime > timeout) {
             throw new Error("Timeout waiting for element to be clickable");
         }
-        const element = document.querySelector(selector);
+        const element = safeQuerySelector(selector);
         if (element && !element.disabled && getComputedStyle(element).display !== 'none') {
             return element;
         }
@@ -1156,9 +1380,9 @@ function VazVisCol() { //Vazamento visível e coletado
 
 function NhidNConf() { // Nº Hid não confere - já atualizado
     HoraAtual()
-    var hid = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
+    var hid = safeQuerySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
     console.log(hid);
-    var data = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(2)").innerText;
+    var data = safeQuerySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(2)").innerText;
     console.log(data);
     var diag = ('Hidrômetro '+hid+' foi substituído pela CAESB e cadastro já está atualizado.');
     var prov = ('Hidrômetro instalado em ' + data);
@@ -1375,7 +1599,7 @@ async function TrocaHD() { // Troca de HD
     var motivo = prompt('Digite o motivo da troca: (parado, danificado, etc)');
     var hdnovo = prompt('Digite o novo HIDRÔMETRO: (Y20S123456) ');
     var lacrenovo = prompt('Digite o novo LACRE: ');
-    var hd = document.querySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
+    var hd = safeQuerySelector("#form1\\:tbHidro_data > tr:nth-child(1) > td:nth-child(1)").innerText;
 
     if (lacre == "") {
         diag = ('Em vistoria verificamos que o hidrômetro ' + hd + ' está ' + motivo + ' com leitura ' + leitura + '.');
@@ -1385,30 +1609,6 @@ async function TrocaHD() { // Troca de HD
     var prov = ('Hidrômetro substituído pelo ' + hdnovo + ', lacre ' + lacrenovo + ' e leitura 0.');
 
     Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
-    /*
-    PrimeFaces.ab({s:'form1:tbHidro:0:j_idt638',p:'form1:tbHidro:0:j_idt638',u:'formSubstituicaoHidrometro',onco:function(xhr,status,args){PF('dlgSubstituicaoHidrometro').show();}});
-
-    const sub = await waitForElement('#formSubstituicaoHidrometro\\:pnlHidAntigo_header > span:nth-child(1)');
-    var nleit = document.getElementById("#formSubstituicaoHidrometro\\:j_idt1144");
-    var situ = document.getElementById("formSubstituicaoHidrometro:novaSitu_8");
-    var pesqhd = document.evaluate("/html/body/div[22]/div[2]/form[2]/div/div[2]/table/tbody/tr/td[9]/button/span[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-    if (nleit !== null) {
-        nleit.value = leitura;
-    }
-    if (situ) {
-        situ.click();
-    }
-    if (pesqhd) {
-        pesqhd.click();
-        const nhd = await waitForElement('#formPesquisarHidrometro\\:j_idt1335');
-        nhd.value = hdnovo;
-        const pesq = document.evaluate("/html/body/div[22]/div[2]/form[1]/span/table/tbody/tr/td[2]/table/tbody/tr/td/button/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();
-        const check = await waitForElement('/html/body/div[22]/div[2]/form[2]/div/div[2]/table/tbody/tr/td[9]/button/span[1]');
-        check.click();
-    }
-    var leitn = document.getElementByID('#formSubstituicaoHidrometro\\:j_idt1159').value = 0;
-    */
 };
 
 function Leit042023() { // Vaz.Abaixo LS S/Esg
@@ -1574,7 +1774,7 @@ function AbertaOSNovaLigacao() { // Aberta OS para Nova Ligação
 function extractLogradouro() {
     try {
         // Select the element with the given CSS selector
-        const element = document.querySelector(logradouroidt);
+        const element = safeQuerySelector('#form1\\:obsPanel');
         if (!element) {
             console.error('Element not found');
             return;
@@ -1603,10 +1803,6 @@ function extractLogradouro() {
 
 function AbrirAnexos() { //Abrir todos os anexos.
     var form2 = 'formOsAnexoBean';
-    //const count1 = countElements("formOsAnexoBean:abasAtendimento:j_idt1741:", "j_idt1747_menu", 20);
-    //const count2 = countElements("formOsAnexoBean:abasAtendimento:tableAtendimento:", "j_idt1737_menu", 20);
-    //openAttachments("formOsAnexoBean:abasAtendimento:j_idt1741:", "j_idt1748", count1, form2);
-    //openAttachments("formOsAnexoBean:abasAtendimento:tableAtendimento:", "j_idt1740", count2, form2);
     const count1 = countElements(prefix1, menuId1, 20);
     const count2 = countElements(prefix2, menuId2, 20);
     openAttachments(prefix1, abrir1, count1, form2);
@@ -1615,10 +1811,6 @@ function AbrirAnexos() { //Abrir todos os anexos.
 
 function AbrirAnexosAtendimento() {
     var form2 = 'abas:formAtendimentoAnexo';
-    //const count1 = countElements("abas:formAtendimentoAnexo:j_idt649:", "j_idt655_menu", 20);
-    //const count2 = countElements("abas:formAtendimentoAnexo:j_idt659:", "j_idt665_menu", 20);
-    //openAttachments("abas:formAtendimentoAnexo:j_idt649:", "j_idt658", count1, form2);
-    //openAttachments("abas:formAtendimentoAnexo:j_idt659:", "j_idt666", count2, form2);
     const count3 = countElements(prefix3, menuId3, 20);
     const count4 = countElements(prefix4, menuId4, 20);
     openAttachments(prefix3, abrir3, count3, form2);
@@ -1981,7 +2173,7 @@ function PopUpRefatCred() {
         await waitForElement(dlg2TitleSelector);
 
         // Aqui você precisaria de uma lógica para verificar a linha correta e clicar no checkbox e na opção PARCIAL
-        const rows = document.querySelectorAll(tableLancamentoSelector);
+        const rows = safeQuerySelectorAll(tableLancamentoSelector);
 
         var descontosaguaaplicado = false;
 
@@ -2103,12 +2295,12 @@ function PopUpRefatCred() {
 
         console.log("descontos aplicados");
 
-        document.querySelector(j_idt680Selector).click();
+        safeQuerySelector(j_idt680Selector).click();
 
-        var resultado = document.querySelector(resultContainerSelector).innerText;
+        var resultado = safeQuerySelector(resultContainerSelector).innerText;
         console.log(resultado);
 
-        document.querySelector(observacaoinput).value = resultado;
+        safeQuerySelector(observacaoinput).value = resultado;
 
         var inscricaoInput2 = await waitForElement(inscricaoInput2Selector);
         console.log(inscricaoInput2);
