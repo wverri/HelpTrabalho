@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.00
+// @version     3.05
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -36,7 +36,7 @@ function getDynamicIdByText(startingPattern, targetText, modif, targetIndex=0) {
         const { id } = matchedIds[targetIndex];
         if (modif > 0) {
             // Extrai o número do ID atual (assumindo que o formato é "j_idtNNN")
-            let currentNumber = parseInt(id.match(/\d+/)[0]);
+            let currentNumber = parseInt(id.match(/\d+$/)[0]);
             // Incrementa o número para obter o próximo número
             const nextNumber = currentNumber + modif;
             const regex = new RegExp("(\\d+)(?!.*\\d)");
@@ -106,14 +106,19 @@ const checkemail1 = (checkemail1ID + '_input');
 const checkemail2 = (checkemail2ID + '_input');
 const botaoemail = botaoemailID;
 
-// Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS:', 1, 3);
-const tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro:', 1, 3);
-const taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
+let tagusuarioID, tagleituraID, taganexarID, tagusuario, tagleitura, taganexar; // lançado na função de revisão.
 
-const tagusuario = formatCSSSelector(tagusuarioID);
-const tagleitura = formatCSSSelector(tagleituraID);
-const taganexar = (formatCSSSelector(taganexarID) + '_header');
+console.log('ContatTitleElementID: ' + contaTitleElementID);
+console.log('AttVencElementID: ' + AttVencElementID);
+console.log('textarea2idt: ' + textarea2idt);
+console.log('textareaidt: ' + textareaidt);
+console.log('leitidt: ' + leitidt);
+console.log('esgotomediaID: ' + esgotomediaID);
+console.log('leituracriadanaoID: ' + leituracriadanaoID);
+console.log('checkemail1: ' + checkemail1);
+console.log('checkemail2: ' + checkemail2);
+console.log('botaoemail: ' + botaoemail);
+
 
 // Tela de abrir anexos na tela de baixa
 // Anexos da OS
@@ -183,6 +188,8 @@ const elementPairs = [
     [formatCSSSelector(nomeANEXOcadastro) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOcadastro)]
 ]
 
+console.log(elementPairs);
+
 
 // LISTAGEM COM TODOS OS IDT's
 
@@ -250,7 +257,7 @@ const lupaSelector = 'form1:j_idt475';
 const dlg2TitleSelector = 'dlg2_title';
 const tableLancamentoSelector = "#form3\\:tableLancamento_data > tr";
 const form3Selector = "#form3";
-const j_idt680Selector = "#form3\\:j_idt680 > span.ui-button-text.ui-c";
+const AplicarCreditoButt = "#form3\\:j_idt692 > span.ui-button-text.ui-c";
 const resultContainerSelector = "#resultContainer > div:nth-child(3)";
 const inscricaoInput2Selector = '#form1\\:inscricao';
 const contaRefInput2Selector = '#form1\\:j_idt473';
@@ -663,7 +670,7 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
         if (window.location.href.includes('app/atendimento/os/baixa')) {
             if ($('#ui-datepicker-div').is(':visible')) {
                 // Verifique se o campo de texto já foi adicionado
-                var sliderHandles = safeQuerySelectorAll(".ui-slider-handle");
+                var sliderHandles = document.querySelectorAll(".ui-slider-handle");
                 var textField = sliderHandles[0].nextSibling;
                 if (!textField || textField.tagName !== 'INPUT') {
                     // Crie o campo de texto ao lado do elemento de slider
@@ -1062,6 +1069,10 @@ function Titularidade(diag, prov) {
 
 async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacre, improc) {
 
+    if (vaz == 3) {
+        var depois = true;
+        vaz = 1;
+    }
     //Revisao(vazamento, concluido, executado, resposta, diag, prov, usu, lei, lacre, improcende)
     var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[" + vaz + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + conc + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -1099,6 +1110,13 @@ async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacr
         }
     }
 
+    if (depois) {
+        const tipoVazamento = await waitForElement('#form1\\:tipoVazamento');
+        if (tipoVazamento) {
+            document.getElementById("form1:tipoVazamento_2").click();
+        }
+    }
+
     if (improc) {
         var improcedente = document.evaluate("/html/body/div[8]/div/form[3]/span/div[3]/div[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         if (improcedente !== null) {
@@ -1115,6 +1133,19 @@ async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacr
             procedente.click();
         }
     }
+
+    // Tela de Baixa - usuário, leitura e titulo de anexar.
+    tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS:', 1, 3);
+    tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro:', 1, 3);
+    taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
+
+    tagusuario = formatCSSSelector(tagusuarioID);
+    tagleitura = formatCSSSelector(tagleituraID);
+    taganexar = (formatCSSSelector(taganexarID) + '_header');
+
+    console.log('tagusuario: ' + tagusuario);
+    console.log('tagleitura: ' + tagleitura);
+    console.log('taganexar: ' + taganexar);
 
 
     if (usuario && leitura) {
@@ -1721,12 +1752,7 @@ function VazDepoisCavalete() { //Vaz depois cavalete
     }
 
 
-    Revisao(1, 1, 1, 1, diag, prov, '.', '0', null, false).then(async v => {
-        const vaz = await waitForElement('#form1\\:tipoVazamento');
-        if (vaz) {
-            document.getElementById("form1:tipoVazamento_2").click();
-        }
-    });
+    Revisao(3, 1, 1, 1, diag, prov, '.', '0', null, false);
 };
 
 // ----------- NOVA LIGAÇÃO -----------
@@ -2173,7 +2199,7 @@ function PopUpRefatCred() {
         await waitForElement(dlg2TitleSelector);
 
         // Aqui você precisaria de uma lógica para verificar a linha correta e clicar no checkbox e na opção PARCIAL
-        const rows = safeQuerySelectorAll(tableLancamentoSelector);
+        const rows = document.querySelectorAll(tableLancamentoSelector);
 
         var descontosaguaaplicado = false;
 
@@ -2202,7 +2228,7 @@ function PopUpRefatCred() {
 
                     // Selecionar a opção "Parcial"
                     try {
-                        const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
+                        const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt681\\:1`);
                         console.log("check parcial: ", radioParcial);
                         radioParcial.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
@@ -2213,7 +2239,7 @@ function PopUpRefatCred() {
                     // Inserir o valor do desconto na Água
                     console.log("tentando colocar o desconto de agua");
                     try {
-                        const descontoAguaInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt676`);
+                        const descontoAguaInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt688`);
                         console.log("desconto agua");
                         console.log(descontoAguaInput);
                         descontoAguaInput.value = descontoAgua;
@@ -2261,7 +2287,7 @@ function PopUpRefatCred() {
 
                     // Selecionar a opção "Parcial"
                     try {
-                        const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt669\\:1`);
+                        const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt681\\:1`);
                         console.log("check parcial: ", radioParcial2);
                         radioParcial2.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
@@ -2272,7 +2298,7 @@ function PopUpRefatCred() {
                     // Inserir o valor do desconto no Esgoto
                     console.log("tentando colocar o desconto de esgoto");
                     try {
-                        const descontoEsgotoInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt676`);
+                        const descontoEsgotoInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt688`);
                         console.log("desconto esgoto");
                         console.log(descontoEsgotoInput);
                         descontoEsgotoInput.value = descontoEsgoto;
@@ -2295,7 +2321,7 @@ function PopUpRefatCred() {
 
         console.log("descontos aplicados");
 
-        safeQuerySelector(j_idt680Selector).click();
+        safeQuerySelector(AplicarCreditoButt).click();
 
         var resultado = safeQuerySelector(resultContainerSelector).innerText;
         console.log(resultado);

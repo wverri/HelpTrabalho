@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.00
+// @version     3.05
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -60,45 +60,48 @@ var hidrometro = 'form:numHidrometro';
 var leit = 'form:leituraVistoria';
 var lacr = 'form:lacreInstaladoVistoria';
 var usu = 'form:nomeContatoVistoria';
-
-const checkemaildiagID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Diagnóstico', 3);
-const checkemailprovID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Providência', 5);
-const checkemailgerarID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Gerar texto do Email', 9);
-
-var checkemaildiag = (formatCSSSelector(checkemaildiagID) + ' > div:nth-child(2) > span:nth-child(1)');
-var checkemailprov = (formatCSSSelector(checkemailprovID) + ' > div:nth-child(2) > span:nth-child(1)');
-var checkemailgerar = (formatCSSSelector(checkemailgerarID));
-
-
-const respostaID = getDynamicIdByText('form\\:j_idt', 'Sim', 0, -1);
-const diagnosticoID = getDynamicIdByText('form\\:j_idt', 'Diagnóstico*:', 1, -1);
-const providenciaID = getDynamicIdByText('form\\:j_idt', 'Providência*:', 1, -1);
-
-var resposta = (formatCSSSelector(respostaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
-var diagnostico = formatCSSSelector(diagnosticoID);
-var providencia = formatCSSSelector(providenciaID);
- 
-const vazcorrigidosimID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',2,-1);
-const vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
-const vaznaovisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
-const vazcoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
-const vaznaocoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
-
-var vazcorrigidosim = (formatCSSSelector(vazcorrigidosimID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
-var vazvisivel = (formatCSSSelector(vazvisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
-var vaznaovisivel = (formatCSSSelector(vaznaovisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
-var vazcoletado = (formatCSSSelector(vazcoletadoID) + '> tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
-var vaznaocoletado = (formatCSSSelector(vaznaocoletadoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
-
-
-const nomeANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Arquivo selecionado:');
-const descricaoANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Descrição do arquivo:*',1);
-
-var elementPairs = [
-    [formatCSSSelector(nomeANEXO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXO)]
-];
-
 const naoseaplica = '#form\\:naoSeAplicaVistoria > div:nth-child(2) > span:nth-child(1)';
+
+let nomeANEXO, descricaoANEXO, elementPairs, checkemaildiagID, checkemaildiag, checkemailprovID, checkemailprov, checkemailgerarID, checkemailgerar, respostaID, diagnosticoID, providenciaID, resposta, diagnostico, providencia, vazcorrigidosimID, vazvisivelID, vaznaovisivelID, vazcoletadoID, vaznaocoletadoID, vazcorrigidosim, vazvisivel, vaznaovisivel, vazcoletado, vaznaocoletado;
+
+function PegarIdts() {
+
+    respostaID = getDynamicIdByText('form\\:j_idt', 'Sim', 0, -1);
+    diagnosticoID = getDynamicIdByText('form\\:j_idt', 'Diagnóstico*:', 1, -1);
+    providenciaID = getDynamicIdByText('form\\:j_idt', 'Providência*:', 1, -1);
+
+    resposta = (formatCSSSelector(respostaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+    diagnostico = formatCSSSelector(diagnosticoID);
+    providencia = formatCSSSelector(providenciaID);
+    
+    vazcorrigidosimID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',2,-1);
+    vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
+    vaznaovisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
+    vazcoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
+    vaznaocoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1);
+
+    vazcorrigidosim = (formatCSSSelector(vazcorrigidosimID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
+    vazvisivel = (formatCSSSelector(vazvisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    vaznaovisivel = (formatCSSSelector(vaznaovisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+    vazcoletado = (formatCSSSelector(vazcoletadoID) + '> tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    vaznaocoletado = (formatCSSSelector(vaznaocoletadoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+
+    checkemaildiagID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Diagnóstico', 3);
+    checkemailprovID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Providência', 5);
+    checkemailgerarID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Gerar texto do Email', 9);
+
+    checkemaildiag = (formatCSSSelector(checkemaildiagID) + ' > div:nth-child(2) > span:nth-child(1)');
+    checkemailprov = (formatCSSSelector(checkemailprovID) + ' > div:nth-child(2) > span:nth-child(1)');
+    checkemailgerar = (formatCSSSelector(checkemailgerarID));
+
+    nomeANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Arquivo selecionado:');
+    descricaoANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Descrição do arquivo:*',1);
+
+    elementPairs = [
+        [formatCSSSelector(nomeANEXO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXO)]
+    ];
+
+};
 
 
 // Define as estilizações do widget em um objeto CSS
@@ -215,7 +218,10 @@ var createSectionTitle = function(text) {
 
 var createButtonWithClick = function(text, clickHandler) {
     var button = $('<button>' + text + '</button>').css(buttonStyles);
-    button.click(clickHandler);
+    button.click(function() {
+        PegarIdts();
+        clickHandler();
+    });
     return button;
 };
 
@@ -311,12 +317,24 @@ var marcado = false;
                     confirmElementValue.value = fileNameWithoutExtension;
                 }
             }
+
+            var iframe = document.querySelector('iframe'); // Use o seletor apropriado para selecionar o iframe específico
+            if (iframe) {
+                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+                var textoParaRemover = iframeDocument.body.innerHTML.match(/Em \d{2}\/\d{2}\/\d{4} não foi possível realizar vistoria no imóvel por .<br><br>&nbsp;Deste modo, dentro de suas competências e diante da impossibilidade de realizar vistoria, a CAESB , não detectou problemas que justificassem a revisão dos valores cobrados em sua\(s\) conta\(s\), portanto, o faturamento descrito em sua\(s\) conta\(s\) fica\(m\) confirmado\(s\) e todos os valores mantidos\./);
+                if (textoParaRemover) {
+                    iframeDocument.body.innerHTML = iframeDocument.body.innerHTML.replace(textoParaRemover[0], '');
+                }
+            }
         }
     }, 200);
 })();
 
 
 async function Revisao(vaz, visivel, coletado, diag, prov) {
+
+    PegarIdts();
 
     //Revisao(vaz, visivel, coletado, diag, prov)
     var clickresposta = document.querySelector(resposta);
@@ -464,6 +482,36 @@ function VazInternNVisCol() { //Vaz. Interno
     var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
 
     Revisao(1,0,0,diag,prov);
+};
+
+function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
+
+    var dataidt = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
+    var dataID = formatCSSSelector(dataidt) + '_content';
+    var leitura = document.getElementById(leit).value;
+
+    var data = document.querySelector(dataID + ' > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(5) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)').textContent;
+
+    var diag = `Comunicamos que em ${data} a CAESB esteve em seu imóvel para realizar vistoria, porém não havia ninguém no local para acompanhar a vistoria.`;
+    var prov = 'Acesso ao hidrômetro, com leitura ' +leitura+ ' confirmada.  Caso necessário, realizar novo pedido de vistoria em nosso site (https://www.caesb.df.gov.br/portal-servicos/) ou aplicativo e caso não fique ninguém no imóvel solicitar vistoria com agendamento, onde poderá escolher o dia e o período, matutino ou vespertino, para realização da vistoria, sendo cobrada uma taxa de R$ 35,21 no próximo faturamento.';
+
+    Revisao(0,0,0,diag,prov);
+};
+
+function VazDepoisCavalete() {
+    var leitura = document.getElementById(leit).value;
+    var OSC = prompt('Informe a OSC de conserto de cavalete: ');
+    var data = prompt('Informe a data do conserto.');
+    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
+    var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
+
+    if ( conta == "" ) {
+        var prov = 'Contas com consumo dentro da média do imóvel.';
+    }
+    else {
+        var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
+    }
+    Revisao(0,0,0,diag,prov);
 };
 
 function VazCoberto() { //Vaz Coberto
