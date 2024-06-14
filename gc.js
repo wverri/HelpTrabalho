@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.05
+// @version     3.10
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -186,9 +186,20 @@ const elementPairs = [
     [formatCSSSelector(nomeANEXOcliente) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', descricaoANEXOcliente],
     [formatCSSSelector(nomeANEXOclienteimovel) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOclienteimovel)],
     [formatCSSSelector(nomeANEXOcadastro) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXOcadastro)]
-]
+];
 
 console.log(elementPairs);
+
+// Aplicação de crédito na tela de crédito
+const inscricaoSelector = '#form1\\:inscricao';
+const dlg2TitleSelector = 'dlg2_title';
+const tableLancamentoSelector = "#form3\\:tableLancamento_data > tr";
+const form3Selector = "#form3";
+const resultContainerSelector = "#resultContainer > div:nth-child(3)";
+const inscricaoInput2Selector = '#form1\\:inscricao';
+const pfInscricaoId = "form1:inscricao";
+
+let radioParcialidt, radioParcialID, pfValorParcialID, pfDlgEdicaoShowID, pfDlgEdicaoShow, contaRefSelectorID, contaRefSelector, lupaSelectorID, lupaSelector, AplicarCreditoButtID, AplicarCreditoButt, observacaoinputID, observacaoinput;
 
 
 // LISTAGEM COM TODOS OS IDT's
@@ -250,25 +261,27 @@ const menuId2 = 'j_idt1759_menu';
 const abrir2 = 'j_idt1762';
 */
 
-// Aplicação de crédito na tela de crédito
+/* // Aplicação de crédito na tela de crédito
 const inscricaoSelector = '#form1\\:inscricao';
-const contaRefSelector = '#form1\\:j_idt473';
-const lupaSelector = 'form1:j_idt475';
 const dlg2TitleSelector = 'dlg2_title';
 const tableLancamentoSelector = "#form3\\:tableLancamento_data > tr";
 const form3Selector = "#form3";
-const AplicarCreditoButt = "#form3\\:j_idt692 > span.ui-button-text.ui-c";
 const resultContainerSelector = "#resultContainer > div:nth-child(3)";
 const inscricaoInput2Selector = '#form1\\:inscricao';
-const contaRefInput2Selector = '#form1\\:j_idt473';
+const pfInscricaoId = "form1:inscricao";
+ */
+
+/* const contaRefSelector = '#form1\\:j_idt473';
+const lupaSelector = 'form1:j_idt475';
+const AplicarCreditoButt = "#form3\\:j_idt692 > span.ui-button-text.ui-c";
 const observacaoinput = '#form1\\:j_idt494';
 
-// Identificadores usados nas chamadas PrimeFaces.ab()
-const pfInscricaoId = "form1:inscricao";
-const pfContaRefId = "form1:j_idt473";
+// Identificadores usados nas chamadas PrimeFaces.ab()'
 const pfDlgEdicaoShow = "j_idt380:j_idt382";
+const radioParcialID = "j_idt681";
+const pfValorParcialID = ":j_idt688"; */
 
-// Define as estilizações do widget em um objeto CSS
+// Define as estilizaçes do widget em um objeto CSS
 var widgetStyles = {
     'position': 'fixed',
     'top': '10%',
@@ -1179,13 +1192,14 @@ async function waitForElement(selector) {
 async function waitForElementEnabled(selector, timeout = 30000) {
     const startTime = Date.now();
     while (true) {
-        const element = safeQuerySelector(selector);
+        const element = document.querySelector(selector);
         if (element && !element.disabled) {
             return element;
         }
         if (Date.now() - startTime > timeout) {
             throw new Error('Timeout waiting for element to be enabled');
         }
+        console.log('Esperando elemento: ' + selector);
         await new Promise(resolve => setTimeout(resolve, 100)); // espera 100ms antes de tentar novamente
     }
 }
@@ -2162,6 +2176,29 @@ function PopUpRefatCred() {
 
     async function applyCredit() {
 
+        // Botão de clicar em Cocessão de crédito (primeiro)
+        pfDlgEdicaoShowID = getDynamicIdByText('j_idt', 'Cadastrar', 0);
+        pfDlgEdicaoShow = pfDlgEdicaoShowID + ':' + 'j_idt' + (parseInt(pfDlgEdicaoShowID.match(/\d+/)[0]) + 2);
+
+        // Aplicação de crédito na tela de crédito
+        contaRefSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 1); //ok
+        contaRefSelector = formatCSSSelector(contaRefSelectorID);
+
+        lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 3); //ok 
+        lupaSelector = formatCSSSelector(lupaSelectorID);
+
+        AplicarCreditoButtID = getDynamicIdByText('form3\\:j_idt', 'Adicionar', 0); //ok
+        AplicarCreditoButt = formatCSSSelector(AplicarCreditoButtID) + ' > span.ui-button-text.ui-c';
+
+        observacaoinputID = getDynamicIdByText('form1\\:j_idt', 'Observação: *', 1); //ok
+        observacaoinput = formatCSSSelector(observacaoinputID);
+
+        console.log('pfDlgEdicaoShow: ' + pfDlgEdicaoShow);
+        console.log('contaRefSelector: ' + contaRefSelector);
+        console.log('lupaSelector: ' + lupaSelector);
+        console.log('AplicarCreditoButt: ' + AplicarCreditoButt);
+        console.log('observacaoinput: ' + observacaoinput);
+
         console.log("Aplicando crédito");
         const { resultadoAguaMedido, resultadoAguaRefat, resultadoEsgotoMedido, resultadoEsgotoRefat, consumo, esgoto, ls, media, consumoRefat, osc, contaRef, tipoVazamento, insc, descontoAgua, descontoEsgoto } = calculateBilling();
 
@@ -2186,20 +2223,27 @@ function PopUpRefatCred() {
         console.log(contaRefInput);
         console.log(contaRef);
         PrimeFaces.ab({
-            s: pfContaRefId,
+            s: contaRefSelectorID,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: pfContaRefId,
-            params: [{name: pfContaRefId, value: contaRef}]
+            p: contaRefSelectorID,
+            params: [{name: contaRefSelectorID, value: contaRef}]
         });
 
         // Simula o clique na lupa
-        PrimeFaces.ab({s: lupaSelector, u: "form3"});
+        PrimeFaces.ab({s: lupaSelectorID, u: "form3"});
 
         // Espera o novo elemento aparecer
         await waitForElement(dlg2TitleSelector);
 
         // Aqui você precisaria de uma lógica para verificar a linha correta e clicar no checkbox e na opção PARCIAL
         const rows = document.querySelectorAll(tableLancamentoSelector);
+
+        radioParcialidt = getDynamicIdByText('form3:tableLancamento', 'TotalParcial', 0, 3);
+        radioParcialID = radioParcialidt.split(':').pop();
+        pfValorParcialID = 'j_idt' + (parseInt(radioParcialID.match(/\d+/)[0]) + 7);
+
+        console.log('radioParcialID: ' + radioParcialID);
+        console.log('pfValorParcialID: ' + pfValorParcialID);
 
         var descontosaguaaplicado = false;
 
@@ -2208,7 +2252,7 @@ function PopUpRefatCred() {
                 const tarifaCell = row.cells[2].textContent;
                 if (tarifaCell.includes("TARIFA VARIAVEL DE AGUA")) {
                     console.log("Achei linha tarifa de agua!");
-                    console.log(row);
+                    console.log("Linha: " + index);
 
                     // Checkbox
                     /*
@@ -2225,10 +2269,11 @@ function PopUpRefatCred() {
                     } else {
                         console.error('Elemento não encontrado para o índice:', index);
                     }
+                    
 
                     // Selecionar a opção "Parcial"
                     try {
-                        const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt681\\:1`);
+                        const radioParcial = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:${radioParcialID}\\:1`);
                         console.log("check parcial: ", radioParcial);
                         radioParcial.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
@@ -2239,7 +2284,7 @@ function PopUpRefatCred() {
                     // Inserir o valor do desconto na Água
                     console.log("tentando colocar o desconto de agua");
                     try {
-                        const descontoAguaInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt688`);
+                        const descontoAguaInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:${pfValorParcialID}`);
                         console.log("desconto agua");
                         console.log(descontoAguaInput);
                         descontoAguaInput.value = descontoAgua;
@@ -2287,7 +2332,7 @@ function PopUpRefatCred() {
 
                     // Selecionar a opção "Parcial"
                     try {
-                        const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt681\\:1`);
+                        const radioParcial2 = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:${radioParcialID}\\:1`);
                         console.log("check parcial: ", radioParcial2);
                         radioParcial2.click();  // Clique no radio button para selecionar "Parcial"
                     } catch (error) {
@@ -2298,7 +2343,7 @@ function PopUpRefatCred() {
                     // Inserir o valor do desconto no Esgoto
                     console.log("tentando colocar o desconto de esgoto");
                     try {
-                        const descontoEsgotoInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:j_idt688`);
+                        const descontoEsgotoInput = await waitForElementEnabled(`#form3\\:tableLancamento\\:${index}\\:${pfValorParcialID}`);
                         console.log("desconto esgoto");
                         console.log(descontoEsgotoInput);
                         descontoEsgotoInput.value = descontoEsgoto;
@@ -2341,14 +2386,14 @@ function PopUpRefatCred() {
         inscricaoInput2.value = insc;
 
         // Insere o valor da contaRef
-        var contaRefInput2 = await waitForElement(contaRefInput2Selector);
+        var contaRefInput2 = await waitForElement(contaRefSelector);
         console.log(contaRefInput2);
         console.log(contaRef);
         PrimeFaces.ab({
-            s: pfContaRefId,
+            s: contaRefSelectorID,
             e: "valueChange",  // Adiciona o evento valueChange
-            p: pfContaRefId,
-            params: [{name: pfContaRefId, value: document.getElementById('contaRef').value}]
+            p: contaRefSelectorID,
+            params: [{name: contaRefSelectorID, value: document.getElementById('contaRef').value}]
         });
         contaRefInput2.value = contaRef;
     }

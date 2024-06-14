@@ -1,11 +1,11 @@
-/* const elements = document.querySelectorAll('[id^="' + 'form\\:j_idt' + '"]');
+/* const elements = document.querySelectorAll('[id^="' + 'formEnviarEmail\\:j_idt' + '"]');
 let matchedIds = [];
 
 for (const element of elements) {
         const id = element.id;
         const elementText = element.textContent.trim();
 
-        if (id && elementText.includes('Acompanhou a OS: *')) {
+        if (id && elementText.includes('Diagnóstico)) {
             matchedIds.push({id, elementText});
         }
     }
@@ -77,13 +77,46 @@ function extractIds(tbodyidtID, mod) { // abas:formAtendimentoAnexo:j_idt656:0:j
     return ids;
 }
 
+/* // TELA DE REFATURAMENTO
+var radioParcialID = getDynamicIdByText('form3:tableLancamento', 'TotalParcial', 0, 3);
+var radioParcial = radioParcialID.split(':').pop();
+
+var pfValorParcial = 'j_idt' + (parseInt(radioParcial.match(/\d+/)[0]) + 7);
+
+// Botão de clicar em Cocessão de crédito (primeiro)
+var pfDlgEdicaoShowID = getDynamicIdByText('j_idt', 'Cadastrar', 0);
+var pfDlgEdicaoShow = pfDlgEdicaoShowID + ':' + 'j_idt' + (parseInt(pfDlgEdicaoShowID.match(/\d+/)[0]) + 2);
+
+// Aplicação de crédito na tela de crédito
+var contaRefSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 1); //ok
+var contaRefSelector = formatCSSSelector(contaRefSelectorID);
+
+var lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 3); //ok 
+var lupaSelector = formatCSSSelector(lupaSelectorID);
+
+var AplicarCreditoButtID = getDynamicIdByText('form3\\:j_idt', 'Adicionar', 0); //ok
+var AplicarCreditoButt = formatCSSSelector(AplicarCreditoButtID);
+
+var observacaoinputID = getDynamicIdByText('form1\\:j_idt', 'Observação: *', 1); //ok
+var observacaoinput = formatCSSSelector(observacaoinputID); */
+
+
+/* const contaRefSelector = '#form1\\:j_idt473';
+const lupaSelector = 'form1:j_idt475';
+const AplicarCreditoButt = "#form3\\:j_idt692 > span.ui-button-text.ui-c";
+const observacaoinput = '#form1\\:j_idt494';
+
+// Identificadores usados nas chamadas PrimeFaces.ab()
+const pfDlgEdicaoShow = "j_idt380:j_idt382";
+const radioParcialID = "j_idt681";
+const pfValorParcialID = ":j_idt688"; */
 
 
 // GCOM NOVO!
-var dataID = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
+/* var dataID = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
 var data = formatCSSSelector(dataID) + '_content';
 console.log(data);
-
+ */
 
 /* const respostaID = getDynamicIdByText('form\\:j_idt', 'Encaminhar Carta Resposta:*', 1, -1); //ok
 const diagnosticoID = getDynamicIdByText('form\\:j_idt', 'Diagnóstico*:', 1, -1); //ok 
@@ -94,7 +127,7 @@ diagnostico = formatCSSSelector(diagnosticoID);
 providencia = formatCSSSelector(providenciaID); 
 
 const vazcorrigidosimID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',2,-1); //ok
-const vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1); // ok
+const vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
 const vaznaovisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1); //ok
 const vazcoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1); //ok
 const vaznaocoletadoID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',8,-1); //ok
@@ -255,22 +288,22 @@ console.log('leituracriadanao: ' + leituracriadanao);
 
 
 // CheckBox do enviar email resposta
-const checkemail1ID = getDynamicIdByText('formEnviarEmail:', 'Diagnóstico', 3); // ok
-const checkemail2ID = getDynamicIdByText('formEnviarEmail:', 'Providência', 5); // ok
-const botaoemailID = getDynamicIdByText('formEnviarEmail:', 'Gerar texto do Email', 9); // ok
+const checkemail1ID = getDynamicIdByText('formEnviarEmail:', 'Diagnóstico', 3);
+const checkemail2ID = getDynamicIdByText('formEnviarEmail:', 'Providência', 5);
+const botaoemailID = getDynamicIdByText('formEnviarEmail:', 'Gerar texto do Email', 9);
 
 const checkemail1 = (checkemail1ID + '_input');
 const checkemail2 = (checkemail2ID + '_input');
 const botaoemail = botaoemailID;
 
 // Tela de Baixa - usuário, leitura e titulo de anexar.
-const tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS: *', 1, 3); // ok
-const tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro: *', 1, 3); // ok
-const taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2); // ok
+const tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS: *', 1, 3);
+const tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro: *', 1, 3);
+const taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
 
-const tagusuario = formatCSSSelector(tagusuarioID); // ok
-const tagleitura = formatCSSSelector(tagleituraID); // ok 
-const taganexar = (formatCSSSelector(taganexarID) + '_header'); // ok
+const tagusuario = formatCSSSelector(tagusuarioID);
+const tagleitura = formatCSSSelector(tagleituraID); 
+const taganexar = (formatCSSSelector(taganexarID) + '_header');
 
 console.log(tagusuarioID);
 console.log(tagleituraID);

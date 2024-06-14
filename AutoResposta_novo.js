@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.05
+// @version     3.10
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -85,14 +85,6 @@ function PegarIdts() {
     vaznaovisivel = (formatCSSSelector(vaznaovisivelID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
     vazcoletado = (formatCSSSelector(vazcoletadoID) + '> tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
     vaznaocoletado = (formatCSSSelector(vaznaocoletadoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
-
-    checkemaildiagID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Diagnóstico', 3);
-    checkemailprovID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Providência', 5);
-    checkemailgerarID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Gerar texto do Email', 9);
-
-    checkemaildiag = (formatCSSSelector(checkemaildiagID) + ' > div:nth-child(2) > span:nth-child(1)');
-    checkemailprov = (formatCSSSelector(checkemailprovID) + ' > div:nth-child(2) > span:nth-child(1)');
-    checkemailgerar = (formatCSSSelector(checkemailgerarID));
 
     nomeANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Arquivo selecionado:');
     descricaoANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_idt', 'Descrição do arquivo:*',1);
@@ -281,9 +273,30 @@ var marcado = false;
             //Verifica se o elemento #dlgEnviarEmailVistoria_title está presente
             var dlgEnviarEmailElement = document.querySelector('html body div#dlgEnviarEmailVistoria.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-shadow.ui-hidden-container.ui-dialog-absolute.ui-draggable[aria-hidden="false"]');
             if (dlgEnviarEmailElement && marcado == false) {
+
+                checkemaildiagID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Diagnóstico', 0, 1);
+                checkemailprovID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Providência', 0, 1);
+                checkemailgerarID = getDynamicIdByText('formEnviarEmail\\:j_idt', 'Gerar texto do Email', 0, 1);
+
+                console.log('CheckemaildiagID: ' + checkemaildiagID);
+                console.log('CheckemailprovID: ' + checkemailprovID);
+                console.log('CheckemailgerarID: ' + checkemailgerarID);
+
+                checkemaildiag = (formatCSSSelector(checkemaildiagID) + ' > div:nth-child(2) > span:nth-child(1)');
+                checkemailprov = (formatCSSSelector(checkemailprovID) + ' > div:nth-child(2) > span:nth-child(1)');
+                checkemailgerar = (formatCSSSelector(checkemailgerarID));
+
+                console.log('Checkemaildiag: ' + checkemaildiag);
+                console.log('Checkemailprov: ' + checkemailprov);
+                console.log('Checkemailgerar: ' + checkemailgerar);
+
                 // Verifica se os checkboxes estão marcados
                 var checkbox1 = document.querySelector(checkemaildiag);
                 var checkbox2 = document.querySelector(checkemailprov);
+
+                console.log(checkbox1);
+                console.log(checkbox2);
+
                 // Função para marcar um checkbox
                 function marcarCheckbox(checkbox) {
                     checkbox.checked = true;
@@ -307,16 +320,19 @@ var marcado = false;
                 marcado = true;
             }
 
-            for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
-                const confirmElement = document.querySelector(confirmElementSelector);
-                const confirmElementValue = document.querySelector(confirmElementValueSelector);
-
-                if (confirmElement && confirmElementValue && confirmElementValue.value === '') {
-                    const fileName = confirmElement.innerText.trim();
-                    const fileNameWithoutExtension = fileName.slice(0, -4);
-                    confirmElementValue.value = fileNameWithoutExtension;
-                }
+            if (elementPairs) {
+                for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
+                    const confirmElement = document.querySelector(confirmElementSelector);
+                    const confirmElementValue = document.querySelector(confirmElementValueSelector);
+    
+                    if (confirmElement && confirmElementValue && confirmElementValue.value === '') {
+                        const fileName = confirmElement.innerText.trim();
+                        const fileNameWithoutExtension = fileName.slice(0, -4);
+                        confirmElementValue.value = fileNameWithoutExtension;
+                    }
+                }                
             }
+            
 
             var iframe = document.querySelector('iframe'); // Use o seletor apropriado para selecionar o iframe específico
             if (iframe) {
@@ -338,7 +354,6 @@ async function Revisao(vaz, visivel, coletado, diag, prov) {
 
     //Revisao(vaz, visivel, coletado, diag, prov)
     var clickresposta = document.querySelector(resposta);
-    console.log(clickresposta);
 
     if (clickresposta !== null) {
         clickresposta.click();
@@ -356,15 +371,22 @@ async function Revisao(vaz, visivel, coletado, diag, prov) {
         provd.value = prov;
     }
 
+    const naoaplica = document.querySelector(naoseaplica);
+    console.log(naoaplica);
+    if (naoaplica.classList.contains('ui-icon-check')){
+        naoaplica.click();
+        await waitForClickable(vazcorrigidosim);
+    }
+
     if (vaz == 1) {
         document.querySelector(vazcorrigidosim).click();
-        if (visivel = 1){
+        if (visivel == 1){
             document.querySelector(vazvisivel).click();
         }
         else{
             document.querySelector(vaznaovisivel).click();
         }
-        if (coletado = 1){
+        if (coletado == 1){
             document.querySelector(vazcoletado).click();
         }
         else{
