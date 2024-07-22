@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.10
+// @version     3.12
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -423,6 +423,7 @@ myWidget.append(
     createButtonWithClick('Vaz.Abaixo LS S/Esg', function(){ VazAbaixoLs(); }),
     createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
     createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
+    createButtonWithClick('Depois cavalete - dentro mda', function(){ VazDepoisCavaleteDentroMda(); }),
     createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
     createButtonWithClick('Multa Agend Fora Prazo', function(){ AgendLeituraForaPrazo(); }),
     createSectionTitle('--- DADOS CADASTRAIS ---'),
@@ -1753,8 +1754,41 @@ function CorteNExec() { // Exec.Cons.Final - Corte não realizado
 function VazDepoisCavalete() { //Vaz depois cavalete
 
     HoraAtual();
-    var OSC = prompt('Informe a OSC de conserto de cavalete: ');
-    var data = prompt('Informe a data do conserto.');
+    // Função para obter o número da OS
+    const obsPanel = document.querySelector('#form1\\:obsPanel');
+    if (obsPanel) {
+        const conteudo = obsPanel.textContent;
+        const match = conteudo.match(/OS:\s*(\d+)/);
+        if (match && match[1]) {
+            var OSC = match[1];
+        }
+        // Obter a data da OS
+        const dataElement = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[6]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (dataElement) {
+            const dataOS = dataElement.textContent.trim();
+            const [dataOriginal] = dataOS.split(' '); // Pega apenas a parte da data
+            const [dia, mes, ano] = dataOriginal.split('/');
+            
+            // Criar uma nova data subtraindo 1 dia
+            const dataAnterior = new Date(ano, mes - 1, dia);
+            dataAnterior.setDate(dataAnterior.getDate() - 1);
+            
+            // Formatar a nova data
+            const diaAnterior = dataAnterior.getDate().toString().padStart(2, '0');
+            const mesAnterior = (dataAnterior.getMonth() + 1).toString().padStart(2, '0');
+            const anoAnterior = dataAnterior.getFullYear();
+            
+            data = `${diaAnterior}/${mesAnterior}/${anoAnterior}`;
+        }
+        else {
+            data = prompt('Informe a data do conserto:');
+        }
+    }
+    else {
+        var OSC = prompt('Informe a OSC de conserto de cavalete: ');
+        data = prompt('Informe a data do conserto:');
+    }
+
     var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
     var diag = 'Vazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
 
@@ -1767,6 +1801,48 @@ function VazDepoisCavalete() { //Vaz depois cavalete
 
 
     Revisao(3, 1, 1, 1, diag, prov, '.', '0', null, false);
+};
+
+function VazDepoisCavaleteDentroMda() { //Vaz depois cavalete - Dentro da média
+
+    HoraAtual();
+    // Função para obter o número da OS
+    const obsPanel = document.querySelector('#form1\\:obsPanel');
+    if (obsPanel) {
+        const conteudo = obsPanel.textContent;
+        const match = conteudo.match(/OS:\s*(\d+)/);
+        if (match && match[1]) {
+            var OSC = match[1];
+        }
+    }
+    else {
+        var OSC = prompt('Informe a OSC de conserto de cavalete: ');
+    }
+
+    // Obter a data da OS
+    const dataElement = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[6]/td[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (dataElement) {
+        const dataOS = dataElement.textContent.trim();
+        const [dataOriginal] = dataOS.split(' '); // Pega apenas a parte da data
+        const [dia, mes, ano] = dataOriginal.split('/');
+        
+        // Criar uma nova data subtraindo 1 dia
+        const dataAnterior = new Date(ano, mes - 1, dia);
+        dataAnterior.setDate(dataAnterior.getDate() - 1);
+        
+        // Formatar a nova data
+        const diaAnterior = dataAnterior.getDate().toString().padStart(2, '0');
+        const mesAnterior = (dataAnterior.getMonth() + 1).toString().padStart(2, '0');
+        const anoAnterior = dataAnterior.getFullYear();
+        
+        data = `${diaAnterior}/${mesAnterior}/${anoAnterior}`;
+    } else {
+        data = prompt('Informe a data do conserto:');
+    }
+    var diag = 'Vazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
+    var prov = 'Contas com consumo dentro da média do imóvel.';
+    Revisao(3, 1, 1, 1, diag, prov, '.', '0', null, false);
+
 };
 
 // ----------- NOVA LIGAÇÃO -----------
