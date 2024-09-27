@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.13
+// @version     3.14
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -66,7 +66,7 @@ function safeQuerySelector(selector) {
 }
 
 function extractIds(tbodyidtID, mod) {
-    let ids = {}; 
+    let ids = {};
     const parts = tbodyidtID.split(':');
     const j_idtPart = parts.find(part => part.startsWith('j_idt'));
     if (j_idtPart) {
@@ -238,7 +238,7 @@ const botaoemail = 'formEnviarEmail:j_idt1817';
 const tagusuario = '#form1\\:j_idt518';
 const tagleitura = '#form1\\:j_idt520';
 const taganexar = '#form1\\:j_idt453_header';
- 
+
 
 // Abrir anexos na tela de atendimento
 const tbodyidt = '#abas\\:formAtendimentoAnexo\\:j_idt656_data';
@@ -505,7 +505,7 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
 
         // Botão de Abrir Anexos na tela de Atendimento
         if (window.location.href.includes('app/atendimento/principal/atendimentoVisualizacao')) {
-            
+
             // Pegar todos os IDT's
             tbodyidtID = getDynamicIdByText('abas:formAtendimentoAnexo', 'Download', 0);
             if (tbodyidtID){
@@ -578,8 +578,8 @@ if (window.location.href.includes('app/atendimento/os/baixa')) {
             // console.log(abrir1);
 
 
-            const baixaElement = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelArquivos_header");            
-            
+            const baixaElement = document.querySelector("#formOsAnexoBean\\:abasAtendimento\\:panelArquivos_header");
+
             if (baixaElement && (countElements(prefix2, menuId2, 20) > 0) && (!baixaElement.nextSibling || baixaElement.nextSibling.nodeName !== 'BUTTON')) {
                 console.log('Botão anexos tela baixa - OSC');
                 // Cria um botão
@@ -1059,6 +1059,9 @@ function Titularidade(diag, prov) {
     var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // revisão de conta - não
+    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
     if (element1 !== null) {
         element1.click();
@@ -1068,6 +1071,12 @@ function Titularidade(diag, prov) {
     }
     if (element3 !== null) {
         element3.click();
+    }
+    if (element4 !== null) {
+        element4.click();
+    }
+    if (element5 !== null) {
+        element5.click();
     }
 
     var diagn = document.getElementById("form1:diagnosticoBaixa");
@@ -1081,17 +1090,25 @@ function Titularidade(diag, prov) {
     }
 }
 
-async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacre, improc) {
+async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura, lacre, improc, revicontasistema = null) {
 
     if (vaz == 3) {
         var depois = true;
         vaz = 1;
     }
-    //Revisao(vazamento, concluido, executado, resposta, diag, prov, usu, lei, lacre, improcende)
+
+    var element5;
+    if (revicontasistema != null) {
+        element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+    else {
+        element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+    //Revisao(vazamento, reviconta, executado, resposta, diag, prov, usu, lei, lacre, improcende)
     var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[" + vaz + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + conc + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[" + exec + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[" + resp + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + exec + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[" + resp + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[" + reviconta + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
     if (element1 !== null) {
         element1.click();
@@ -1103,6 +1120,9 @@ async function Revisao(vaz, conc, exec, resp, diag, prov, usuario, leitura, lacr
         element3.click();
     }
     if (element4 !== null) {
+        element4.click();
+    }
+    if (element5 !== null) {
         element4.click();
     }
 
@@ -1267,7 +1287,7 @@ function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
     }
     var prov = `Caso seja identificado um vazamento, é importante efetuar o registro fotográfico do local antes e depois da correção, além de providenciar o reparo imediato.\nApós o reparo, o usuário(a) deve encaminhar as fotos que comprovem a existência/correção do vazamento, juntamente com foto da numeração do hidrômetro e foto da leitura atual, em uma nova solicitação por meio do Autoatendimento no site da CAESB ou pelo Aplicativo.\nEssas medidas garantirão a revisão adequada das contas, conforme estabelecido pela Resolução 14/2011.`;
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function PortaoFechado() { //Portão fechado.
@@ -1298,7 +1318,7 @@ function SemVazamImprocedente() { //Sem Vazam. Improcedente
         var prov = 'Informamos que, de acordo com as normas e regulamentos vigentes, não há nenhuma prerrogativa para a concessão de desconto nesta situação relatada.\n Atualizado vencimento da(s) conta(s) referência ' + refs + '.';
     }
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function VazInternNVisCol() { //Vaz. Interno
@@ -1318,7 +1338,7 @@ function VazInternNVisCol() { //Vaz. Interno
 
     var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
 
-    Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(1, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 };
 
 function LeituraInformada() { //Leitura informada
@@ -1330,7 +1350,7 @@ function LeituraInformada() { //Leitura informada
     var diag = ('Usuário informa leitura ' + leitura + ' para conta referência ' + conta + ' faturada pela média devido a ocorrência impeditiva de leitura.');
     var prov = ('Conta referência ' + conta + ' refaturada conforme leitura informada pelo usuário.');
 
-    Revisao(2, 1, 1, 1, diag, prov, '.', leitura, false, false);
+    Revisao(2, 2, 1, 1, diag, prov, '.', leitura, false, false);
 };
 
 function VazCoberto() { //Vaz Coberto
@@ -1348,7 +1368,7 @@ function VazCoberto() { //Vaz Coberto
 
     var prov = ('A revisão de contas solicitada não pode ser concedida devido à falta de documentação comprobatória do conserto do vazamento imperceptível e/ou da realização da vistoria para verificação do mesmo. \nConforme a Resolução 014/2011 da ADASA, para obter o desconto mencionado, é necessário apresentar o termo de ocorrência de eliminação do vazamento imperceptível e comprovantes do material/serviço utilizado para reparar o vazamento. Alternativamente, é possível solicitar uma vistoria para verificar novamente o vazamento, desde que o mesmo esteja exposto para registro fotográfico. As fotos do conserto, juntamente com os comprovantes, podem ser apresentados em novo pedido de revisão pelo Autoatendimento no site da CAESB ou Aplicativo.')
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function ErroLeitura() { //Erro de leitura
@@ -1367,7 +1387,7 @@ function ErroLeitura() { //Erro de leitura
 
     var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel');
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 };
 
 function AgendLeitura() { //Agendamento de leitura
@@ -1386,7 +1406,7 @@ function AgendLeitura() { //Agendamento de leitura
 
     var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel e retirada multa de impedimento de leitura.');
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 };
 
 function AgendLeituraForaPrazo() { //Agendamento de leitura aberta fora do prazo
@@ -1400,7 +1420,7 @@ function AgendLeituraForaPrazo() { //Agendamento de leitura aberta fora do prazo
     var prov = ('Conta referência ' +conta+ ' mantida, pedido de revisão indeferido, pois foi solicitado o agendamento APÓS o faturamento da conta seguinte ao impedimento gerador da multa. \n' +
                'Salientamos ainda que o usuário tem a opção de solicitar o remanejamento do hidrômetro para fora do imóvel, dando acesso à leitura, ou se cadastrar na Auto Leitura pelo site da CAESB, sendo necessário informar a leitura mensalmente pelo site.');
 
-    Revisao(2, 1, 1, 1, diag, prov, ' ', '0', false, false);
+    Revisao(2, 2, 1, 1, diag, prov, ' ', '0', false, false);
 };
 
 function VazVisCol() { //Vazamento visível e coletado
@@ -1421,7 +1441,7 @@ function VazVisCol() { //Vazamento visível e coletado
 
     var prov = ('Após analisarmos o seu pedido de revisão tarifária referente ao vazamento visível nas instalações hidráulicas da sua unidade usuária, verificamos que, de acordo com a Resolução ADASA nº 14/2011, Art. 118, o desconto sobre o consumo excedente só é aplicável quando há comprovação e subsequente eliminação de vazamento imperceptível nas instalações hidráulicas. Além disso, conforme o § 4º da mesma resolução, caso seja comprovado que o excesso de água não foi direcionado para a rede pública de esgotos sanitários, a tarifa de esgoto será calculada com base na média de consumo da unidade usuária. \nPortanto, devido ao fato de o vazamento ser visível e a água ter escoado para a rede de esgoto, não é possível conceder desconto tanto na tarifa de água quanto na de esgoto.');
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function NhidNConf() { // Nº Hid não confere - já atualizado
@@ -1454,7 +1474,7 @@ function VazNegado() { //Vaz.Negado Mais de 2 LS.
 
     var prov = ('Conforme o ART. 118, §5º da Resolução 014/2011 da ADASA, o desconto será aplicado em, no máximo, duas faturas mensais subsequentes que comprovadamente foram influenciadas pelo vazamento confirmado pelo prestador de serviços. Esse desconto está limitado a uma ocorrência de vazamento em um período de 12 (doze) meses. \nInformamos que a solicitação de revisão não procede, uma vez que já foi concedido desconto por vazamento na(s) conta(s) ' +conta+ '. \nAtualizado vencimento da conta xx/2023.');
 
-    Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(1, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function ReforcoFeitaHoje() { // Reforço feito hoje
@@ -1497,7 +1517,7 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
         HoraAtual();
         var diag = 'Conforme informado no termo de autoleitura, em caso de não informação de autoleitura por dois meses seguidos, usuário é automaticamente descadastrado do sistema de autoleitura.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
-        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+        Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
     });
 
     modal.querySelector('#opcao2').addEventListener('click', function() {
@@ -1507,7 +1527,7 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
         var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
             'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
-        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+        Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
     });
 
     modal.querySelector('#opcao3').addEventListener('click', function() {
@@ -1517,7 +1537,7 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
         var diag = 'Conforme informado no termo de autoleitura, nos meses de ABRIL e OUTUBRO a CAESB deverá necessariamente ter acesso ao hidrômetro para vistoria e leitura.\n' +
             'Como não houve acesso à leitura no mês de ' + opcao + ', usuário foi descadastrado da autoleitura automaticamente.';
         var prov = 'Usuário somente poderá se cadastrar novamente após 06 meses, como constante no Termo de Adesão da autoleitura.';
-        Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+        Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
     });
 
     document.body.appendChild(modal);
@@ -1543,7 +1563,7 @@ function AlteracaoCategoria() { // Alteração de categoria
                'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
                'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 }
 
 function AlteracaoUnidadesConsumo() { // Alteração de Unidades de Consumo
@@ -1566,7 +1586,7 @@ function AlteracaoUnidadesConsumo() { // Alteração de Unidades de Consumo
                'Caso não concorde com esta alteração poderá solicitar uma revisão de dados cadastrais no site da CAESB, www.caesb.df.gov.br, após cadastro prévio.\n' +
                'Solicitações, serviços e informações podem ser obtidos por meio do aplicativo da CAESB, autoatendimento no site da CAESB, Central 115 ou unidades de atendimento presencial.';
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 }
 
 
@@ -1612,7 +1632,7 @@ function DistribuicaoConsumo() { // Distribuição de Consumo
 
     var prov = frase2;
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 };
 
 function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
@@ -1634,7 +1654,7 @@ function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
 
     var prov = ('Conforme ART. 118, §3º da resolução 014/2011 da ADASA o desconto na tarifa de água será no volume que ultrapassar o Limite Superior, sendo este 80% do consumo médio dos últimos 12 meses do imóvel. Conta(s) referência ' + conta + ' com consumo abaixo do Limite Superior.');
 
-    Revisao(1, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(1, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 async function TrocaHD() { // Troca de HD
@@ -1654,7 +1674,7 @@ async function TrocaHD() { // Troca de HD
     }
     var prov = ('Hidrômetro substituído pelo ' + hdnovo + ', lacre ' + lacrenovo + ' e leitura 0.');
 
-    Revisao(2, 1, 1, 1, diag, prov, usuario, leitura, lacre, true);
+    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, true);
 };
 
 function Leit042023() { // Vaz.Abaixo LS S/Esg
@@ -1669,7 +1689,7 @@ function UsuarioDescadastr() { // Tarifa Social - Usuario Descadastr.
     var data = prompt('Informe a data que usuário foi descadastrado (ficha): ');
     var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. \nCliente revogado por não estar mais nos critérios estabelecidos de acordo com informações recebidas da SEDES/GDF em ' + data + '.');
     var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no último relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
-    Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function MultaImpCorte() { //Multa de impedimento de corte - negado
@@ -1679,14 +1699,14 @@ function MultaImpCorte() { //Multa de impedimento de corte - negado
     var prov = `Alertamos que o não pagamento das contas constitui descumprimento contratual, sujeitando o usuário à suspensão do serviço de abastecimento de água, conforme previsto no artigo 82, §3º, e no artigo 121, inciso I, da Resolução ADASA nº 11/2014, onde o usuário é notificado mensalmente nas contas de consumo mensal sobre as contas em aberto no imóvel e a possibilidade de corte em caso de permanência no inadimplemento.
                 \nPedido de revisão indeferido, conta mantida.`;
 
-    Revisao(2, 1, 1, 1, diag, prov, '.', '0', false, true);
+    Revisao(2, 2, 1, 1, diag, prov, '.', '0', false, true);
 };
 
 function ForaDaLista() { // Tarifa Social - Fora da lista
     HoraAtual();
     var diag = ('Para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre.');
     var prov = ('Informamos que o cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e CPF do(a) usuário(a) não consta no último relatório recebido pela CAESB - Caso necessário procurar o CRAS ou SEDES para atualização cadastral. \nA alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
-    Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function UsuarioJaTemTarSocial() { // Tarifa Social - Usuário já tem tar. social
@@ -1694,7 +1714,7 @@ function UsuarioJaTemTarSocial() { // Tarifa Social - Usuário já tem tar. soci
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = ('Informamos que o imóvel de inscrição ' + inscricao + ' já possui o benefício de tarifa social.');
     var prov = ('Salientamos que para concessão da tarifa social, é necessário que o CPF do beneficiário conste do relatório de integrantes do CadÚnico encaminhado pela SEDES e que a renda média familiar seja igual ou inferior a R$210,00 (duzentos e dez reais), caracterizando-se como família pobre ou extremamente pobre. O cadastro na tarifa social depende exclusivamente das informações encaminhadas pela SEDES/GDF e a alteração para tarifa social é realizada de forma automática caso usuário esteja vinculado a apenas um imóvel.');
-    Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function UsuarioVinculadoTarSocial() { // Tarifa Social - Usuário vinculado
@@ -1702,7 +1722,7 @@ function UsuarioVinculadoTarSocial() { // Tarifa Social - Usuário vinculado
     var inscricao = document.evaluate("/html/body/div[8]/div/form[3]/span/div[1]/div[2]/table[1]/tbody/tr[1]/td[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.textContent;
     var diag = ('Usuário é beneficiário de tarifa social e solicita vinculação do imóvel de inscrição ' + inscricao + ' para o benefício.');
     var prov = ('Imóvel selecionado para concessão de tarifa social, alteração terá efeito à partir do próximo faturamento.');
-    Revisao(2, 1, 1, 1, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
@@ -1713,7 +1733,7 @@ function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
     var diag = `Comunicamos que em ${data.split(' ')[0]} a CAESB esteve em seu imóvel para realizar vistoria, porém não havia ninguém no local para acompanhar a vistoria.`;
     var prov = 'Acesso ao hidrômetro, com leitura ' +leitura+ ' confirmada.  Caso necessário, realizar novo pedido de vistoria em nosso site (https://www.caesb.df.gov.br/portal-servicos/) ou aplicativo e caso não fique ninguém no imóvel solicitar vistoria com agendamento, onde poderá escolher o dia e o período, matutino ou vespertino, para realização da vistoria, sendo cobrada uma taxa de R$ 37,22 no próximo faturamento.';
 
-    Revisao(2, 1, 1, 1, diag, prov, 'ausente', leitura, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, 'ausente', leitura, false, true);
 };
 
 function Proprietario() { // Exec.Cons.Final - Proprietario
@@ -1722,7 +1742,7 @@ function Proprietario() { // Exec.Cons.Final - Proprietario
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Atual titular é proprietário e solicitou apenas a desativação, não sendo registrada a saída.');
-    Revisao(2, 1, 2, null, diag, prov, false, false, false, false);
+    Revisao(2, 2, 2, null, diag, prov, false, false, false, false);
 };
 
 function InqSemCons() { // Exec.Cons.Final - Inquilino sem Consumo Final
@@ -1731,7 +1751,7 @@ function InqSemCons() { // Exec.Cons.Final - Inquilino sem Consumo Final
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e sem conta de consumo final.');
-    Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
 };
 
 function InqConsFinal() { // Exec.Cons.Final - Inquilino com Consumo Final
@@ -1740,7 +1760,7 @@ function InqConsFinal() { // Exec.Cons.Final - Inquilino com Consumo Final
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e gerada conta com consumo final do imóvel.');
-    Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
 };
 
 function CorteNExec() { // Exec.Cons.Final - Corte não realizado
@@ -1748,7 +1768,7 @@ function CorteNExec() { // Exec.Cons.Final - Corte não realizado
     var data = prompt('Informe a data que houve a tentativa de corte: ');
     var diag = ('Tentativa de corte pela equipe da CAESB em ' + data + ', porém sem acesso ao hidrômetro para execução do serviço.');
     var prov = ('Conforme informado no Termo de Solicitação assinado pelo usuário a rescisão contratual e consequente suspensão do faturamento somente será efetivada após a suspensão definitiva dos serviços de abastecimento de água, onde deve ser viabilizada mediante a concessão de acesso ao padrão de ligação.');
-    Revisao(2, 1, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
 };
 
 function VazDepoisCavalete() { //Vaz depois cavalete
@@ -1768,16 +1788,16 @@ function VazDepoisCavalete() { //Vaz depois cavalete
             const dataOS = dataElement.textContent.trim();
             const [dataOriginal] = dataOS.split(' '); // Pega apenas a parte da data
             const [dia, mes, ano] = dataOriginal.split('/');
-            
+
             // Criar uma nova data subtraindo 1 dia
             const dataAnterior = new Date(ano, mes - 1, dia);
             dataAnterior.setDate(dataAnterior.getDate() - 1);
-            
+
             // Formatar a nova data
             const diaAnterior = dataAnterior.getDate().toString().padStart(2, '0');
             const mesAnterior = (dataAnterior.getMonth() + 1).toString().padStart(2, '0');
             const anoAnterior = dataAnterior.getFullYear();
-            
+
             data = `${diaAnterior}/${mesAnterior}/${anoAnterior}`;
         }
         else {
@@ -1800,7 +1820,7 @@ function VazDepoisCavalete() { //Vaz depois cavalete
     }
 
 
-    Revisao(3, 1, 1, 1, diag, prov, '.', '0', null, false);
+    Revisao(3, 2, 1, 1, diag, prov, '.', '0', null, false);
 };
 
 function VazDepoisCavaleteDentroMda() { //Vaz depois cavalete - Dentro da média
@@ -1825,23 +1845,23 @@ function VazDepoisCavaleteDentroMda() { //Vaz depois cavalete - Dentro da média
         const dataOS = dataElement.textContent.trim();
         const [dataOriginal] = dataOS.split(' '); // Pega apenas a parte da data
         const [dia, mes, ano] = dataOriginal.split('/');
-        
+
         // Criar uma nova data subtraindo 1 dia
         const dataAnterior = new Date(ano, mes - 1, dia);
         dataAnterior.setDate(dataAnterior.getDate() - 1);
-        
+
         // Formatar a nova data
         const diaAnterior = dataAnterior.getDate().toString().padStart(2, '0');
         const mesAnterior = (dataAnterior.getMonth() + 1).toString().padStart(2, '0');
         const anoAnterior = dataAnterior.getFullYear();
-        
+
         data = `${diaAnterior}/${mesAnterior}/${anoAnterior}`;
     } else {
         data = prompt('Informe a data do conserto:');
     }
     var diag = 'Vazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
     var prov = 'Contas com consumo dentro da média do imóvel.';
-    Revisao(3, 1, 1, 1, diag, prov, '.', '0', null, false);
+    Revisao(3, 2, 1, 1, diag, prov, '.', '0', null, false);
 
 };
 
@@ -2260,7 +2280,7 @@ function PopUpRefatCred() {
         contaRefSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 1); //ok
         contaRefSelector = formatCSSSelector(contaRefSelectorID);
 
-        lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 3); //ok 
+        lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 3); //ok
         lupaSelector = formatCSSSelector(lupaSelectorID);
 
         AplicarCreditoButtID = getDynamicIdByText('form3\\:j_idt', 'Adicionar', 0); //ok
@@ -2345,7 +2365,7 @@ function PopUpRefatCred() {
                     } else {
                         console.error('Elemento não encontrado para o índice:', index);
                     }
-                    
+
 
                     // Selecionar a opção "Parcial"
                     try {
