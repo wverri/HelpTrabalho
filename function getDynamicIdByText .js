@@ -144,7 +144,7 @@ console.log(vaznaovisivel);
 console.log(vazcoletado);
 console.log(vaznaocoletado);
 
-*/
+
 
  
 
@@ -162,6 +162,29 @@ const descricaoANEXO = getDynamicIdByText('formConfirmaAnexoVistoriaEmail\\:j_id
 var elementPairs = [
     [formatCSSSelector(nomeANEXO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXO)]
 ];
+
+*/
+
+const IrregConstID = getDynamicIdByText('form1\\:j_idt', 'Irregularidade Constatada*:', 1);
+const IrregConst = formatCSSSelector(IrregConstID);
+
+const ApuracaoID = getDynamicIdByText('form1\\:j_idt', 'Elemento de apuração da irregularidade*:', 1);
+const Apuracao = formatCSSSelector(ApuracaoID);
+
+const CriteriosID = getDynamicIdByText('form1\\:j_idt', 'Critérios adotados na revisão dos faturamentos*:', 1);
+const Criterios = formatCSSSelector(CriteriosID);
+
+const TarifaID = getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1);
+const Tarifa = formatCSSSelector(TarifaID);
+
+const MemoCalculoID = getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1);
+const MemoCalculo = formatCSSSelector(MemoCalculoID);
+
+console.log(IrregConst);
+console.log(Apuracao);
+console.log(Criterios);
+console.log(Tarifa);
+console.log(MemoCalculo);
 
 
 

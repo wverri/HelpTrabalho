@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.11
+// @version     3.12
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!

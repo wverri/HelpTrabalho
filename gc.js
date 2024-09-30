@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.14
+// @version     3.20
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -201,6 +201,18 @@ const pfInscricaoId = "form1:inscricao";
 
 let radioParcialidt, radioParcialID, pfValorParcialID, pfDlgEdicaoShowID, pfDlgEdicaoShow, contaRefSelectorID, contaRefSelector, lupaSelectorID, lupaSelector, AplicarCreditoButtID, AplicarCreditoButt, observacaoinputID, observacaoinput;
 
+
+// Tela de baixa de OS - revisão de conta : sim
+const IrregConstID = getDynamicIdByText('form1\\:j_idt', 'Irregularidade Constatada*:', 1);
+const IrregConst = formatCSSSelector(IrregConstID);
+const ApuracaoID = getDynamicIdByText('form1\\:j_idt', 'Elemento de apuração da irregularidade*:', 1);
+const Apuracao = formatCSSSelector(ApuracaoID);
+const CriteriosID = getDynamicIdByText('form1\\:j_idt', 'Critérios adotados na revisão dos faturamentos*:', 1);
+const Criterios = formatCSSSelector(CriteriosID);
+const TarifaID = getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1);
+const Tarifa = formatCSSSelector(TarifaID);
+const MemoCalculoID = getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1);
+const MemoCalculo = formatCSSSelector(MemoCalculoID);
 
 // LISTAGEM COM TODOS OS IDT's
 
@@ -411,10 +423,8 @@ myWidget.append(
     createButtonWithClick('Usuario Orientado Vazamento', function(){ UsuarioOrientadoVazamento(); }),
     createButtonWithClick('Portão fechado', function(){ PortaoFechado(); }),
     createButtonWithClick('Sem Vazam. Improcedente', function(){ SemVazamImprocedente(); }),
-    createButtonWithClick('Vazamento Interno Ñ Vis/Col', function(){ VazInternNVisCol(); }),
     createButtonWithClick('Leitura informada pelo usuario', function(){ LeituraInformada(); }),
     createButtonWithClick('Vazamento Coberto', function(){ VazCoberto(); }),
-    createButtonWithClick('Erro de leitura', function(){ ErroLeitura(); }),
     createButtonWithClick('Agendamento de leitura', function(){ AgendLeitura(); }),
     createButtonWithClick('Vazamento Visivel/Coletado', function(){ VazVisCol(); }),
     createButtonWithClick('NºHid.ñ conf. já atualizado', function(){ NhidNConf(); }),
@@ -422,10 +432,13 @@ myWidget.append(
     createButtonWithClick('Distribuição de Consumo', function(){ DistribuicaoConsumo(); }),
     createButtonWithClick('Vaz.Abaixo LS S/Esg', function(){ VazAbaixoLs(); }),
     createButtonWithClick('Clt ausente Vist realizada', function(){ CltAusenteVistRealizada(); }),
-    createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
     createButtonWithClick('Depois cavalete - dentro mda', function(){ VazDepoisCavaleteDentroMda(); }),
     createButtonWithClick('Multa imp.corte', function(){ MultaImpCorte(); }),
     createButtonWithClick('Multa Agend Fora Prazo', function(){ AgendLeituraForaPrazo(); }),
+    createSectionTitle('--- REVISAO COM REFAT ---'),
+    createButtonWithClick('Vazamento Interno Ñ Vis/Col', function(){ VazInternNVisCol(); }),
+    createButtonWithClick('Erro de leitura', function(){ ErroLeitura(); }),
+    createButtonWithClick('Vaz depois cavalete', function(){ VazDepoisCavalete(); }),
     createSectionTitle('--- DADOS CADASTRAIS ---'),
     createButtonWithClick('Alteração de categoria', function(){ AlteracaoCategoria(); }),
     createButtonWithClick('Alteração de Unidades de Consumo', function(){ AlteracaoUnidadesConsumo(); }),
@@ -1063,6 +1076,9 @@ function Titularidade(diag, prov) {
     var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
+    if (element5 !== null) {
+        element5.click();
+    }
     if (element1 !== null) {
         element1.click();
     }
@@ -1074,9 +1090,6 @@ function Titularidade(diag, prov) {
     }
     if (element4 !== null) {
         element4.click();
-    }
-    if (element5 !== null) {
-        element5.click();
     }
 
     var diagn = document.getElementById("form1:diagnosticoBaixa");
@@ -1097,13 +1110,11 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
         vaz = 1;
     }
 
-    var element5;
-    if (revicontasistema != null) {
-        element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (element5 !== null) {
+        element5.click();
     }
-    else {
-        element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    }
+
     //Revisao(vazamento, reviconta, executado, resposta, diag, prov, usu, lei, lacre, improcende)
     var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[" + vaz + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + exec + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -1120,9 +1131,6 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
         element3.click();
     }
     if (element4 !== null) {
-        element4.click();
-    }
-    if (element5 !== null) {
         element4.click();
     }
 
@@ -1196,6 +1204,99 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
 
 }
 
+async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criterios, tarifa, memoriacalculo, usuario, leitura) {
+    if (tipovaz == 3) {
+        var depois = true;
+        tipovaz = 1;
+    }
+
+    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (element5 !== null) {
+        element5.click();
+    }
+
+    var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    if (element1 !== null) {
+        element1.click();
+    }
+    if (element2 !== null) {
+        element2.click();
+    }
+    if (element3 !== null) {
+        element3.click();
+    }
+    if (element4 !== null) {
+        element4.click();
+    }
+
+    const irreg = safeQuerySelector(IrregConst);
+    const apur = safeQuerySelector(Apuracao);
+    const crit = safeQuerySelector(Criterios);
+    const tarif = safeQuerySelector(Tarifa);
+    const memcalc = safeQuerySelector(MemoCalculo);
+    const anexar = await waitForElement(taganexar);
+
+    if (irreg !== null && irreg !== false) {
+        irreg.value = irregularidade;
+    }
+    if (apur !== null && apur !== false) {
+        apur.value = apuracao;
+    }
+    if (crit !== null && crit !== false) {
+        crit.value = criterios;
+    }
+    if (tarif !== null && tarif !== false) {
+        tarif.value = tarifa;
+    }
+    if (memcalc !== null && memcalc !== false) {
+        memcalc.value = memoriacalculo;
+    }
+
+    if (vaz == 1) {
+        const tipoVazamento = await waitForElement('#form1\\:tipoVazamento');
+        if (tipoVazamento) {
+            document.getElementById("form1:tipoVazamento_4").click();
+        }
+    }
+
+    if (depois) {
+        const tipoVazamento = await waitForElement('#form1\\:tipoVazamento');
+        if (tipoVazamento) {
+            document.getElementById("form1:tipoVazamento_2").click();
+        }
+    }
+
+    // Tela de Baixa - usuário, leitura e titulo de anexar.
+    tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS:', 1, 3);
+    tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro:', 1, 3);
+    taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
+
+    tagusuario = formatCSSSelector(tagusuarioID);
+    tagleitura = formatCSSSelector(tagleituraID);
+    taganexar = (formatCSSSelector(taganexarID) + '_header');
+
+    console.log('tagusuario: ' + tagusuario);
+    console.log('tagleitura: ' + tagleitura);
+    console.log('taganexar: ' + taganexar);
+
+
+    if (usuario && leitura) {
+        const usu = await waitForElement(tagusuario);
+        if (usu !== null) {
+            usu.value = usuario;
+        }
+        const leit = await waitForElement(tagleitura);
+        if (leit !== null) {
+            leit.value = leitura;
+        }
+    }
+    return;
+}
+
 async function waitForElement(selector) {
     const startTime = Date.now();
     const timeout = 2000; // Tempo limite de 2 segundos
@@ -1239,6 +1340,77 @@ async function waitForClickable(selector, timeout = 30000) {
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
+}
+
+async function abrirModalRevisao() {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.position = 'fixed';
+        modal.style.zIndex = '9999';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.backgroundColor = 'white';
+        modal.style.padding = '20px';
+        modal.style.border = '1px solid black';
+        modal.style.maxHeight = '80vh';
+        modal.style.overflowY = 'auto';
+
+        modal.innerHTML = `
+            <h2>Informações para Revisão de Contas</h2>
+            ${[1, 2, 3, 4].map(i => `
+                <div>
+                    <h3>Conta ${i}</h3>
+                    <input type="text" id="conta${i}" placeholder="Conta (ex: 07/2024)">
+                    <input type="number" id="consumo${i}" placeholder="Consumo">
+                    <select id="tipoRefat${i}">
+                        <option value="">Tipo de Refaturamento</option>
+                        <option value="LS">Limite Superior</option>
+                        <option value="LSM">Limite Superior e média no esgoto</option>
+                        <option value="M">Média no esgoto</option>
+                        <option value="MM">Média água e esgoto></option>
+                    </select>
+                    <input type="number" id="ls${i}" placeholder="LS">
+                    <input type="number" id="media${i}" placeholder="Média">
+                    <input type="number" id="valorConta${i}" placeholder="Valor Conta" step="0.01">
+                    <input type="number" id="novoValor${i}" placeholder="Novo Valor" step="0.01">
+                </div>
+            `).join('')}
+            <select id="tabelaTarifa">
+                <option value="01/06/2024">01/06/2024</option>
+                <option value="01/08/2023">01/08/2023</option>
+                <option value="01/01/2023">01/01/2023</option>
+                <option value="01/09/2022">01/09/2022</option>
+                <option value="01/06/2021">01/06/2021</option>
+            </select>
+            <button id="submitModal">Enviar</button>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('submitModal').addEventListener('click', function() {
+            const contas = [];
+            for (let i = 1; i <= 4; i++) {
+                const conta = document.getElementById(`conta${i}`).value;
+                if (conta) {
+                    contas.push({
+                        conta: conta,
+                        consumo: document.getElementById(`consumo${i}`).value,
+                        tipoRefat: document.getElementById(`tipoRefat${i}`).value,
+                        ls: document.getElementById(`ls${i}`).value,
+                        media: document.getElementById(`media${i}`).value,
+                        valorConta: document.getElementById(`valorConta${i}`).value,
+                        novoValor: document.getElementById(`novoValor${i}`).value
+                    });
+                }
+            }
+            const tabelaTarifa = document.getElementById('tabelaTarifa').value;
+
+            modal.remove();
+            resolve({ contas, tabelaTarifa });
+        });
+    });
 }
 
 function AltTitAtual() { // Alteração para Titular Atual
@@ -1327,18 +1499,43 @@ function VazInternNVisCol() { //Vaz. Interno
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
     var usuario = prompt('Digite o nome do usuario: ');
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
-    var vistoriante = prompt('Digite a matrícula do vistoriante: ');
-    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
-    if ( lacre == "" ) {
-        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
-    }
-    else {
-        var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
-    }
+    var data = document.getElementById('form1:dataFimExecucao_input').value.split(' ')[0];
 
-    var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
+    // var vistoriante = prompt('Digite a matrícula do vistoriante: ');
+    // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
+    // if ( lacre == "" ) {
+    //     var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+    // }
+    // else {
+    //     var diag = 'Em vistoria o hidrômetro apresentou bom funcionamento, com leitura confirmada de ' + leitura + ', lacre ' + lacre + '. \nVazamento interno sanado, não visível e não coletado para o esgoto ' + vaz + '.\nMatrícula vistoriante responsável pela avaliação: ' + vistoriante;
+    // }
 
-    Revisao(1, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    // var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
+
+    // Revisao(1, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
+
+    //Alteração para o novo sistema de revisão
+    abrirModalRevisao().then(({ contas, tabelaTarifa }) => {
+        const irregularidade = `Conta(s) referência(s) ${contas.map(c => c.conta).join(' , ')} com consumo acima da média do imóvel.`;
+        const apuracao = `Vistoria realizada em ${data} que confirmou vazamento interno no imóvel sanado pelo usuário: ${vaz};`;
+        const criterios = contas.map(c => {
+            let criterio = `Conta ${c.conta} revisada `;
+            if (c.tipoRefat === 'LS') {
+                criterio += `pelo limite superior (${c.ls}m³) na tarifa de água.`;
+            } else if (c.tipoRefat === 'LSM') {
+                criterio += `pelo limite superior (${c.ls}m³) na tarifa de água e média (${c.media}m³) na tarifa de esgoto.`;
+            } else if (c.tipoRefat === 'M') {
+                criterio += `pela média (${c.media}m³) na tarifa de esgoto.`;
+            }
+            return criterio;
+        }).join(' ');
+        const tarifa = `Tabela de tarifa vigente a partir de ${tabelaTarifa};`;
+        const memoriacalculo = contas.map(c =>
+            `Conta ${c.conta} inicial faturada com ${c.consumo}m³ que resultou numa conta de R$ ${c.valorConta} e nova conta faturada no valor de R$ ${c.novoValor}.`
+        ).join(' ');
+
+        RevisaoComRefaturamento(1, irregularidade, apuracao, criterios, tarifa, memoriacalculo, usuario, leitura);
+    });
 };
 
 function LeituraInformada() { //Leitura informada
@@ -1374,20 +1571,37 @@ function VazCoberto() { //Vaz Coberto
 function ErroLeitura() { //Erro de leitura
 
     var leitura = prompt('Digite a leitura: ');
+    const leituraAnterior = prompt('Digite a leitura coletada errada:');
     var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
     var usuario = prompt('Digite o nome do usuario: ');
-    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
+    const data = document.getElementById('form1:dataFimExecucao_input').value.split(' ')[0];
 
-    if ( lacre == "" ) {
-        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Houve erro de leitura.');
-    }
-    else {
-        var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+'. Houve erro de leitura.');
-    }
+    // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
 
-    var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel');
+    // if ( lacre == "" ) {
+    //     var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Houve erro de leitura.');
+    // }
+    // else {
+    //     var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada, lacre ' +lacre+'. Houve erro de leitura.');
+    // }
 
-    Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
+    // var prov = ('Conta referência ' +conta+ ' refaturada conforme consumo do imóvel');
+
+    // Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
+
+    // Alteração para o novo sistema de revisão
+    abrirModalRevisao().then(({ contas, tabelaTarifa }) => {
+        const leitura = prompt('Digite a leitura correta:');
+        const irregularidade = `Erro na leitura coletada na referência ${contas[0].conta};`;
+        const apuracao = `Vistoria realizada em ${data} que confirmou o erro de leitura;`;
+        const criterios = `Leitura correta coletada (${leitura}) subtraída da leitura anterior (${leituraAnterior});`;
+        const tarifa = `Tabela de tarifa vigente a partir de ${tabelaTarifa};`;
+        const memoriacalculo = contas.map(c =>
+            `Conta ${c.conta} inicial faturada com ${c.consumo}m³ que resultou numa conta de R$ ${c.valorConta} e nova conta faturada com ${leitura - leituraAnterior}m³ que resultou numa conta de R$ ${c.novoValor}.`
+        ).join(' ');
+
+        RevisaoComRefaturamento(1, irregularidade, apuracao, criterios, tarifa, memoriacalculo, usuario, leitura);
+    });
 };
 
 function AgendLeitura() { //Agendamento de leitura
@@ -1809,18 +2023,43 @@ function VazDepoisCavalete() { //Vaz depois cavalete
         data = prompt('Informe a data do conserto:');
     }
 
-    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
-    var diag = 'Vazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
+    // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
+    // var diag = 'Vazamento após o hidrômetro sanado pela CAESB em ' +data+ ' pela OSM ' +OSC+ '.';
 
-    if ( conta == "" ) {
-        var prov = 'Contas com consumo dentro da média do imóvel.';
-    }
-    else {
-        var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
-    }
+    // if ( conta == "" ) {
+    //     var prov = 'Contas com consumo dentro da média do imóvel.';
+    // }
+    // else {
+    //     var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
+    // }
 
 
-    Revisao(3, 2, 1, 1, diag, prov, '.', '0', null, false);
+    // Revisao(3, 2, 1, 1, diag, prov, '.', '0', null, false);
+
+    //Alteração para o novo sistema de revisão
+    abrirModalRevisao().then(({ contas, tabelaTarifa }) => {
+
+        const irregularidade = `Conta(s) referência(s) ${contas.map(c => c.conta).join(' e ')} com consumo acima da média do imóvel devido a vazamento após o hidrômetro.`;
+        const apuracao = `Vazamento após o hidrômetro sanado pela CAESB em ${data} pela OSM ${OSC}.`;
+        const criterios = contas.map(c => {
+            let criterio = `Conta ${c.conta} revisada `;
+            criterio += `pela média (${c.media}m³).`;
+            return criterio;
+        }).join(' ');
+        const tarifa = `Tabela de tarifa vigente a partir de ${tabelaTarifa};`;
+        const memoriacalculo = contas.map(c =>
+                                          `Conta ${c.conta} inicial faturada com ${c.consumo}m³ que resultou numa conta de R$ ${c.valorConta} e nova conta faturada no valor de R$ ${c.novoValor}.`
+                                         ).join(' ');
+
+        if (contas.length === 0) {
+            const diag = `Vazamento após o hidrômetro sanado pela CAESB em ${data} pela OSM ${OSC}.`;
+            const prov = 'Contas com consumo dentro da média do imóvel.';
+            Revisao(3, 2, 1, 1, diag, prov, '.', '0', null, false);
+        } else {
+            RevisaoComRefaturamento(3, irregularidade, apuracao, criterios, tarifa, memoriacalculo, '.', '0');
+        }
+    });
+
 };
 
 function VazDepoisCavaleteDentroMda() { //Vaz depois cavalete - Dentro da média
