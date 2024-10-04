@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.20
+// @version     3.36
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -79,7 +79,7 @@ function extractIds(tbodyidtID, mod) {
 }
 
 
-// Exemplo de uso da função getDynamicIdByText
+// IDTs da tela de refaturamento
 const contaTitleElementID = getDynamicIdByText('j_idt', 'Conta', 0);
 const AttVencElementID = getDynamicIdByText('j_idt', 'Alterar Data Vencimento', 0);
 const textarea2idtID = getDynamicIdByText('formVencimento\\:j_idt', 'Justificativa: *', 1);
@@ -108,16 +108,16 @@ const botaoemail = botaoemailID;
 
 let tagusuarioID, tagleituraID, taganexarID, tagusuario, tagleitura, taganexar; // lançado na função de revisão.
 
-console.log('ContatTitleElementID: ' + contaTitleElementID);
-console.log('AttVencElementID: ' + AttVencElementID);
-console.log('textarea2idt: ' + textarea2idt);
-console.log('textareaidt: ' + textareaidt);
-console.log('leitidt: ' + leitidt);
-console.log('esgotomediaID: ' + esgotomediaID);
-console.log('leituracriadanaoID: ' + leituracriadanaoID);
-console.log('checkemail1: ' + checkemail1);
-console.log('checkemail2: ' + checkemail2);
-console.log('botaoemail: ' + botaoemail);
+// console.log('ContatTitleElementID: ' + contaTitleElementID);
+// console.log('AttVencElementID: ' + AttVencElementID);
+// console.log('textarea2idt: ' + textarea2idt);
+// console.log('textareaidt: ' + textareaidt);
+// console.log('leitidt: ' + leitidt);
+// console.log('esgotomediaID: ' + esgotomediaID);
+// console.log('leituracriadanaoID: ' + leituracriadanaoID);
+// console.log('checkemail1: ' + checkemail1);
+// console.log('checkemail2: ' + checkemail2);
+// console.log('botaoemail: ' + botaoemail);
 
 
 // Tela de abrir anexos na tela de baixa
@@ -202,7 +202,7 @@ const pfInscricaoId = "form1:inscricao";
 let radioParcialidt, radioParcialID, pfValorParcialID, pfDlgEdicaoShowID, pfDlgEdicaoShow, contaRefSelectorID, contaRefSelector, lupaSelectorID, lupaSelector, AplicarCreditoButtID, AplicarCreditoButt, observacaoinputID, observacaoinput;
 
 
-// Tela de baixa de OS - revisão de conta : sim
+/* // Tela de baixa de OS - revisão de conta : sim
 const IrregConstID = getDynamicIdByText('form1\\:j_idt', 'Irregularidade Constatada*:', 1);
 const IrregConst = formatCSSSelector(IrregConstID);
 const ApuracaoID = getDynamicIdByText('form1\\:j_idt', 'Elemento de apuração da irregularidade*:', 1);
@@ -213,6 +213,48 @@ const TarifaID = getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1);
 const Tarifa = formatCSSSelector(TarifaID);
 const MemoCalculoID = getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1);
 const MemoCalculo = formatCSSSelector(MemoCalculoID);
+
+// Tela de baixa botões de revisão:
+const RefaturarContaID = getDynamicIdByText('form1\\:j_idt', 'Deseja refaturar conta:', 2);
+const RefaturarConta = formatCSSSelector(RefaturarContaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)';
+const HaviaVazID = getDynamicIdByText('form1\\:j_idt', 'Havia vazamento ou extravasamento: *', 1);
+const HaviaVaz = formatCSSSelector(HaviaVazID); 
+const ExecutadoID = getDynamicIdByText('form1\\:j_idt', 'Executado: *', 1);
+const Executado = formatCSSSelector(ExecutadoID);
+const CartaRespostaID = getDynamicIdByText('form1\\:j_idt', 'Encaminhar Carta Resposta: *', 1);
+const CartaResposta = formatCSSSelector(CartaRespostaID); 
+const RevisaoContaID = getDynamicIdByText('form1\\:j_idt', 'Revisão de Conta: *', 1);
+const RevisaoConta = formatCSSSelector(RevisaoContaID); // Adicionar o '1) > label:nth-child' ou '2) > label:nth-child(2)' no final
+const ConcluidoID = getDynamicIdByText('form1\\:j_idt', 'Concluído: *', 1);
+const Concluido = formatCSSSelector(ConcluidoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+ */
+
+function getDynamicSelectorsRevisao() {
+    const selectorsRevisao = {
+        RefaturarConta: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Deseja refaturar conta:', 2)) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)',
+        HaviaVaz: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Havia vazamento ou extravasamento: *', 1)),
+        Executado: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Executado: *', 1)),
+        CartaResposta: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Encaminhar Carta Resposta: *', 1)),
+        RevisaoConta: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Revisão de Conta: *', 1)),
+        Concluido: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Concluído: *', 1)) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)'
+    };
+    
+    return selectorsRevisao;
+}
+
+function getDynamicSelectorsRefaturamento() {
+    const selectorsRefaturamento = {
+        IrregConst: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Irregularidade Constatada*:', 1)),
+        Apuracao: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Elemento de apuração da irregularidade*:', 1)),
+        Criterios: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Critérios adotados na revisão dos faturamentos*:', 1)),
+        Tarifa: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1)),
+        MemoCalculo: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1)),
+    };
+    
+    return selectorsRefaturamento;
+}
+
+
 
 // LISTAGEM COM TODOS OS IDT's
 
@@ -1066,40 +1108,83 @@ function HoraAtual() { //Colocar Hora Atual
     moverSlider(sliderHandleMinuto, 123);
 };
 
-function Titularidade(diag, prov) {
+async function Titularidade(diag, prov) {
     HoraAtual();
 
-    var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    // revisão de conta - não
-    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // // revisão de conta - não
+    // var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-    if (element5 !== null) {
-        element5.click();
+    // if (element5 !== null) {
+    //     element5.click();
+    // }
+    // if (element1 !== null) {
+    //     element1.click();
+    // }
+    // if (element2 !== null) {
+    //     element2.click();
+    // }
+    // if (element3 !== null) {
+    //     element3.click();
+    // }
+    // if (element4 !== null) {
+    //     element4.click();
+    // }
+
+    const selectorsRevisao = getDynamicSelectorsRevisao();
+    const refaturarConta = safeQuerySelector(selectorsRevisao.RefaturarConta);
+    if (refaturarConta) {
+        refaturarConta.click();
     }
-    if (element1 !== null) {
-        element1.click();
+    const haviaVaz = safeQuerySelector(selectorsRevisao.HaviaVaz + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+    if (haviaVaz) {
+        haviaVaz.click();
     }
-    if (element2 !== null) {
-        element2.click();
+    const executado = safeQuerySelector(selectorsRevisao.Executado + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (executado) {
+        executado.click();
     }
-    if (element3 !== null) {
-        element3.click();
+    const concluido = safeQuerySelector(selectorsRevisao.Concluido);
+    if (concluido) {
+        concluido.click();
     }
-    if (element4 !== null) {
-        element4.click();
+    const cartaResposta = safeQuerySelector(selectorsRevisao.CartaResposta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (cartaResposta) {
+        cartaResposta.click();
     }
+    const revisaoConta = safeQuerySelector(selectorsRevisao.RevisaoConta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)');
+    if (revisaoConta) {
+        revisaoConta.click();
+    }
+
+    // Tela de Baixa - usuário, leitura e titulo de anexar.
+    tagusuarioID = getDynamicIdByText('form1:', 'Acompanhou a OS:', 1, 3);
+    tagleituraID = getDynamicIdByText('form1:', 'Leitura do Hidrômetro:', 1, 3);
+    taganexarID = getDynamicIdByText('form1:', 'Anexos E-mail:', 0, 2);
+
+    tagusuario = formatCSSSelector(tagusuarioID);
+    tagleitura = formatCSSSelector(tagleituraID);
+    taganexar = (formatCSSSelector(taganexarID) + '_header');
+
+    const anexar = await waitForElement(taganexar);
 
     var diagn = document.getElementById("form1:diagnosticoBaixa");
     var provd = document.getElementById("form1:providenciaBaixa");
 
-    if (diagn !== null) {
+    if (diagn !== null && diagn !== false) {
         diagn.value = diag;
     }
-    if (provd !== null) {
+    else{
+        console.log("Diagnostico null");
+    }
+    if (provd !== null && provd !== false) {
         provd.value = prov;
+    }
+    else{
+        console.log("Providencia null");
     }
 }
 
@@ -1110,40 +1195,57 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
         vaz = 1;
     }
 
-    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    if (element5 !== null) {
-        element5.click();
+    // var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // if (element5 !== null) {
+    //     element5.click();
+    // }
+
+    // //Revisao(vazamento, reviconta, executado, resposta, diag, prov, usu, lei, lacre, improcende)
+    // var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[" + vaz + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + exec + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[" + resp + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    // var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[" + reviconta + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+    // if (element1 !== null) {
+    //     element1.click();
+    // }
+    // if (element2 !== null) {
+    //     element2.click();
+    // }
+    // if (element3 !== null) {
+    //     element3.click();
+    // }
+    // if (element4 !== null) {
+    //     element4.click();
+    // }
+
+    const selectorsRevisao = getDynamicSelectorsRevisao();
+    const refaturarConta = safeQuerySelector(selectorsRevisao.RefaturarConta);
+    if (refaturarConta) {
+        refaturarConta.click();
+    }
+    const haviaVaz = safeQuerySelector(selectorsRevisao.HaviaVaz + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(' + vaz + ') > label:nth-child(2)');
+    if (haviaVaz) {
+        haviaVaz.click();
+    }
+    const executado = safeQuerySelector(selectorsRevisao.Executado + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child('+ exec +') > label:nth-child(2)');
+    if (executado) {
+        executado.click();
+    }
+    const concluido = safeQuerySelector(selectorsRevisao.Concluido);
+    if (concluido) {
+        concluido.click();
+    }
+    const cartaResposta = safeQuerySelector(selectorsRevisao.CartaResposta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child('+ resp +') > label:nth-child(2)');
+    if (cartaResposta) {
+        cartaResposta.click();
+    }
+    const revisaoConta = safeQuerySelector(selectorsRevisao.RevisaoConta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child('+ reviconta +') > label:nth-child(2)');
+    if (revisaoConta) {
+        revisaoConta.click();
     }
 
-    //Revisao(vazamento, reviconta, executado, resposta, diag, prov, usu, lei, lacre, improcende)
-    var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[" + vaz + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[" + exec + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[" + resp + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[" + reviconta + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-    if (element1 !== null) {
-        element1.click();
-    }
-    if (element2 !== null) {
-        element2.click();
-    }
-    if (element3 !== null) {
-        element3.click();
-    }
-    if (element4 !== null) {
-        element4.click();
-    }
-
-    const diagn = document.getElementById("form1:diagnosticoBaixa");
-    const provd = document.getElementById("form1:providenciaBaixa");
     const anexar = await waitForElement(taganexar);
-
-    if (diagn !== null && diagn !== false) {
-        diagn.value = diag;
-    }
-    if (provd !== null && provd !== false) {
-        provd.value = prov;
-    }
 
     if (vaz == 1) {
         const tipoVazamento = await waitForElement('#form1\\:tipoVazamento');
@@ -1200,6 +1302,23 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
             leit.value = leitura;
         }
     }
+
+    const diagn = document.getElementById("form1:diagnosticoBaixa");
+    const provd = document.getElementById("form1:providenciaBaixa");
+
+    if (diagn !== null && diagn !== false) {
+        diagn.value = diag;
+    }
+    else{
+        console.log("Diagnostico null");
+    }
+    if (provd !== null && provd !== false) {
+        provd.value = prov;
+    }
+    else{
+        console.log("Providencia null");
+    }
+
     return;
 
 }
@@ -1210,53 +1329,37 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
         tipovaz = 1;
     }
 
-    var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    if (element5 !== null) {
-        element5.click();
+    // 
+    
+    const selectorsRevisao = getDynamicSelectorsRevisao();
+    const refaturarConta = safeQuerySelector(selectorsRevisao.RefaturarConta);
+    if (refaturarConta) {
+        refaturarConta.click();
+    }
+    const haviaVaz = safeQuerySelector(selectorsRevisao.HaviaVaz + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (haviaVaz) {
+        haviaVaz.click();
+    }
+    const executado = safeQuerySelector(selectorsRevisao.Executado + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (executado) {
+        executado.click();
+    }
+    const concluido = safeQuerySelector(selectorsRevisao.Concluido);
+    if (concluido) {
+        concluido.click();
+    }
+    const cartaResposta = safeQuerySelector(selectorsRevisao.CartaResposta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (cartaResposta) {
+        cartaResposta.click();
+    }
+    const revisaoConta = safeQuerySelector(selectorsRevisao.RevisaoConta + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)');
+    if (revisaoConta) {
+        revisaoConta.click();
     }
 
-    var element1 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element2 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[6]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-    if (element1 !== null) {
-        element1.click();
-    }
-    if (element2 !== null) {
-        element2.click();
-    }
-    if (element3 !== null) {
-        element3.click();
-    }
-    if (element4 !== null) {
-        element4.click();
-    }
-
-    const irreg = safeQuerySelector(IrregConst);
-    const apur = safeQuerySelector(Apuracao);
-    const crit = safeQuerySelector(Criterios);
-    const tarif = safeQuerySelector(Tarifa);
-    const memcalc = safeQuerySelector(MemoCalculo);
     const anexar = await waitForElement(taganexar);
 
-    if (irreg !== null && irreg !== false) {
-        irreg.value = irregularidade;
-    }
-    if (apur !== null && apur !== false) {
-        apur.value = apuracao;
-    }
-    if (crit !== null && crit !== false) {
-        crit.value = criterios;
-    }
-    if (tarif !== null && tarif !== false) {
-        tarif.value = tarifa;
-    }
-    if (memcalc !== null && memcalc !== false) {
-        memcalc.value = memoriacalculo;
-    }
-
-    if (vaz == 1) {
+    if (tipovaz == 1) {
         const tipoVazamento = await waitForElement('#form1\\:tipoVazamento');
         if (tipoVazamento) {
             document.getElementById("form1:tipoVazamento_4").click();
@@ -1294,6 +1397,51 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
             leit.value = leitura;
         }
     }
+
+    const selectorsRefaturamento = getDynamicSelectorsRefaturamento();
+    const irreg = safeQuerySelector(selectorsRefaturamento.IrregConst);
+    const apur = safeQuerySelector(selectorsRefaturamento.Apuracao);
+    const crit = safeQuerySelector(selectorsRefaturamento.Criterios);
+    const tarif = safeQuerySelector(selectorsRefaturamento.Tarifa);
+    const memcalc = safeQuerySelector(selectorsRefaturamento.MemoCalculo);
+
+    if (irreg !== null && irreg !== false) {
+        irreg.value = irregularidade;
+    }
+    if (apur !== null && apur !== false) {
+        apur.value = apuracao;
+    }
+    if (crit !== null && crit !== false) {
+        crit.value = criterios;
+    }
+    if (tarif !== null && tarif !== false) {
+        tarif.value = tarifa;
+    }
+    if (memcalc !== null && memcalc !== false) {
+        memcalc.value = memoriacalculo;
+    }
+
+    // function setTextareaValue(element, value) {
+    //     if (element) {
+    //         element.value = value;
+    //         element.dispatchEvent(new Event('input', { bubbles: true }));
+    //         element.dispatchEvent(new Event('change', { bubbles: true }));
+    //     } else {
+    //         console.error('Elemento não encontrado');
+    //     }
+    // }
+
+    // setTextareaValue(irreg, irregularidade);
+    // setTextareaValue(apur, apuracao);
+    // setTextareaValue(crit, criterios);
+    // setTextareaValue(tarif, tarifa);
+    // setTextareaValue(memcalc, memoriacalculo);
+
+    var procedente = document.evaluate("/html/body/div[8]/div/form[3]/span/div[3]/div[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (procedente !== null) {
+        procedente.click();
+    }
+
     return;
 }
 
@@ -1373,8 +1521,8 @@ async function abrirModalRevisao() {
                     </select>
                     <input type="number" id="ls${i}" placeholder="LS">
                     <input type="number" id="media${i}" placeholder="Média">
-                    <input type="number" id="valorConta${i}" placeholder="Valor Conta" step="0.01">
-                    <input type="number" id="novoValor${i}" placeholder="Novo Valor" step="0.01">
+                    <input type="text" id="valorConta${i}" placeholder="Valor Original (R$)" inputmode="decimal">
+                    <input type="text" id="novoValor${i}" placeholder="Novo Valor (R$)" inputmode="decimal">
                 </div>
             `).join('')}
             <select id="tabelaTarifa">
@@ -1496,7 +1644,7 @@ function SemVazamImprocedente() { //Sem Vazam. Improcedente
 function VazInternNVisCol() { //Vaz. Interno
 
     var leitura = prompt('Digite a leitura: ');
-    var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
+    // var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
     var usuario = prompt('Digite o nome do usuario: ');
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
     var data = document.getElementById('form1:dataFimExecucao_input').value.split(' ')[0];
@@ -1570,13 +1718,15 @@ function VazCoberto() { //Vaz Coberto
 
 function ErroLeitura() { //Erro de leitura
 
-    var leitura = prompt('Digite a leitura: ');
-    const leituraAnterior = prompt('Digite a leitura coletada errada:');
-    var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
+    var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
+    const consumoAnterior = prompt('Digite o consumo da conta faturada errada (em m³):');
+    var valorOriginal = prompt('Digite o valor original da conta:');
+    var leitura = prompt('Digite a leitura da vistoria: ');
+    var valorCorrigido = prompt('Digite o valor corrigido da conta:');
+    const consumoCorreto = prompt('Digite o consumo correto (em m³):');
+    // var lacre = prompt('Digite o nº do lacre. Caso não tenha/violado, deixe em branco.');
     var usuario = prompt('Digite o nome do usuario: ');
     const data = document.getElementById('form1:dataFimExecucao_input').value.split(' ')[0];
-
-    // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
 
     // if ( lacre == "" ) {
     //     var diag = ('Hidrômetro com bom funcionamento, leitura ' +leitura+ ' confirmada. Houve erro de leitura.');
@@ -1590,18 +1740,13 @@ function ErroLeitura() { //Erro de leitura
     // Revisao(2, 2, 1, 1, diag, prov, usuario, leitura, lacre, false);
 
     // Alteração para o novo sistema de revisão
-    abrirModalRevisao().then(({ contas, tabelaTarifa }) => {
-        const leitura = prompt('Digite a leitura correta:');
-        const irregularidade = `Erro na leitura coletada na referência ${contas[0].conta};`;
-        const apuracao = `Vistoria realizada em ${data} que confirmou o erro de leitura;`;
-        const criterios = `Leitura correta coletada (${leitura}) subtraída da leitura anterior (${leituraAnterior});`;
-        const tarifa = `Tabela de tarifa vigente a partir de ${tabelaTarifa};`;
-        const memoriacalculo = contas.map(c =>
-            `Conta ${c.conta} inicial faturada com ${c.consumo}m³ que resultou numa conta de R$ ${c.valorConta} e nova conta faturada com ${leitura - leituraAnterior}m³ que resultou numa conta de R$ ${c.novoValor}.`
-        ).join(' ');
+    const irregularidade = `Erro na leitura coletada na referência ${conta};`;
+    const apuracao = `Vistoria realizada em ${data} que confirmou o erro de leitura;`;
+    const criterios = `Leitura correta coletada (${leitura}) subtraída da leitura anterior.;`;
+    const tarifa = `Tabela de tarifa vigente a partir de 01/06/2024;`;
+    const memoriacalculo = `Conta ${conta} inicial faturada com ${consumoAnterior}m³ que resultou numa conta de R$ ${valorOriginal} e nova conta faturada com ${consumoCorreto}m³ que resultou numa conta de R$ ${valorCorrigido}.`;
 
-        RevisaoComRefaturamento(1, irregularidade, apuracao, criterios, tarifa, memoriacalculo, usuario, leitura);
-    });
+    RevisaoComRefaturamento(1, irregularidade, apuracao, criterios, tarifa, memoriacalculo, usuario, leitura);
 };
 
 function AgendLeitura() { //Agendamento de leitura

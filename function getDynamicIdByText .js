@@ -163,21 +163,20 @@ var elementPairs = [
     [formatCSSSelector(nomeANEXO) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)', formatCSSSelector(descricaoANEXO)]
 ];
 
-*/
 
-const IrregConstID = getDynamicIdByText('form1\\:j_idt', 'Irregularidade Constatada*:', 1);
+const IrregConstID = getDynamicIdByText('form\\:j_idt', 'Irregularidade Constatada*:', 1,-1);
 const IrregConst = formatCSSSelector(IrregConstID);
 
-const ApuracaoID = getDynamicIdByText('form1\\:j_idt', 'Elemento de apuração da irregularidade*:', 1);
+const ApuracaoID = getDynamicIdByText('form\\:j_idt', 'Elemento de apuração da irregularidade*:', 1,-1);
 const Apuracao = formatCSSSelector(ApuracaoID);
 
-const CriteriosID = getDynamicIdByText('form1\\:j_idt', 'Critérios adotados na revisão dos faturamentos*:', 1);
+const CriteriosID = getDynamicIdByText('form\\:j_idt', 'Critérios adotados na revisão dos faturamentos*:', 1,-1);
 const Criterios = formatCSSSelector(CriteriosID);
 
-const TarifaID = getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1);
+const TarifaID = getDynamicIdByText('form\\:j_idt', 'Tarifa utilizada*:', 1,-1);
 const Tarifa = formatCSSSelector(TarifaID);
 
-const MemoCalculoID = getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1);
+const MemoCalculoID = getDynamicIdByText('form\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1,-1);
 const MemoCalculo = formatCSSSelector(MemoCalculoID);
 
 console.log(IrregConst);
@@ -186,8 +185,51 @@ console.log(Criterios);
 console.log(Tarifa);
 console.log(MemoCalculo);
 
+const irreg = safeQuerySelector(IrregConst);
+const apur = safeQuerySelector(Apuracao);
+const crit = safeQuerySelector(Criterios);
+const tarif = safeQuerySelector(Tarifa);
+const memcalc = safeQuerySelector(MemoCalculo);
+
+console.log(irreg);
+console.log(apur);
+console.log(crit);
+console.log(tarif);
+console.log(memcalc);
+*/
 
 
+// const RefaturarContaID = getDynamicIdByText('form1\\:j_idt', 'Deseja refaturar conta:', 2);
+// const RefaturarConta = formatCSSSelector(RefaturarContaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)';
+
+// const HaviaVazID = getDynamicIdByText('form1\\:j_idt', 'Havia vazamento ou extravasamento: *', 1);
+// const HaviaVaz = formatCSSSelector(HaviaVazID)  + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+
+// const ExecutadoID = getDynamicIdByText('form1\\:j_idt', 'Executado: *', 1);
+// const Executado = formatCSSSelector(ExecutadoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+
+// const CartaRespostaID = getDynamicIdByText('form1\\:j_idt', 'Encaminhar Carta Resposta: *', 1);
+// const CartaResposta = formatCSSSelector(CartaRespostaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+
+const RevisaoContaID = getDynamicIdByText('form\\:j_idt', 'Revisão de Conta: *', 1,-1);
+const RevisaoConta = formatCSSSelector(RevisaoContaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+
+// const ConcluidoID = getDynamicIdByText('form1\\:j_idt', 'Concluído: *', 1);
+// const Concluido = formatCSSSelector(ConcluidoID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)';
+
+// console.log(RefaturarConta);
+// console.log(HaviaVaz);
+// console.log(Executado);
+// console.log(CartaResposta);
+console.log(RevisaoConta);
+// console.log(Concluido);
+
+// console.log(safeQuerySelector(RefaturarConta));
+// console.log(safeQuerySelector(HaviaVaz));
+// console.log(safeQuerySelector(Executado));
+// console.log(safeQuerySelector(CartaResposta));
+console.log(safeQuerySelector(RevisaoConta));
+// console.log(safeQuerySelector(Concluido));
 
 //  ----------------------------
 
