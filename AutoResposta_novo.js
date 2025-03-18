@@ -7,6 +7,8 @@
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
+// @downloadURL https://update.greasyfork.org/scripts/496957/HelpGCOM_novo.user.js
+// @updateURL https://update.greasyfork.org/scripts/496957/HelpGCOM_novo.meta.js
 // ==/UserScript==
 
 var version = GM_info.script.version;
@@ -73,7 +75,7 @@ function PegarIdts() {
     resposta = (formatCSSSelector(respostaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)');
     diagnostico = formatCSSSelector(diagnosticoID);
     providencia = formatCSSSelector(providenciaID);
-    
+
     vazcorrigidosimID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',2,-1);
     vazvisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
     vaznaovisivelID = getDynamicIdByText('form\\:j_idt', 'Não se aplica',5,-1);
@@ -106,7 +108,7 @@ function getDynamicSelectorsRefaturamento() {
         Tarifa: formatCSSSelector(getDynamicIdByText('form\\:j_idt', 'Tarifa utilizada*:', 1,-1)),
         MemoCalculo: formatCSSSelector(getDynamicIdByText('form\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1,-1)),
     };
-    
+
     return selectorsRefaturamento;
 }
 
@@ -349,15 +351,15 @@ var marcado = false;
                 for (const [confirmElementSelector, confirmElementValueSelector] of elementPairs) {
                     const confirmElement = document.querySelector(confirmElementSelector);
                     const confirmElementValue = document.querySelector(confirmElementValueSelector);
-    
+
                     if (confirmElement && confirmElementValue && confirmElementValue.value === '') {
                         const fileName = confirmElement.innerText.trim();
                         const fileNameWithoutExtension = fileName.slice(0, -4);
                         confirmElementValue.value = fileNameWithoutExtension;
                     }
-                }                
+                }
             }
-            
+
 
             var iframe = document.querySelector('iframe'); // Use o seletor apropriado para selecionar o iframe específico
             if (iframe) {
@@ -504,7 +506,7 @@ async function RevisaoComRefaturamento(vaz, visivel, coletado, irregularidade, a
         else{
             document.querySelector(naoseaplica).click();
         }
-        
+
     }, 2000);
 
     return;
@@ -687,7 +689,7 @@ function VazInternNVisCol() { //Vaz. Interno
     // var prov = 'Conta(s) referência ' + conta + ' revisada(s) conforme Resolução ADASA nº 14/2011.';
 
     // Revisao(1,0,0,diag,prov);
-    
+
     //Alteração para o novo sistema de revisão
     abrirModalRevisao().then(({ contas, tabelaTarifa }) => {
         const irregularidade = `Conta(s) referência(s) ${contas.map(c => c.conta).join(' , ')} com consumo acima da média do imóvel.`;

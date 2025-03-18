@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.36
+// @version     3.39
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -218,11 +218,11 @@ const MemoCalculo = formatCSSSelector(MemoCalculoID);
 const RefaturarContaID = getDynamicIdByText('form1\\:j_idt', 'Deseja refaturar conta:', 2);
 const RefaturarConta = formatCSSSelector(RefaturarContaID) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > label:nth-child(2)';
 const HaviaVazID = getDynamicIdByText('form1\\:j_idt', 'Havia vazamento ou extravasamento: *', 1);
-const HaviaVaz = formatCSSSelector(HaviaVazID); 
+const HaviaVaz = formatCSSSelector(HaviaVazID);
 const ExecutadoID = getDynamicIdByText('form1\\:j_idt', 'Executado: *', 1);
 const Executado = formatCSSSelector(ExecutadoID);
 const CartaRespostaID = getDynamicIdByText('form1\\:j_idt', 'Encaminhar Carta Resposta: *', 1);
-const CartaResposta = formatCSSSelector(CartaRespostaID); 
+const CartaResposta = formatCSSSelector(CartaRespostaID);
 const RevisaoContaID = getDynamicIdByText('form1\\:j_idt', 'Revisão de Conta: *', 1);
 const RevisaoConta = formatCSSSelector(RevisaoContaID); // Adicionar o '1) > label:nth-child' ou '2) > label:nth-child(2)' no final
 const ConcluidoID = getDynamicIdByText('form1\\:j_idt', 'Concluído: *', 1);
@@ -238,7 +238,7 @@ function getDynamicSelectorsRevisao() {
         RevisaoConta: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Revisão de Conta: *', 1)),
         Concluido: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Concluído: *', 1)) + ' > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > label:nth-child(2)'
     };
-    
+
     return selectorsRevisao;
 }
 
@@ -250,7 +250,7 @@ function getDynamicSelectorsRefaturamento() {
         Tarifa: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Tarifa utilizada*:', 1)),
         MemoCalculo: formatCSSSelector(getDynamicIdByText('form1\\:j_idt', 'Memória descritiva dos cálculos de revisão do valor faturado*:', 1)),
     };
-    
+
     return selectorsRefaturamento;
 }
 
@@ -1118,19 +1118,19 @@ async function Titularidade(diag, prov) {
     // var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/span[1]/div/div[2]/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     // var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-    // if (element5 !== null) {
+    // if (element5 != null) {
     //     element5.click();
     // }
-    // if (element1 !== null) {
+    // if (element1 != null) {
     //     element1.click();
     // }
-    // if (element2 !== null) {
+    // if (element2 != null) {
     //     element2.click();
     // }
-    // if (element3 !== null) {
+    // if (element3 != null) {
     //     element3.click();
     // }
-    // if (element4 !== null) {
+    // if (element4 != null) {
     //     element4.click();
     // }
 
@@ -1174,13 +1174,13 @@ async function Titularidade(diag, prov) {
     var diagn = document.getElementById("form1:diagnosticoBaixa");
     var provd = document.getElementById("form1:providenciaBaixa");
 
-    if (diagn !== null && diagn !== false) {
+    if (diagn != null && diagn !== false) {
         diagn.value = diag;
     }
     else{
         console.log("Diagnostico null");
     }
-    if (provd !== null && provd !== false) {
+    if (provd != null && provd !== false) {
         provd.value = prov;
     }
     else{
@@ -1196,7 +1196,7 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
     }
 
     // var element5 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    // if (element5 !== null) {
+    // if (element5 != null) {
     //     element5.click();
     // }
 
@@ -1206,16 +1206,16 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
     // var element3 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[7]/td/table/tbody/tr/td/table/tbody/tr/td[" + resp + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     // var element4 = document.evaluate("/html/body/div[8]/div/form[3]/span/div[2]/div[2]/table/tbody/tr/td/table/tbody/tr[8]/td/table/tbody/tr/td/table/tbody/tr/td[" + reviconta + "]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-    // if (element1 !== null) {
+    // if (element1 != null) {
     //     element1.click();
     // }
-    // if (element2 !== null) {
+    // if (element2 != null) {
     //     element2.click();
     // }
-    // if (element3 !== null) {
+    // if (element3 != null) {
     //     element3.click();
     // }
-    // if (element4 !== null) {
+    // if (element4 != null) {
     //     element4.click();
     // }
 
@@ -1263,7 +1263,7 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
 
     if (improc) {
         var improcedente = document.evaluate("/html/body/div[8]/div/form[3]/span/div[3]/div[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr/td[2]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        if (improcedente !== null) {
+        if (improcedente != null) {
             improcedente.click();
             const naoexec = await waitForElement('#form1\\:motivoNaoExecucao');
             if (naoexec) {
@@ -1273,7 +1273,7 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
     }
     else {
         var procedente = document.evaluate("/html/body/div[8]/div/form[3]/span/div[3]/div[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        if (procedente !== null) {
+        if (procedente != null) {
             procedente.click();
         }
     }
@@ -1294,11 +1294,11 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
 
     if (usuario && leitura) {
         const usu = await waitForElement(tagusuario);
-        if (usu !== null) {
+        if (usu != null) {
             usu.value = usuario;
         }
         const leit = await waitForElement(tagleitura);
-        if (leit !== null) {
+        if (leit != null) {
             leit.value = leitura;
         }
     }
@@ -1306,13 +1306,13 @@ async function Revisao(vaz, reviconta, exec, resp, diag, prov, usuario, leitura,
     const diagn = document.getElementById("form1:diagnosticoBaixa");
     const provd = document.getElementById("form1:providenciaBaixa");
 
-    if (diagn !== null && diagn !== false) {
+    if (diagn != null && diagn !== false) {
         diagn.value = diag;
     }
     else{
         console.log("Diagnostico null");
     }
-    if (provd !== null && provd !== false) {
+    if (provd != null && provd !== false) {
         provd.value = prov;
     }
     else{
@@ -1329,8 +1329,8 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
         tipovaz = 1;
     }
 
-    // 
-    
+    //
+
     const selectorsRevisao = getDynamicSelectorsRevisao();
     const refaturarConta = safeQuerySelector(selectorsRevisao.RefaturarConta);
     if (refaturarConta) {
@@ -1389,11 +1389,11 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
 
     if (usuario && leitura) {
         const usu = await waitForElement(tagusuario);
-        if (usu !== null) {
+        if (usu != null) {
             usu.value = usuario;
         }
         const leit = await waitForElement(tagleitura);
-        if (leit !== null) {
+        if (leit != null) {
             leit.value = leitura;
         }
     }
@@ -1405,19 +1405,19 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
     const tarif = safeQuerySelector(selectorsRefaturamento.Tarifa);
     const memcalc = safeQuerySelector(selectorsRefaturamento.MemoCalculo);
 
-    if (irreg !== null && irreg !== false) {
+    if (irreg != null && irreg !== false) {
         irreg.value = irregularidade;
     }
-    if (apur !== null && apur !== false) {
+    if (apur != null && apur !== false) {
         apur.value = apuracao;
     }
-    if (crit !== null && crit !== false) {
+    if (crit != null && crit !== false) {
         crit.value = criterios;
     }
-    if (tarif !== null && tarif !== false) {
+    if (tarif != null && tarif !== false) {
         tarif.value = tarifa;
     }
-    if (memcalc !== null && memcalc !== false) {
+    if (memcalc != null && memcalc !== false) {
         memcalc.value = memoriacalculo;
     }
 
@@ -1438,7 +1438,7 @@ async function RevisaoComRefaturamento(tipovaz, irregularidade, apuracao, criter
     // setTextareaValue(memcalc, memoriacalculo);
 
     var procedente = document.evaluate("/html/body/div[8]/div/form[3]/span/div[3]/div[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr/td[1]/div/div[2]/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    if (procedente !== null) {
+    if (procedente != null) {
         procedente.click();
     }
 
@@ -1812,7 +1812,7 @@ function NhidNConf() { // Nº Hid não confere - já atualizado
     var diag = ('Hidrômetro '+hid+' foi substituído pela CAESB e cadastro já está atualizado.');
     var prov = ('Hidrômetro instalado em ' + data);
 
-    Revisao(2, 2, 1, 2, diag, prov, '.', '0', false, true);
+    Revisao(2, 2, 1, 2, diag, prov, null, null, false, true);
 };
 
 function VazNegado() { //Vaz.Negado Mais de 2 LS.
@@ -2101,7 +2101,7 @@ function Proprietario() { // Exec.Cons.Final - Proprietario
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Atual titular é proprietário e solicitou apenas a desativação, não sendo registrada a saída.');
-    Revisao(2, 2, 2, null, diag, prov, false, false, false, false);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function InqSemCons() { // Exec.Cons.Final - Inquilino sem Consumo Final
@@ -2110,7 +2110,7 @@ function InqSemCons() { // Exec.Cons.Final - Inquilino sem Consumo Final
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e sem conta de consumo final.');
-    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function InqConsFinal() { // Exec.Cons.Final - Inquilino com Consumo Final
@@ -2119,7 +2119,7 @@ function InqConsFinal() { // Exec.Cons.Final - Inquilino com Consumo Final
     var leit = prompt('Informe a leitura final: ');
     var diag = ('Corte realizado em ' + data + ', com leitura final de ' + leit + '.');
     var prov = ('Registrada saída do(a) usuário(a) e gerada conta com consumo final do imóvel.');
-    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function CorteNExec() { // Exec.Cons.Final - Corte não realizado
@@ -2127,7 +2127,7 @@ function CorteNExec() { // Exec.Cons.Final - Corte não realizado
     var data = prompt('Informe a data que houve a tentativa de corte: ');
     var diag = ('Tentativa de corte pela equipe da CAESB em ' + data + ', porém sem acesso ao hidrômetro para execução do serviço.');
     var prov = ('Conforme informado no Termo de Solicitação assinado pelo usuário a rescisão contratual e consequente suspensão do faturamento somente será efetivada após a suspensão definitiva dos serviços de abastecimento de água, onde deve ser viabilizada mediante a concessão de acesso ao padrão de ligação.');
-    Revisao(2, 2, 1, null, diag, prov, false, false, false, true);
+    Revisao(2, 2, 1, 1, diag, prov, false, false, false, true);
 };
 
 function VazDepoisCavalete() { //Vaz depois cavalete
