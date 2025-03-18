@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.39
+// @version     3.40
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -2661,16 +2661,18 @@ function PopUpRefatCred() {
         pfDlgEdicaoShow = pfDlgEdicaoShowID + ':' + 'j_idt' + (parseInt(pfDlgEdicaoShowID.match(/\d+/)[0]) + 2);
 
         // Aplicação de crédito na tela de crédito
-        contaRefSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 1); //ok
+        //contaRefSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 0); //ok
+        contaRefSelectorID = 'form1:mesAnoReferencia';
         contaRefSelector = formatCSSSelector(contaRefSelectorID);
 
-        lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 3); //ok
+        lupaSelectorID = getDynamicIdByText('form1\\:j_idt', 'Referência: *', 2); //ok
         lupaSelector = formatCSSSelector(lupaSelectorID);
 
         AplicarCreditoButtID = getDynamicIdByText('form3\\:j_idt', 'Adicionar', 0); //ok
         AplicarCreditoButt = formatCSSSelector(AplicarCreditoButtID) + ' > span.ui-button-text.ui-c';
 
-        observacaoinputID = getDynamicIdByText('form1\\:j_idt', 'Observação: *', 1); //ok
+        //observacaoinputID = getDynamicIdByText('form1\\:j_idt', 'Observação: *', 1); //ok
+        observacaoinputID = 'form1:observacao';
         observacaoinput = formatCSSSelector(observacaoinputID);
 
         console.log('pfDlgEdicaoShow: ' + pfDlgEdicaoShow);
@@ -2695,6 +2697,7 @@ function PopUpRefatCred() {
             s: pfInscricaoId,
             e: "valueChange",  // Adiciona o evento valueChange
             p: pfInscricaoId,
+            u: "form1:servicoCredito",
             params: [{name: pfInscricaoId, value: insc}]
         });
 
