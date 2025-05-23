@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Os arquivos desse projeto rodam em um cliente de UserScript no navegador
