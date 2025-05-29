@@ -3,7 +3,7 @@
 // @namespace   https://sistemas.caesb.df.gov.br/gcom/
 // @match       *sistemas.caesb.df.gov.br/gcom/*
 // @match       *sistemas.caesb/gcom/*
-// @version     3.36
+// @version     3.37
 // @grant       none
 // @license     MIT
 // @description Auxiliar para trabalhos no GCOM!
@@ -592,6 +592,7 @@ async function abrirModalRevisao() {
                 </div>
             `).join('')}
             <select id="tabelaTarifa">
+                <option value="01/06/2025">01/06/2025</option>
                 <option value="01/06/2024">01/06/2024</option>
                 <option value="01/08/2023">01/08/2023</option>
                 <option value="01/01/2023">01/01/2023</option>
@@ -630,9 +631,9 @@ async function abrirModalRevisao() {
 //Revisao(vaz, visivel, coletado, diag, prov)
 
 function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
-    var usuario = document.getElementById(usu).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
+    var usuario = document.getElementById(usu).innerText;
     console.log(leitura);
     console.log(lacre);
     console.log(usuario);
@@ -651,8 +652,8 @@ function UsuarioOrientadoVazamento() { //Usuario Orientado Vazamento
 
 function SemVazamImprocedente() { //Sem Vazam. Improcedente
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var refs = prompt('Caso tenha atualizado vencimento, informar refs. Ex. 10/2023, 11/2023 e 12/2023 \nCaso contrário deixar em branco.');
     if ( lacre == "" ) {
         var diag = 'Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente e a leitura ' + leitura + ' foi confirmada e não foi encontrado nenhum indício de vazamento no local. Diante disso, concluímos que as contas foram faturadas de acordo com o consumo registrado pelo hidrômetro.'
@@ -672,8 +673,8 @@ function SemVazamImprocedente() { //Sem Vazam. Improcedente
 
 function VazInternNVisCol() { //Vaz. Interno
 
-    // var leitura = document.getElementById(leit).value;
-    // var lacre = document.getElementById(lacr).value;
+    // var leitura = document.getElementById(leit).innerText;
+    // var lacre = document.getElementById(lacr).innerText;
     var dataidt = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
     var dataID = formatCSSSelector(dataidt) + '_content';
     var data = document.querySelector(dataID + ' > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(5) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)').textContent;
@@ -719,7 +720,7 @@ function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
 
     var dataidt = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
     var dataID = formatCSSSelector(dataidt) + '_content';
-    var leitura = document.getElementById(leit).value;
+    var leitura = document.getElementById(leit).innerText;
 
     var data = document.querySelector(dataID + ' > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(5) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)').textContent;
 
@@ -730,7 +731,7 @@ function CltAusenteVistRealizada() { //Cliente Ausente - Vistoria Realizada
 };
 
 function VazDepoisCavalete() {
-    // var leitura = document.getElementById(leit).value;
+    // var leitura = document.getElementById(leit).innerText;
     var OSC = prompt('Informe a OSC de conserto de cavalete: ');
     var data = prompt('Informe a data do conserto.');
     // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023. \nDeixe em branco se não houve revisão');
@@ -771,8 +772,8 @@ function VazDepoisCavalete() {
 
 function VazCoberto() { //Vaz Coberto
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
 
     if ( lacre == "" ) {
         var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' +leitura + ' foi confirmada. Usuário informa que sanou vazamento, porém local já estava tampado/coberto, não sendo possível verificar o vazamento sanado.');
@@ -788,8 +789,8 @@ function VazCoberto() { //Vaz Coberto
 
 function ErroLeitura() { //Erro de leitura
 
-    // var leitura = document.getElementById(leit).value;
-    // var lacre = document.getElementById(lacr).value;
+    // var leitura = document.getElementById(leit).innerText;
+    // var lacre = document.getElementById(lacr).innerText;
     // var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
 
     // if ( lacre == "" ) {
@@ -809,7 +810,7 @@ function ErroLeitura() { //Erro de leitura
     var conta = prompt('Digite a(s) conta(s): Ex. 01/2023, 02/2023 e 03/2023');
     const consumoAnterior = prompt('Digite o consumo da conta faturada errada (em m³):');
     var valorOriginal = prompt('Digite o valor original da conta:');
-    var leitura = document.getElementById(leit).value;
+    var leitura = document.getElementById(leit).innerText;
     var valorCorrigido = prompt('Digite o valor corrigido da conta:');
     const consumoCorreto = prompt('Digite o consumo correto (em m³):');
     var dataidt = getDynamicIdByText('form\\:j_idt', 'Data do cadastro:');
@@ -827,8 +828,8 @@ function ErroLeitura() { //Erro de leitura
 
 function AgendLeitura() { //Agendamento de leitura
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var conta = prompt('Digite a conta: Ex. 01/2023');
 
     if ( lacre == "" ) {
@@ -859,8 +860,8 @@ function AgendLeituraForaPrazo() { //Agendamento de leitura aberta fora do prazo
 
 function VazVisCol() { //Vazamento visível e coletado
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var vaz = prompt('Digite o local do vazamento: Ex. na caixa de descarga ');
 
     if ( lacre == "" ) {
@@ -878,8 +879,8 @@ function VazVisCol() { //Vazamento visível e coletado
 
 function VazNegado() { //Vaz.Negado Mais de 2 LS.
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
     var conta = prompt('Digite a(s) conta(s) que já receberam LS: Ex. 01/2023, 02/2023 e 03/2023');
 
@@ -946,8 +947,8 @@ function DescAutoLeitura() { // Descadastrado da auto leitura mes
 
 function AlteracaoCategoria() { // Alteração de categoria
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var categoriaAtual = prompt('Digite a categoria anterior: ');
     var categoriaNova = prompt('Digite a nova categoria: ');
 
@@ -968,8 +969,8 @@ function AlteracaoCategoria() { // Alteração de categoria
 
 function AlteracaoUnidadesConsumo() { // Alteração de Unidades de Consumo
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var usuario = prompt('Digite o nome do usuario: ');
     var unidadesConsumoAtual = prompt('Digite o nº de Unidades de Consumo anterior: ');
     var unidadesConsumoNova = prompt('Digite o novo nº de Unidades de Consumo: ');
@@ -1019,8 +1020,8 @@ function DistribuicaoConsumo() { // Distribuição de Consumo
     const firstRef = refsMatches[0];
     const frase2 = `Conta referência ${lastRef} refaturada pela distribuição do consumo dos meses ${firstRef} a ${lastRef}, com consumo total de ${totalVolume} em ${months} meses.`;
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
 
     if ( lacre == "" ) {
         var diag = ('Após vistoria no local, constatamos que o hidrômetro está funcionando corretamente, leitura ' + leitura + ' foi confirmada. Não foi encontrado nenhum indício de vazamento no local. \n' + frase1);
@@ -1036,8 +1037,8 @@ function DistribuicaoConsumo() { // Distribuição de Consumo
 
 function VazAbaixoLs() { // Vaz.Abaixo LS S/Esg
 
-    var leitura = document.getElementById(leit).value;
-    var lacre = document.getElementById(lacr).value;
+    var leitura = document.getElementById(leit).innerText;
+    var lacre = document.getElementById(lacr).innerText;
     var vaz = prompt('Digite o local do vazamento: Ex. no ramal do quintal ');
     var conta = prompt('Digite a(s) conta(s) que estão abaixo do LS: Ex. 01/2023, 02/2023 e 03/2023');
 

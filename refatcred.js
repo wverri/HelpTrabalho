@@ -99,7 +99,24 @@
         { categoria: 'Comercial', tarifacao: '06/2024', faixa: 7, valor: 9.7 },
         { categoria: 'Comercial', tarifacao: '06/2024', faixa: 10, valor: 12.52 },
         { categoria: 'Comercial', tarifacao: '06/2024', faixa: 40, valor: 15.52 },
-        { categoria: 'Comercial', tarifacao: '06/2024', faixa: 10000, valor: 18.31 }
+        { categoria: 'Comercial', tarifacao: '06/2024', faixa: 10000, valor: 18.31 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 7, valor: 4.13 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 13, valor: 4.96 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 20, valor: 9.82 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 30, valor: 14.25 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 45, valor: 21.37 },
+        { categoria: 'Residencial', tarifacao: '06/2025', faixa: 10000, valor: 27.77 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 7, valor: 2.07 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 13, valor: 2.48 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 20, valor: 4.92 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 30, valor: 7.12 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 45, valor: 21.37 },
+        { categoria: 'Social', tarifacao: '06/2025', faixa: 10000, valor: 27.77 },
+        { categoria: 'Comercial', tarifacao: '06/2025', faixa: 4, valor: 8.53 },
+        { categoria: 'Comercial', tarifacao: '06/2025', faixa: 7, valor: 10.66 },
+        { categoria: 'Comercial', tarifacao: '06/2025', faixa: 10, valor: 13.75 },
+        { categoria: 'Comercial', tarifacao: '06/2025', faixa: 40, valor: 17.05 },
+        { categoria: 'Comercial', tarifacao: '06/2025', faixa: 10000, valor: 20.12 }
     ];
 
     function createOptionsWindow() {
@@ -146,7 +163,7 @@
             { label: 'Consumo', id: 'consumo', type: 'text' },
             { label: 'LS', id: 'ls', type: 'text' },
             { label: 'Média', id: 'media', type: 'text' },
-            { label: 'Tarifação', id: 'tarifacao', type: 'select', options: ['06/2024', '08/2023', '01/2023', '09/2022', '06/2021'], default: '06/2024' }
+            { label: 'Tarifação', id: 'tarifacao', type: 'select', options: ['06/2025', '06/2024', '08/2023', '01/2023', '09/2022', '06/2021'], default: '06/2024' }
         ];
 
         fields.forEach(field => {
